@@ -14,7 +14,7 @@
 #'   (**alt**: Alternate allele, **ref**: Reference allele)
 #' * `phecode`: Character vector of the phecode for the association
 #' * `phecode_string`: Character vector of the phecode string label
-#' * `best_log_P`: Numeric vector of the -log10(P) of the association
+#' * `cat_LOG10_P`: Numeric vector of the -log10(P) of the association from the catalog
 #' * `cat_OR`: Numeric vector of the odds ratio of the association
 #' * `cat_L95`: Numeric vector of the 95% lower confidence interval of the association
 #' * `cat_U95`: Numeric vector of the 95% upper confidence interval of the association

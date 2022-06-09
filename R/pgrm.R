@@ -2,8 +2,8 @@
 #' @import data.table
 #' @import gaston
 #' @import genpwr
+#' @import DescTools
 #' @importFrom reshape2 melt
-#' @importFrom DescTools "%c%"
 NULL
 
 #' Get instance of PGRM
@@ -21,6 +21,7 @@ NULL
 #'
 #' @export
 get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
+
    ancestry=toupper(ancestry)
    build=tolower(build)
    PGRM=pgrm::PGRM_ALL
@@ -37,17 +38,19 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
   }
 
    freq_col_name = ancestry %c% "_freq"
-   setnames(PGRM, freq_col_name, "AF")
    cases_needed_col_name = 'cases_needed_' %c% ancestry
+   setnames(PGRM, freq_col_name, "AF")
    setnames(PGRM, cases_needed_col_name, "cases_needed")
 
-   cols = c("AFR_freq","EAS_freq","EUR_freq","AMR_freq","SAS_freq","ALL_freq","cases_needed_AFR","cases_needed_EAS","cases_needed_EUR","cases_needed_AMR","cases_needed_SAS","cases_needed_ALL")
-   cols=cols[!cols %in% c(freq_col_name,cases_needed_col_name)]
-   PGRM[, c(cols):=NULL]
-   print("foo")
+   #cols = c("AFR_freq","EAS_freq","EUR_freq","AMR_freq","SAS_freq","ALL_freq","cases_needed_AFR","cases_needed_EAS","cases_needed_EUR","cases_needed_AMR","cases_needed_SAS","cases_needed_ALL")
+   #cols=cols[!cols %in% c(freq_col_name,cases_needed_col_name)]
+   PGRM=PGRM[, c('assoc_ID','SNP','ancestry', 'rsID','risk_allele_dir','risk_allele','AF','phecode','phecode_string','category_string','cat_LOG10_P','cat_OR','cat_L95','cat_L95','cases_needed','Study_accession')]
+
 
    return(PGRM)
 }
+
+
 
 #' Add power annotations to a result set that's been merged with PGRM
 #'
@@ -65,20 +68,20 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
 #'
 annotate_power = function(annotated_results,LOUD=FALSE){
 
-  results$Power = NA
-  results$Power = as.numeric(results$Power)
-  total = nrow(results)
+  annotated_results$Power = NA
+  annotated_results$Power = as.numeric(annotated_results$Power)
+  total = nrow(annotated_results)
   if(LOUD==TRUE  ) {
     print("Doing power calculations")
   }
-  for(i in 1:nrow(results)){
+  for(i in 1:nrow(annotated_results)){
     if(LOUD==TRUE & i %% 100 == 0) {
       print(i %c% " of " %c% total)
     }
-    odds_ratio = results[i,]$cat_L95
-    AF=results[i,]$AF
+    odds_ratio = annotated_results[i,]$cat_L95
+    AF=annotated_results[i,]$AF
     ## change AF to risk allele
-    if(results[i,]$risk_allele_dir == 'ref'){
+    if(annotated_results[i,]$risk_allele_dir == 'ref'){
       AF=1-AF
     }
     ## flip AF and OR to minor allele
@@ -86,20 +89,20 @@ annotate_power = function(annotated_results,LOUD=FALSE){
       AF=1-AF
       odds_ratio = 1/odds_ratio
     }
-    k = results[i,]$controls/results[i,]$cases
-    N = results[i,]$controls+results[i,]$cases
+    k = annotated_results[i,]$controls/annotated_results[i,]$cases
+    N = annotated_results[i,]$controls+annotated_results[i,]$cases
     ## control:case ratio ceiling of 20
     if(k>20){
       k=20
-      N = results[i,]$cases * 20
+      N = annotated_results[i,]$cases * 20
     }
     pwr <- genpwr.calc(calc = "power", model = "logistic", ge.interaction = NULL,
                        Case.Rate=NULL, k=k,N=N,
                        MAF=AF, OR=odds_ratio,Alpha=0.05,Power=NULL,
                        True.Model=c("Additive"),  Test.Model=c( "Additive"))
-    results[i,]$Power = pwr$Power_at_Alpha_0.05
+    annotated_results[i,]$Power = pwr$Power_at_Alpha_0.05
   }
-  return(results)
+  return(annotated_results)
 }
 
 

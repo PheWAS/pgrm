@@ -17,7 +17,7 @@ A data.table with the following columns:
 (\strong{alt}: Alternate allele, \strong{ref}: Reference allele)
 \item \code{phecode}: Character vector of the phecode for the association
 \item \code{phecode_string}: Character vector of the phecode string label
-\item \code{best_log_P}: Numeric vector of the -log10(P) of the association
+\item \code{cat_LOG10_P}: Numeric vector of the -log10(P) of the association from the catalog
 \item \code{cat_OR}: Numeric vector of the odds ratio of the association
 \item \code{cat_L95}: Numeric vector of the 95\% lower confidence interval of the association
 \item \code{cat_U95}: Numeric vector of the 95\% upper confidence interval of the association

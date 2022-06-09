@@ -1,4 +1,4 @@
-"assoc_ID","SNP_hg19","SNP_hg38","ancestry","rsID","risk_allele_dir","risk_allele","phecode","phecode_string","best_log_P","cat_OR","cat_L95","cat_U95","Study_accession","cases_needed_AFR","cases_needed_EAS","cases_needed_EUR","cases_needed_AMR","cases_needed_SAS","cases_needed_ALL","category_string"
+"assoc_ID","SNP_hg19","SNP_hg38","ancestry","rsID","risk_allele_dir","risk_allele","phecode","phecode_string","cat_LOG10_P","cat_OR","cat_L95","cat_U95","Study_accession","cases_needed_AFR","cases_needed_EAS","cases_needed_EUR","cases_needed_AMR","cases_needed_SAS","cases_needed_ALL","category_string"
 201,"1:62782860:T:C","1:62317189:T:C","EUR","rs79742895","alt","C",364.51,"Fuchs' dystrophy",14,2.090000,1.730000,2.520000,"GCST004217",-,-,291,-,-,412,"sense organs"
 202,"1:169060489:G:A","1:169091251:G:A","EUR","rs1200114","ref","G",364.51,"Fuchs' dystrophy",18,1.450000,1.340000,1.580000,"GCST004217",673,3026,245,355,541,287,"sense organs"
 203,"1:183092500:C:T","1:183123365:C:T","EUR","rs3768617","ref","C",364.51,"Fuchs' dystrophy",15.154901959985743,1.408451,1.300000,1.540000,"GCST004217",664,288,302,314,332,328,"sense organs"
