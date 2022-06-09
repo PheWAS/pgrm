@@ -24,7 +24,7 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
 
    ancestry=toupper(ancestry)
    build=tolower(build)
-   PGRM=pgrm::PGRM_ALL
+   PGRM=PGRM_ALL
    if(build=="hg19"){
      PGRM$SNP_hg38=NULL
      names(PGRM)[1] = "SNP"
@@ -44,7 +44,7 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
 
    #cols = c("AFR_freq","EAS_freq","EUR_freq","AMR_freq","SAS_freq","ALL_freq","cases_needed_AFR","cases_needed_EAS","cases_needed_EUR","cases_needed_AMR","cases_needed_SAS","cases_needed_ALL")
    #cols=cols[!cols %in% c(freq_col_name,cases_needed_col_name)]
-   PGRM=PGRM[, c('assoc_ID','SNP','ancestry', 'rsID','risk_allele_dir','risk_allele','AF','phecode','phecode_string','category_string','cat_LOG10_P','cat_OR','cat_L95','cat_L95','cases_needed','Study_accession')]
+   PGRM=PGRM[, c('assoc_ID','SNP','ancestry', 'rsID','risk_allele_dir','risk_allele','AF','phecode','phecode_string','category_string','cat_LOG10_P','cat_OR','cat_L95','cat_U95','cases_needed','Study_accession')]
 
 
    return(PGRM)
