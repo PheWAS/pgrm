@@ -14,9 +14,11 @@ RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 Depends: R (>= 3.5)
 Imports:
-  BEDMatrix (>= 2.0.3),
-  checkmate (>= 2.0.0),
+  reshape2 (>= 1.4.4),
   data.table (>= 1.5.0),
+  gaston (>= 1.5.7),
+  genpwr (>= 1.0.4),
+  checkmate (>= 2.0.0),
   foreach (>= 1.5.2)
 Suggests:
   doParallel (>= 1.0.17),

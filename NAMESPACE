@@ -2,7 +2,6 @@
 
 import(checkmate)
 import(data.table)
-importFrom(BEDMatrix,BEDMatrix)
-importFrom(foreach,"%do%")
-importFrom(foreach,"%dopar%")
-importFrom(foreach,foreach)
+import(gaston)
+import(genpwr)
+import(reshape2)
