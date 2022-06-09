@@ -3,18 +3,28 @@ library('data.table')
 rawDir = 'data-raw'
 
 ########################
-# PGRM. Open the map and allele frequencies. Merge on SNP_hg19
+# The PGRM. Add allele frequnecies
 
- PGRM = fread(
-   file.path(rawDir, 'PGRM.csv'),
+ PGRM_ALL = fread(
+   file.path(rawDir, 'PGRM_ALL.csv'),
    colClasses = list(character = 'phecode'),
    na.strings="-")
-setkeyv(PGRM, c('assoc_ID', 'phecode','SNP_hg19'))
+setkeyv(PGRM_ALL, c('assoc_ID', 'phecode','SNP_hg19'))
  PGRM_AF = fread(file.path(rawDir, 'PGRM_AF.csv'))
-  setkeyv(PGRM_AF, c('SNP_hg19'))
- PGRM=merge(PGRM,PGRM_AF,by="SNP_hg19")
+ setkeyv(PGRM_AF, c('SNP_hg19'))
+ PGRM_ALL=merge(PGRM_ALL,PGRM_AF,by="SNP_hg19")
+ usethis::use_data(PGRM_ALL, overwrite = TRUE)
 
- usethis::use_data(PGRM, overwrite = TRUE)
+########################
+# PGRM allele frequencies
+
+# PGRM_AF = fread(
+#   file.path(rawDir, 'PGRM_AF.csv'))
+
+ #setkeyv(PGRM_AF, c('SNP_hg19'))
+ #usethis::use_data(PGRM_AF, overwrite = TRUE)
+
+
 
 #######################
 # phecode exclude ranges for PheWAS
@@ -75,3 +85,20 @@ setkeyv(PGRM, c('assoc_ID', 'phecode','SNP_hg19'))
  setkeyv(results_UKBB, c('SNP', 'phecode'))
 
  usethis::use_data(results_UKBB, overwrite = TRUE)
+
+
+
+
+ # ########################
+ # # PGRM. Open the map and allele frequencies. Merge on SNP_hg19
+ #
+ # PGRM = fread(
+ #   file.path(rawDir, 'PGRM.csv'),
+ #   colClasses = list(character = 'phecode'),
+ #   na.strings="-")
+ # setkeyv(PGRM, c('assoc_ID', 'phecode','SNP_hg19'))
+ # PGRM_AF = fread(file.path(rawDir, 'PGRM_AF.csv'))
+ # setkeyv(PGRM_AF, c('SNP_hg19'))
+ # PGRM=merge(PGRM,PGRM_AF,by="SNP_hg19")
+ #
+ # usethis::use_data(PGRM, overwrite = TRUE)

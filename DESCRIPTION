@@ -19,7 +19,7 @@ Imports:
   gaston (>= 1.5.7),
   genpwr (>= 1.0.4),
   checkmate (>= 2.0.0),
-  foreach (>= 1.5.2)
+  DescTools (>= 0.99.45)
 Suggests:
   doParallel (>= 1.0.17),
   knitr,

@@ -26,5 +26,21 @@
 #' * `cases_needed_ALL`: Integer vector of the estimated cases needed at 80% power for multi-ancestry cohort
 #' * `category_string`: Character vector of the phecode category
 #'
-#' @seealso [open_PGRM()]]
-'PGRM'
+#' @seealso [get_PGRM()]]
+'PGRM_ALL'
+
+#' Exclude ranges for phecode controls
+#'
+#' The data are artificial and do not correspond to real patients.
+#'
+#' @format A data table with the following columns:
+#'
+#' * `phecode`: Character vector of phecode
+#' * `range_start`: Numeric vector of the start of the exclude range
+#' * `range_end`: Numeric vector of the end of the exclude range
+#'
+#' @source <https://phewascatalog.org>
+#'
+#' @seealso [get_pheno()]]
+'exclude_ranges'
+
