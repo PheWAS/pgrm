@@ -22,6 +22,7 @@ NULL
 #' @export
 get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
 
+  ## need functions to check arguments
    ancestry=toupper(ancestry)
    build=tolower(build)
    PGRM=PGRM_ALL
@@ -61,7 +62,7 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
 #'
 #' @return A data.table of the results with a column Power added which includes 80% power calculations (alpha=0.05)
 #'
-#' @eval example1()
+#' @eval example2()
 #'
 #'
 #' @export
@@ -123,7 +124,7 @@ annotate_power = function(annotated_results,LOUD=FALSE){
 #'
 #' @return A data.table of the results file annotated with columsn from the PGRM
 #'
-#' @eval example1()
+#' @eval example3()
 #'
 #'
 #' @export
@@ -160,4 +161,26 @@ annotate_results = function(results, use_allele_dir=T,ancestry="all",build="hg19
     results[cat_L95  > rU95   ]$CI_overlap = 'PGRM_greater'
   }
   return(results)
+}
+
+#' Replicaiton rate (RR) of powered associations
+#'
+#' This function calculates the replicaiton rate in a test cohort
+#'
+#' @param results An data.table of results, annotated with the pgrm
+#' @param LOUD If TRUE then progress info is printed to the terminal. Default TRUE
+#'
+#' @return The replication rate of the result set at 80% power
+#'
+#' @eval example4()
+#'
+#'
+#' @export
+get_RR_power = function(results,LOUD=TRUE){
+  results=data.table(results)
+  powered=nrow(results[powered==1])
+  powered_and_rep=nrow(results[powered==1 & rep==1])
+  RR=powered_and_rep/powered
+  print("Replicated " %c% powered_and_rep %c% " of " %c% powered %c% " for RR=" %c% sprintf("%1.1f%%", 100*RR))
+  return(RR)
 }
