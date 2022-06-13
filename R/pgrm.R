@@ -24,9 +24,9 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
 
    ancestry=toupper(ancestry)
    build=tolower(build)
-
-  # checkBuild(build)
-
+#print(build)
+#  checkBuild(build)
+#assert(build %in% c('hg19','hg37'))
    PGRM=copy(PGRM_ALL)
    if(build=="hg19"){
      PGRM$SNP_hg38=NULL

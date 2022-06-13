@@ -1,4 +1,4 @@
 checkBuild = function(build) {
-  assert(build %in% c('hg19','hg37'))
-  invisible()
-}
+  #assert(build %in% c('hg19','hg37'))
+  print('foo')
+  invisible()}
