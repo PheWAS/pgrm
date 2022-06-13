@@ -44,3 +44,100 @@
 #' @seealso [get_pheno()]]
 'exclude_ranges'
 
+#' Summary statistics from BioBank Japan (BBJ)
+#'
+#' This table provides BBJ GWAS summary statistics for SNPs and phecodes that are in the PGRM
+#'
+#' @format A data.table with the following columns:
+#'
+#' * `SNP`: String of SNP identifier, format CHR:position:ref:alt. Build = hg19.
+#' * `phecode`: String of a phecode
+#' * `cases`: Integer of the number of cases for specified phecode
+#' * `controls`: Integer of the number of controls for specified phecode
+#' * `odds_ratio`: Numeric odds ratio
+#' * `P`: Numeric raw P-value
+#' * `L95`: Numeric 95% lower confidence interval
+#' * `U95`: Numeric 95% upper confidence interval
+#' * `cohort_match`: Integer that is 1 if the source of the PGRM association includes BBJ, 0 if not
+#'
+#' @source <https://pheweb.jp>
+#'
+'results_BBJ'
+
+#' Summary statistics from UK Biobank (UKBB)
+#'
+#' This table provides UK Biobank GWAS summary statistics for SNPs and phecodes that are in the PGRM
+#'
+#' @format A data.table with the following columns:
+#'
+#' * `SNP`: String of SNP identifier, format CHR:position:ref:alt. Build = hg38
+#' * `phecode`: String of a phecode
+#' * `cases`: Integer of the number of cases for specified phecode
+#' * `controls`: Integer of the number of controls for specified phecode
+#' * `odds_ratio`: Numeric odds ratio
+#' * `P`: Numeric raw P-value
+#' * `L95`: Numeric 95% lower confidence interval
+#' * `U95`: Numeric 95% upper confidence interval
+#' * `cohort_match`: Integer that is 1 if the source of the PGRM association includes UKBB, 0 if not
+#'
+#' @source <https://pheweb.org/UKB-TOPMed/>
+#'
+'results_UKBB'
+
+
+#' Summary statistics from the Michigan Genomics Initiative (MGI)
+#'
+#' This table provides MGI GWAS summary statistics for SNPs and phecodes that are in the PGRM
+#'
+#' @format A data.table with the following columns:
+#'
+#' * `SNP`: String of SNP identifier, format CHR:position:ref:alt. Build = hg38
+#' * `phecode`: String of a phecode
+#' * `cases`: Integer of the number of cases for specified phecode
+#' * `controls`: Integer of the number of controls for specified phecode
+#' * `odds_ratio`: Numeric odds ratio
+#' * `P`: Numeric raw P-value
+#' * `L95`: Numeric 95% lower confidence interval
+#' * `U95`: Numeric 95% upper confidence interval
+#' * `cohort_match`: Integer that is 1 if the source of the PGRM association includes MGI, 0 if not
+#'
+#'
+'results_MGI'
+
+#' Summary statistics from the African ancestery cohort in BioVU
+#'
+#' This table provides BioVU African ancestry GWAS summary statistics for SNPs and phecodes that are in the PGRM
+#'
+#' @format A data.table with the following columns:
+#'
+#' * `SNP`: String of SNP identifier, format CHR:position:ref:alt. Build = hg19
+#' * `phecode`: String of a phecode
+#' * `cases`: Integer of the number of cases for specified phecode
+#' * `controls`: Integer of the number of controls for specified phecode
+#' * `odds_ratio`: Numeric odds ratio
+#' * `P`: Numeric raw P-value
+#' * `L95`: Numeric 95% lower confidence interval
+#' * `U95`: Numeric 95% upper confidence interval
+#' * `cohort_match`: Integer that is 1 if the source of the PGRM association includes BioVU, 0 if not
+#'
+#'
+'results_BioVU_AFR'
+
+#' Summary statistics from the European ancestery cohort in BioVU
+#'
+#' This table provides BioVU European ancestry GWAS summary statistics for SNPs and phecodes that are in the PGRM
+#'
+#' @format A data.table with the following columns:
+#'
+#' * `SNP`: String of SNP identifier, format CHR:position:ref:alt. Build = hg19
+#' * `phecode`: String of a phecode
+#' * `cases`: Integer of the number of cases for specified phecode
+#' * `controls`: Integer of the number of controls for specified phecode
+#' * `odds_ratio`: Numeric odds ratio
+#' * `P`: Numeric raw P-value
+#' * `L95`: Numeric 95% lower confidence interval
+#' * `U95`: Numeric 95% upper confidence interval
+#' * `cohort_match`: Integer that is 1 if the source of the PGRM association includes BioVU, 0 if not
+#'
+#'
+'results_BioVU_EUR'

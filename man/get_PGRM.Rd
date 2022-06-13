@@ -9,7 +9,7 @@ get_PGRM(ancestry = "all", build = "hg19", phecode_version = "V1.2")
 \arguments{
 \item{ancestry}{A string that indicates the ancestry of the PGRM. Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL}
 
-\item{build}{A string indicating the genome reference build. Options hg19, hg37. Default is hg19.}
+\item{build}{A string indicating the genome reference build. Options hg19, hg38. Default is hg19.}
 
 \item{phecode_version}{A string indicating the phecode version. Currently only V1.2 is supported, which is the default}
 }

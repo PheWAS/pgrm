@@ -2,8 +2,7 @@
 #' @import data.table
 #' @import gaston
 #' @import genpwr
-#' @import DescTools
-#' @importFrom reshape2 melt
+#' @importFrom DescTools %c%
 NULL
 
 #' Get instance of PGRM
@@ -11,7 +10,7 @@ NULL
 #' This function generates a PGRM copy with specified ancestry, build, and phecode version
 #'
 #' @param ancestry A string that indicates the ancestry of the PGRM. Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL
-#' @param build A string indicating the genome reference build. Options hg19, hg37. Default is hg19.
+#' @param build A string indicating the genome reference build. Options hg19, hg38. Default is hg19.
 #' @param phecode_version A string indicating the phecode version. Currently only V1.2 is supported, which is the default
 #'
 #' @return A data.table of the PGRM
@@ -24,9 +23,9 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
 
    ancestry=toupper(ancestry)
    build=tolower(build)
-#print(build)
-#  checkBuild(build)
-#assert(build %in% c('hg19','hg37'))
+   checkBuild(build)
+   checkAncestry(ancestry)
+
    PGRM=copy(PGRM_ALL)
    if(build=="hg19"){
      PGRM$SNP_hg38=NULL
@@ -116,7 +115,7 @@ annotate_power = function(annotated_results,LOUD=FALSE){
 #' @param results A data frame with results of a test cohort; columns for SNP, phecode, cases, controls, odds_ratio, P (see demo files like results_BBJ for example)
 #' @param use_allele_dir If TRUE, direction of effect is used when assessing if an association is replicated
 #' @param ancestry A string that specifies ancestry of the PGRM that is then used to annotate the results file. Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL
-#' @param build A string indicating the genome reference build used in the results table. Options hg19, hg37. Default is hg19.
+#' @param build A string indicating the genome reference build used in the results table. Options hg19, hg38. Default is hg19.
 #' @param phecode_version A string indicating the phecode version used in the results table. Currently only V1.2 is supported, which is the default
 #' @param calculate_power If TRUE then power calculations will be conducted using case and control counts from the results file. Necessary for get_AE(). Default FALSE
 #' @param annotate_CI_overlap If TRUE then a column called "annotate_CI_overlap" is added to the table, values:

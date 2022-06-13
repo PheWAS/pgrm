@@ -22,7 +22,7 @@ annotate_results(
 
 \item{ancestry}{A string that specifies ancestry of the PGRM that is then used to annotate the results file. Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL}
 
-\item{build}{A string indicating the genome reference build used in the results table. Options hg19, hg37. Default is hg19.}
+\item{build}{A string indicating the genome reference build used in the results table. Options hg19, hg38. Default is hg19.}
 
 \item{phecode_version}{A string indicating the phecode version used in the results table. Currently only V1.2 is supported, which is the default}
 
