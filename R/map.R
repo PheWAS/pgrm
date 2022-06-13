@@ -26,6 +26,12 @@
 #' * `cases_needed_ALL`: Integer vector of the estimated cases needed at 80% power for multi-ancestry cohort
 #' * `category_string`: Character vector of the phecode category
 #'
+#' @details The odds ratio and 95% confidence intervals (columns cat_OR, cat_L95, and cat_U95) are reported relative to the risk allele
+#' which is specified in the column risk_allele.
+#'
+#' @source Allele frequencies: <https://gnomad.broadinstitute.org/>
+#' Summary statistics: <https://www.ebi.ac.uk/gwas/>
+#'
 #' @seealso [get_PGRM()]
 'PGRM_ALL'
 

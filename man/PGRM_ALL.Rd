@@ -30,11 +30,19 @@ A data.table with the following columns:
 \item \code{category_string}: Character vector of the phecode category
 }
 }
+\source{
+Allele frequencies: \url{https://gnomad.broadinstitute.org/}
+Summary statistics: \url{https://www.ebi.ac.uk/gwas/}
+}
 \usage{
 PGRM_ALL
 }
 \description{
 This table provides GWAS associations results from the GWAS catalog, annotated by phecodes, ancestry, etc.
+}
+\details{
+The odds ratio and 95\% confidence intervals (columns cat_OR, cat_L95, and cat_U95) are reported relative to the risk allele
+which is specified in the column risk_allele.
 }
 \seealso{
 \code{\link[=get_PGRM]{get_PGRM()}}

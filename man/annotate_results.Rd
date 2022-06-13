@@ -16,20 +16,23 @@ annotate_results(
 )
 }
 \arguments{
-\item{results}{A data frame with results of a test cohort; columns for SNP, phecode, cases, controls, odds_ratio, P (see demo files like results_BBJ for example)}
+\item{results}{A data frame (or data.table) with results of a test cohort; columns for SNP, phecode, cases, controls, odds_ratio, P (see demo files for example (e.g results_MGI))}
 
-\item{use_allele_dir}{If TRUE, direction of effect is used when assessing if an association is replicated}
+\item{use_allele_dir}{If TRUE, direction of effect is used when assessing if an association is replicated. To use this argument, odds ratios must be reported for the alternative allele}
 
 \item{ancestry}{A string that specifies ancestry of the PGRM that is then used to annotate the results file. Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL}
 
 \item{build}{A string indicating the genome reference build used in the results table. Options hg19, hg38. Default is hg19.}
 
-\item{phecode_version}{A string indicating the phecode version used in the results table. Currently only V1.2 is supported, which is the default}
+\item{phecode_version}{A string indicating the phecode version used in the results table. (Currently only V1.2 is supported)}
 
 \item{calculate_power}{If TRUE then power calculations will be conducted using case and control counts from the results file. Necessary for get_AE(). Default FALSE}
 
 \item{annotate_CI_overlap}{If TRUE then a column called "annotate_CI_overlap" is added to the table, values:
-(\strong{overlap}: 95\% CIs of PGRM and test cohort overlap, \strong{test_cohort_greater}: 95\% CI of test cohort greater than PGRM, \strong{PGRM_greater}: 95\% CI of PGRM greater than test cohort)}
+\strong{overlap}: 95\% CIs of PGRM and test cohort overlap
+\strong{test_cohort_greater}: 95\% CI of test cohort greater than PGRM
+\strong{PGRM_greater}: 95\% CI of PGRM greater than test cohort
+If annotate_CI_overlap is TRUE, then results must include 95\% CIs}
 
 \item{LOUD}{If TRUE then progress info is printed to the terminal. Default FALSE}
 }
@@ -38,4 +41,35 @@ A data.table of the results file annotated with columsn from the PGRM
 }
 \description{
 This function annotates a result from a test cohort with information from the PGRM
+}
+\details{
+This function takes a dataframe with summary statistics from a test cohort. For an example of
+the way to format the results data frame, see one of the results sets included in the package (e.g. results_MGI). (NOTE: If the direction
+of effect is used to determine if an association is replicated, then the odds ratios of the result set must be oriented to the alternative allele.)
+
+The function returns a data.table with the following annotations:
+\itemize{
+\item Phecode informtion, including phecode_string and phecode_category
+\item Allele frequencies from GnomAD (column AF), ancestry specified by the ancestry argument
+\item The rsID
+\item The direction of effect (ref or alt) and risk allele of the original association
+\item Summary statistics from the GWAS catalog association, including the -log10(P), odds ratio, and 95\% confidence intervals (cat_LOG10_P, cat_OR, cat_L95, cat_U95)
+\item The study accession ID from the GWAS catalog
+\item A column called powered, which is 1 or 0 indicating whether the test association is powered > 80\% (1 if cases >= cases_needed)
+\item A column called rep that indicates if the association is replicated (i.e. p<0.05 in the test cohort; if use_allele_dir==TRUE, then the direction of effect from the test cohort must also be consistant with what is reported in the catalog)
+\item If annotate_CI_overlap is true, then information about the relationship between the 95\% CIs from the catalog and the test set is included in column CI_overlap, and new columns
+for odds_ratio, L95, and U95 are created (rOR, rL95, rU95) that are oriented to the risk allele. (This option requires that the confidence intervals are reported in the test cohort summary statistics)
+}
+}
+\examples{
+library(pgrm)
+## annotate the UK Biobank results set
+annotated_results = annotate_results(results_BioVU_AFR,ancestry="AFR", build="hg19",calculate_power=TRUE)
+
+## Get the replication rate of associations powered at >80\%
+get_RR(annotated_results)
+
+}
+\seealso{
+\link{results_BBJ, results_UKBB, results_BioVU_EUR, results_BioVU_AFR, results_MGI}
 }

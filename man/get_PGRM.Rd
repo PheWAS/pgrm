@@ -20,11 +20,12 @@ A data.table of the PGRM
 This function generates a PGRM copy with specified ancestry, build, and phecode version
 }
 \details{
-This function simply returns a filtered version of PGRM_ALL. The PGRM_ALL data.table includes
-columns for SNPs specified by build hg19 and hg38 (SNP_hg19 and SNP_hg38). This function assigns a column "SNP" as
-either SNP_hg19 or SNP_hg38, depending on the build argument. It also assigns the allele frequency (AF) and cases_needed
-columns according to the ancestry. This funciton is called inside annotate_results(), which can be used to annoate the
-results of a specific test cohort
+This function simply returns a copy of PGRM_ALL with specified columns for SNP, AF, and cases_needed
+according to the arguments specified. The function assigns a column "SNP" as either SNP_hg19 or SNP_hg38, depending
+on the build argument. It also assigns the allele frequency (AF) and cases_needed columns according to the ancestry.
+If the ancestry is != "ALL", then the funciton also subsets PGRM_ALL to include only associations that were based in
+cohorts with the specified ancestry. This funciton is called inside annotate_results(),
+which can be used to annoate the results of a specific test cohort.
 }
 \examples{
 library(pgrm)
