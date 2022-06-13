@@ -1,6 +1,7 @@
 
-get_PGRM(build="hg38x")
-get_PGRM(build="hg19")
+get_PGRM(build="hg38")
+
+get_PGRM(build="hg38")
 get_PGRM()
 results_MGI
 

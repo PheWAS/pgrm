@@ -3,6 +3,7 @@
 export(annotate_power)
 export(annotate_results)
 export(get_PGRM)
+export(get_RR_power)
 import(DescTools)
 import(checkmate)
 import(data.table)

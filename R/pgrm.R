@@ -22,10 +22,12 @@ NULL
 #' @export
 get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
 
-  ## need functions to check arguments
    ancestry=toupper(ancestry)
    build=tolower(build)
-   PGRM=PGRM_ALL
+
+  # checkBuild(build)
+
+   PGRM=copy(PGRM_ALL)
    if(build=="hg19"){
      PGRM$SNP_hg38=NULL
      names(PGRM)[1] = "SNP"
@@ -50,7 +52,6 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
 
    return(PGRM)
 }
-
 
 
 #' Add power annotations to a result set that's been merged with PGRM
