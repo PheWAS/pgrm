@@ -15,8 +15,20 @@ NULL
 #'
 #' @return A data.table of the PGRM
 #'
-#' @eval example1()
+#' @details This function simply returns a filtered version of PGRM_ALL. The PGRM_ALL data.table includes
+#' columns for SNPs specified by build hg19 and hg38 (SNP_hg19 and SNP_hg38). This function assigns a column "SNP" as
+#' either SNP_hg19 or SNP_hg38, depending on the build argument. It also assigns the allele frequency (AF) and cases_needed
+#' columns according to the ancestry. If the ancestry is != "ALL", then the funciton also subsets PGRM_ALL to include only
+#' associations that were based in cohorts with the specified ancestry. This funciton is called inside annotate_results(),
+#' which can be used to annoate the results of a specific test cohort.
 #'
+#' @seealso [PGRM_ALL, annotate_results()]
+#'
+#' @examples
+#' library(pgrm)
+#'
+#' ## Get a copy of the PGRM for build hg19, East Asian ancestry
+#' get_PGRM(build="hg19",ancestry="EAS")
 #'
 #' @export
 get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
@@ -25,6 +37,7 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
    build=tolower(build)
    checkBuild(build)
    checkAncestry(ancestry)
+   checkPhecodeVersion(phecode_version)
 
    PGRM=copy(PGRM_ALL)
    if(build=="hg19"){
@@ -43,9 +56,6 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
    cases_needed_col_name = 'cases_needed_' %c% ancestry
    setnames(PGRM, freq_col_name, "AF")
    setnames(PGRM, cases_needed_col_name, "cases_needed")
-
-   #cols = c("AFR_freq","EAS_freq","EUR_freq","AMR_freq","SAS_freq","ALL_freq","cases_needed_AFR","cases_needed_EAS","cases_needed_EUR","cases_needed_AMR","cases_needed_SAS","cases_needed_ALL")
-   #cols=cols[!cols %in% c(freq_col_name,cases_needed_col_name)]
    PGRM=PGRM[, c('assoc_ID','SNP','ancestry', 'rsID','risk_allele_dir','risk_allele','AF','phecode','phecode_string','category_string','cat_LOG10_P','cat_OR','cat_L95','cat_U95','cases_needed','Study_accession')]
 
 
@@ -61,9 +71,6 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
 #' @param LOUD If TRUE then progress info is printed to the terminal. Default FALSE
 #'
 #' @return A data.table of the results with a column Power added which includes 80% power calculations (alpha=0.05)
-#'
-#' @eval example2()
-#'
 #'
 #' @export
 #'
@@ -124,12 +131,10 @@ annotate_power = function(annotated_results,LOUD=FALSE){
 #'
 #' @return A data.table of the results file annotated with columsn from the PGRM
 #'
-#' @eval example3()
-#'
-#'
 #' @export
 annotate_results = function(results, use_allele_dir=T,ancestry="all",build="hg19",phecode_version="V1.2",calculate_power=FALSE,annotate_CI_overlap=T,LOUD=TRUE){
-  PGRM=get_PGRM(ancestry=ancestry,build=build)
+  PGRM=get_PGRM(ancestry=ancestry,build=build,phecode_version=phecode_version)
+  checkResults(results)
 
   results$SNP = toupper(results$SNP)
   results=merge(results,PGRM,by=c("SNP","phecode"))
@@ -163,24 +168,82 @@ annotate_results = function(results, use_allele_dir=T,ancestry="all",build="hg19
   return(results)
 }
 
-#' Replicaiton rate (RR) of powered associations
+#' Calculate the replicaiton rate (RR) of a test cohort
 #'
-#' This function calculates the replicaiton rate in a test cohort
+#' This function calculates the replicaiton rate in a test cohort that has been annotated with PGRM. By default, it calculates the RR for associations that powered at >80%.
 #'
-#' @param results An data.table of results, annotated with the pgrm
+#' @param annotated_results A data table of results that have been annotated with the PGRM
+#' @param include A character string. If "powered" then only powered associations are included (default). If "all" then all associations are included
 #' @param LOUD If TRUE then progress info is printed to the terminal. Default TRUE
 #'
-#' @return The replication rate of the result set at 80% power
-#'
-#' @eval example4()
-#'
+#' @return An numeric value of the replication rate of the result set
 #'
 #' @export
-get_RR_power = function(results,LOUD=TRUE){
-  results=data.table(results)
-  powered=nrow(results[powered==1])
-  powered_and_rep=nrow(results[powered==1 & rep==1])
-  RR=powered_and_rep/powered
-  print("Replicated " %c% powered_and_rep %c% " of " %c% powered %c% " for RR=" %c% sprintf("%1.1f%%", 100*RR))
+get_RR = function(annotated_results,include="powered",LOUD=TRUE){
+
+  include = tolower(include)
+  check_RR_include(include)
+  checkAnnotatedResults(annotated_results,include)
+
+  if(include == "powered"){
+    denominator=nrow(annotated_results[powered==1])
+    numerator=nrow(annotated_results[powered==1 & rep==1])
+  } else {
+    denominator=nrow(annotated_results)
+    numerator=nrow(annotated_results[rep==1])
+  }
+  RR=numerator/denominator
+  if(LOUD==TRUE){
+    print("Replicated " %c% numerator %c% " of " %c% denominator %c% " for RR=" %c% sprintf("%1.1f%%", 100*RR))
+  }
   return(RR)
+}
+
+#' Calculate the acual:expected ratio (A:E) of a test cohort
+#'
+#' This function calculates the actual:expected a test cohort that has been annotated with PGRM.
+#'
+#' @param annotated_results A data table of results that have been annotated with the PGRM
+#' @param LOUD If TRUE then progress info is printed to the terminal. Default TRUE
+#'
+#' @return An numeric value of the actual:expected ratio of the result set
+#'
+#' @export
+get_AE = function(annotated_results,LOUD=TRUE){
+  checkAnnotatedResults_forAE(annotated_results)
+  r=annotated_results[!is.na(Power)]
+  expected=sum(r$Power)
+  actual=sum(r$rep)
+  AE=actual/expected
+  expected=round(expected,1)
+  total_assoc = nrow(r)
+  uniq_phecode=length(unique(r$phecode))
+  if(LOUD==TRUE){
+  print("Expected " %c% expected %c% ", replicated " %c% actual %c% " for AE=" %c% round(AE,3) %c% " (" %c% total_assoc %c% " associations for " %c% uniq_phecode %c% " uniq phecodes)" )
+  }
+  return(AE)
+}
+
+#' Calculate the percent of associations that are powered in a test set
+#'
+#' This function calculates % of powered associations for a test cohort that has been annotated with PGRM.
+#'
+#' @param annotated_results A data table of results that have been annotated with the PGRM
+#' @param LOUD If TRUE then progress info is printed to the terminal. Default TRUE
+#'
+#' @return An numeric value of the percent of associations that are powered
+#'
+#' @export
+get_powered_rate = function(annotated_results,LOUD=TRUE){
+  checkAnnotatedResults(annotated_results, include="powered")
+  total_rows=nrow(annotated_results)
+  powered=nrow(annotated_results[powered==1])
+  powered_rate=powered/total_rows
+  pr=round(powered_rate,2)
+
+  if(LOUD==TRUE) {
+    uniq_phecode=length(unique(annotated_results[powered==1]$phecode))
+    print("Powered for " %c% powered %c% " of " %c% total_rows %c% " associations " %c% pr %c% " for " %c% uniq_phecode %c% " uniq phecodes")
+  }
+  return(powered_rate)
 }

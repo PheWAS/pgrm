@@ -26,7 +26,7 @@
 #' * `cases_needed_ALL`: Integer vector of the estimated cases needed at 80% power for multi-ancestry cohort
 #' * `category_string`: Character vector of the phecode category
 #'
-#' @seealso [get_PGRM()]]
+#' @seealso [get_PGRM()]
 'PGRM_ALL'
 
 #' Exclude ranges for phecode controls
@@ -41,7 +41,7 @@
 #'
 #' @source <https://phewascatalog.org>
 #'
-#' @seealso [get_pheno()]]
+#' @seealso [get_pheno()]
 'exclude_ranges'
 
 #' Summary statistics from BioBank Japan (BBJ)

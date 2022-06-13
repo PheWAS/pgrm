@@ -37,6 +37,6 @@ PGRM_ALL
 This table provides GWAS associations results from the GWAS catalog, annotated by phecodes, ancestry, etc.
 }
 \seealso{
-\code{\link[=get_PGRM]{get_PGRM()}}]
+\code{\link[=get_PGRM]{get_PGRM()}}
 }
 \keyword{datasets}

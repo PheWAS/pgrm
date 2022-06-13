@@ -2,8 +2,10 @@
 
 export(annotate_power)
 export(annotate_results)
+export(get_AE)
 export(get_PGRM)
-export(get_RR_power)
+export(get_RR)
+export(get_powered_rate)
 import(checkmate)
 import(data.table)
 import(gaston)

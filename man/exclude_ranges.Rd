@@ -22,6 +22,6 @@ exclude_ranges
 The data are artificial and do not correspond to real patients.
 }
 \seealso{
-\code{\link[=get_pheno]{get_pheno()}}]
+\code{\link[=get_pheno]{get_pheno()}}
 }
 \keyword{datasets}

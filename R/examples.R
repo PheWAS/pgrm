@@ -1,20 +1,25 @@
-example1 = function() {
+example_get_PGRM = function() {
   ex = "
   @examples
-  # get an instance of PGRM with build hg19 SNPs and East Asian ancestry
-  PGRM_EAS = get_PGRM(build='hg19',ancestry='EAS')
+  library('pgrm')
+
+  # map ICD codes to phecodes
+  phecodeOccurrences = getPhecodeOccurrences(icdSample)
+
+  # calculate weights
+  weights = getWeights(demoSample, phecodeOccurrences)
+
+  # OMIM disease IDs for which to calculate phenotype risk scores
+  diseaseId = 154700
+
+  # map diseases to phecodes
+  diseasePhecodeMap = mapDiseaseToPhecode()
+
+  # calculate scores
+  scores = getScores(
+  demoSample, phecodeOccurrences, weights, diseasePhecodeMap[disease_id == diseaseId])
+
+  # calculate residual scores
+  rscores = getResidualScores(demoSample, scores, lmFormula = ~ sex)
   "
-  return(strsplit(ex, split = '\n')[[1L]])
-}
-
-example2 = function() {
-  return("foobar")
-}
-
-example3 = function() {
-  return("foobar2")
-}
-
-example4 = function() {
-  return("foobar4")
-}
+  return(strsplit(ex, split = '\n')[[1L]])}

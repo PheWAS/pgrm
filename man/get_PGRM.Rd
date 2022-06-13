@@ -19,3 +19,20 @@ A data.table of the PGRM
 \description{
 This function generates a PGRM copy with specified ancestry, build, and phecode version
 }
+\details{
+This function simply returns a filtered version of PGRM_ALL. The PGRM_ALL data.table includes
+columns for SNPs specified by build hg19 and hg38 (SNP_hg19 and SNP_hg38). This function assigns a column "SNP" as
+either SNP_hg19 or SNP_hg38, depending on the build argument. It also assigns the allele frequency (AF) and cases_needed
+columns according to the ancestry. This funciton is called inside annotate_results(), which can be used to annoate the
+results of a specific test cohort
+}
+\examples{
+library(pgrm)
+
+## Get a copy of the PGRM for build hg19, East Asian ancestry
+get_PGRM(build="hg19",ancestry="EAS")
+
+}
+\seealso{
+\code{\link[=PGRM_ALL, annotate_results]{PGRM_ALL, annotate_results()}}
+}
