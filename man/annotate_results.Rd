@@ -71,5 +71,5 @@ get_RR(annotated_results)
 
 }
 \seealso{
-\link{results_BBJ, results_UKBB, results_BioVU_EUR, results_BioVU_AFR, results_MGI}
+Example result sets: \link{results_BBJ}, \link{results_UKBB}, \link{results_BioVU_EUR}, \link{results_BioVU_AFR}, \link{results_MGI}
 }

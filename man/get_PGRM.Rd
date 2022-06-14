@@ -35,5 +35,5 @@ get_PGRM(build="hg19",ancestry="EAS")
 
 }
 \seealso{
-\code{\link[=PGRM_ALL, annotate_results]{PGRM_ALL, annotate_results()}}
+\link{PGRM_ALL}, \code{\link[=annotate_results]{annotate_results()}}
 }

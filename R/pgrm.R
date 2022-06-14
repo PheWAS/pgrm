@@ -22,7 +22,7 @@ NULL
 #' cohorts with the specified ancestry. This funciton is called inside annotate_results(),
 #' which can be used to annoate the results of a specific test cohort.
 #'
-#' @seealso [PGRM_ALL, annotate_results()]
+#' @seealso [PGRM_ALL], [annotate_results()]
 #'
 #' @examples
 #' library(pgrm)
@@ -48,16 +48,15 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
      PGRM$SNP_hg19=NULL
      names(PGRM)[2] = "SNP"
    }
-   print(ancestry)
   if(ancestry != 'ALL'){
-    PGRM = PGRM[PGRM$ancestry==ancestry,]
+    a = ancestry
+    PGRM <- PGRM[ancestry==a]
   }
-
    freq_col_name = ancestry %c% "_freq"
    cases_needed_col_name = 'cases_needed_' %c% ancestry
    setnames(PGRM, freq_col_name, "AF")
    setnames(PGRM, cases_needed_col_name, "cases_needed")
-   PGRM=PGRM[, c('assoc_ID','SNP','ancestry', 'rsID','risk_allele_dir','risk_allele','AF','phecode','phecode_string','category_string','cat_LOG10_P','cat_OR','cat_L95','cat_U95','cases_needed','Study_accession')]
+   PGRM <- PGRM[, c('assoc_ID','SNP','ancestry', 'rsID','risk_allele_dir','risk_allele','AF','phecode','phecode_string','category_string','cat_LOG10_P','cat_OR','cat_L95','cat_U95','cases_needed','Study_accession')]
 
 
    return(PGRM)
@@ -108,8 +107,14 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
 #'
 #' ## Get the replication rate of associations powered at >80%
 #' get_RR(annotated_results)
+#' ## Get the replication rate of all associations (powered or not)
+#' get_RR(annotated_results,include="all")
 #'
-#' @seealso [results_BBJ, results_UKBB, results_BioVU_EUR, results_BioVU_AFR, results_MGI]
+#' ## Get the actual:expected ratio
+#' get_AE(annotated_results)
+#'
+#' @seealso Example result sets: [results_BBJ], [results_UKBB], [results_BioVU_EUR], [results_BioVU_AFR], [results_MGI]
+#' Functions that take annotated result sets [get_RR()],  [get_EA()]
 #'
 #' @export
 annotate_results = function(results, use_allele_dir=T,ancestry="all",build="hg19",phecode_version="V1.2",calculate_power=FALSE,annotate_CI_overlap=T,LOUD=TRUE){
@@ -160,6 +165,16 @@ annotate_results = function(results, use_allele_dir=T,ancestry="all",build="hg19
 #' @param LOUD If TRUE then progress info is printed to the terminal. Default TRUE
 #'
 #' @return An numeric value of the replication rate of the result set
+#'
+#' @examples
+#' library(pgrm)
+#' ## annotate the UK Biobank results set
+#' annotated_results = annotate_results(results_BioVU_AFR,ancestry="AFR", build="hg19",calculate_power=TRUE)
+#'
+#' ## Get the replication rate of associations powered at >80%
+#' get_RR(annotated_results)
+#' ## Get the replication rate of all associations (powered or not)
+#' get_RR(annotated_results,include="all")
 #'
 #' @export
 get_RR = function(annotated_results,include="powered",LOUD=TRUE){
