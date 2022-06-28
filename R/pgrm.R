@@ -51,6 +51,10 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
   if(ancestry != 'ALL'){
     a = ancestry
     PGRM <- PGRM[ancestry==a]
+  } else {
+    ## make the "ALL" PGRM unique by SNP/phecode
+    uniq_PGRM = PGRM[, .(cat_LOG10_P=max(cat_LOG10_P)), by=list(SNP,phecode)]
+    PGRM=merge(uniq_PGRM, PGRM,by=c("SNP","phecode","cat_LOG10_P"))
   }
    freq_col_name = ancestry %c% "_freq"
    cases_needed_col_name = 'cases_needed_' %c% ancestry
