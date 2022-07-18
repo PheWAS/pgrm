@@ -24,5 +24,8 @@ test_that('test annotate_results with MGI data', {
   MGI_AE_observed=get_AE(MGI_annotate_observed,LOUD=FALSE)
   MGI_AE_expected=snapshot(MGI_AE_observed,"snapshots/MGI_AE.qs" )
   expect_equal(MGI_AE_observed,MGI_AE_expected)
+
+  MGI_powered_observed=get_powered_rate(MGI_annotate_observed)
+  MGI_powered_expected=snapshot(MGI_AE_observed,"snapshots/MGI_powered.qs" )
 })
 
