@@ -12,6 +12,7 @@ NULL
 #' @param ancestry A string that indicates the ancestry of the PGRM. Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL
 #' @param build A string indicating the genome reference build. Options hg19, hg38. Default is hg19.
 #' @param phecode_version A string indicating the phecode version. Currently only V1.2 is supported, which is the default
+#' @param unique If TRUE, then rows are uniqued by SNP/phecode (only relevant when ancestry == "ALL")
 #'
 #' @return A data.table of the PGRM
 #'
@@ -31,7 +32,7 @@ NULL
 #' get_PGRM(build="hg19",ancestry="EAS")
 #'
 #' @export
-get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
+get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T){
 
    ancestry=toupper(ancestry)
    build=tolower(build)
@@ -51,7 +52,8 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2"){
   if(ancestry != 'ALL'){
     a = ancestry
     PGRM <- PGRM[ancestry==a]
-  } else {
+  }
+  if(ancestry == 'ALL' & unique == TRUE) {
     ## make the "ALL" PGRM unique by SNP/phecode
     uniq_PGRM = PGRM[, .(cat_LOG10_P=max(cat_LOG10_P)), by=list(SNP,phecode)]
     PGRM=merge(uniq_PGRM, PGRM,by=c("SNP","phecode","cat_LOG10_P"))
