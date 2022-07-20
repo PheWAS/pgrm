@@ -31,7 +31,7 @@ NULL
 get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T){
 
   ## Avoid warnings about global vars
-   #{cat_LOG10_P} = {SNP} = {phecode} = NULL
+   {cat_LOG10_P} = {SNP} = {phecode} = NULL
 
    ancestry=toupper(ancestry)
    build=tolower(build)
@@ -126,7 +126,7 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T)
 annotate_results = function(results, use_allele_dir=T,ancestry="all",build="hg19",phecode_version="V1.2",calculate_power=FALSE,annotate_CI_overlap=T,LOUD=TRUE){
 
   ## Avoid warnings about global vars
- # {cases} = {cases_needed} = {risk_allele_dir} = {odds_ratio} = {cat_L95} = {cat_U95} = {rL95} = {rU95} =  NULL
+  {cases} = {cases_needed} = {risk_allele_dir} = {odds_ratio} = {cat_L95} = {cat_U95} = {rL95} = {rU95} =  NULL
 
   PGRM=get_PGRM(ancestry=ancestry,build=build,phecode_version=phecode_version)
   checkResults(results)
