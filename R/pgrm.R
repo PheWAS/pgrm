@@ -83,7 +83,8 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T)
 #' @param phecode_version A string indicating the phecode version used in the results table. (Currently only V1.2 is supported)
 #' @param calculate_power If TRUE then power calculations will be conducted using case and control counts from the results file.
 #' Necessary for get_AE(). Default FALSE
-#' @param annotate_CI_overlap If TRUE then a column called "annotate_CI_overlap" is added to the table, values:
+#' @param annotate_CI_overlap If TRUE then a column called "annotate_CI_overlap" is added to the
+#' table, values:
 #' **overlap**: 95% CIs of PGRM and test cohort overlap
 #' **test_cohort_greater**: 95% CI of test cohort greater than PGRM
 #' **PGRM_greater**: 95% CI of PGRM greater than test cohort
@@ -92,9 +93,11 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T)
 #'
 #' @return A data.table of the results file annotated with columsn from the PGRM
 #'
-#' @details This function takes a dataframe with summary statistics from a test cohort. For an example of
-#' the way to format the results data frame, see one of the results sets included in the package (e.g. results_MGI). (NOTE: If the direction
-#' of effect is used to determine if an association is replicated, then the odds ratios of the result set must be oriented to the alternative allele.)
+#' @details This function takes a dataframe with summary statistics from a test cohort. For an
+#' example of the way to format the results data frame, see one of the results sets included in the
+#' package (e.g. results_MGI). (NOTE: If the direction
+#' of effect is used to determine if an association is replicated, then the odds ratios of the
+#' result set must be oriented to the alternative allele.)
 #'
 #' The function returns a data.table with the following annotations:
 #' \itemize{
@@ -102,12 +105,16 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T)
 #'   \item Allele frequencies from GnomAD (column AF), ancestry specified by the ancestry argument
 #'   \item The rsID
 #'   \item The direction of effect (ref or alt) and risk allele of the original association
-#'   \item Summary statistics from the GWAS catalog association, including the -log10(P), odds ratio, and 95% confidence intervals (cat_LOG10_P, cat_OR, cat_L95, cat_U95)
+#'   \item Summary statistics from the GWAS catalog association, including the -log10(P), odds ratio, and 95% confidence intervals
+#'   (cat_LOG10_P, cat_OR, cat_L95, cat_U95)
 #'   \item The study accession ID from the GWAS catalog
 #'   \item A column called powered, which is 1 or 0 indicating whether the test association is powered > 80% (1 if cases >= cases_needed)
-#'   \item A column called rep that indicates if the association is replicated (i.e. p<0.05 in the test cohort; if use_allele_dir==TRUE, then the direction of effect from the test cohort must also be consistant with what is reported in the catalog)
-#'   \item If annotate_CI_overlap is true, then information about the relationship between the 95% CIs from the catalog and the test set is included in column CI_overlap, and new columns
-#' for odds_ratio, L95, and U95 are created (rOR, rL95, rU95) that are oriented to the risk allele. (This option requires that the confidence intervals are reported in the test cohort summary statistics)
+#'   \item A column called rep that indicates if the association is replicated (i.e. p<0.05 in the test cohort; if use_allele_dir==TRUE,
+#'   then the direction of effect from the test cohort must also be consistant with what is reported in the catalog)
+#'   \item If annotate_CI_overlap is true, then information about the relationship between the 95% CIs from the catalog and the test set is
+#'   included in column CI_overlap, and new columns
+#' for odds_ratio, L95, and U95 are created (rOR, rL95, rU95) that are oriented to the risk allele. (This option requires that the confidence
+#' intervals are reported in the test cohort summary statistics)
 #' }
 #'
 #' @examples
@@ -256,127 +263,3 @@ get_powered_rate = function(annotated_results,LOUD=TRUE){
   return(powered_rate)
 }
 
-
-#' Run association tests for phenotype/genotype pairs in the PGRM
-#'
-#' This function takes row level data from a test cohort and runs association tests for all phenotype/genotype pairs included in the PGRM
-#'
-#' @param genotypes A 'BEDMatrix' object linked to the PLINK bed file containing genetic data. The row names correspond to the person_id's in demos and scores tables. The column names correspond to variant IDs.
-#' @param pheno A data.table of phenotypes to be used in the association analysis. Must have columns person_id, phecodes
-#' @param demos A data.table of covariates to be used in the association analysis. Must have column person_id and columns for every covariate in covariates list.
-#' @param PGRM A copy of the PGRM. Can be generated with function get_PGRM()
-#' @param MCC The minimum code count needed for cases. Default == 2.
-#' @param minimum_case_count The minimum number of cases required for an association test to be conducted.
-#' @param use_exclude_range If TRUE then exclude ranges are applied to controls.
-#' @param LOUD If TRUE then progress info is printed to the terminal. Default FALSE
-#'
-#' @return A data.table of association results for all eligable phenotype/genotype pairs in the PGRM.
-#'
-#' @details This function takes row level data from a test cohort as well as a copy of the PGRM. It runs an association analysis for each phenotype/genotype pair in the PGRM
-#' and returns the results.
-#'
-#' @examples
-#' library(pgrm)
-#' ## Get a copy of the PGRM for build hg19, East Asian ancestry
-#' PGRM_EAS=get_PGRM(build="hg19",ancestry="EAS")
-#'
-#' ## Read in a phenotype file
-#' pheno=read.csv(pheno_file,header=TRUE,colClasses=c("character","character","integer"),stringsAsFactors = F)
-#'
-#' ## Read in demographics file
-#' demos=read.csv(demos_file,header=TRUE,stringsAsFactors = F)
-#'
-#' ## Read in genotype file
-#' genotypes=read.bed.matrix(geno_file)
-#' ## Filter out genotypes with low callrate
-#' genotypes=select.snps(geno, callrate > 0.98)
-#'
-#' covariates=c('sex','last_age','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8')
-#' results_MCC2 = run_PGRM_assoc(geno=genotypes, pheno=pheno, demos=demos, covariates=covariates,PGRM=PGRM_EAS,MCC=2,minimum_case_count=100,use_exclude_range=T,LOUD=T)
-#'
-#' @export
-run_PGRM_assoc = function(genotypes, pheno, demos,covariates, PGRM,MCC=2,minimum_case_count=100,LOUD=TRUE,use_exclude_ranges=F){
-
-  ## create formulas for glm using covariates; formula_string_no_sex is for sex-specific phenotypes
-  formula_string="pheno~genotype+" %c% paste(covariates, collapse ='+')
-  formula_string
-  formula_string_no_sex=gsub("sex\\+","",formula_string)
-  formula=as.formula(formula_string)
-  formula_no_sex=as.formula(formula_string_no_sex)
-
-  ## add a check to make sure covariates are in demos file
-
-  ## get phecode counts
-  # phecode_counts=pheno[N>=MCC, .(cases = .N), by=phecode]
-  # available_phecodes = phecode_counts[cases>=min_case_count]$phecode
-  #
-  # ## filter PGRM for available SNPs and phecodes
-  #
-  # PGRM=PGRM[PGRM$SNP %in% SNPs & PGRM$phecode %in% available_phecodes,]
-  #
-  # assoc_to_run=unique(PGRM[,c("SNP", "phecode")])
-  # assoc_num = nrow(assoc_to_run)
-  # print("Running " %c% assoc_num %c% " associations")
-  # #assoc_num = 44
-  # results=data.frame()
-  #
-  # ## filter demos and geno for intersection of IDs
-  # IDs=geno@ped$id
-  # demos =demos[ID %in% IDs]
-  # geno=select.inds(geno, id %in% demos$ID)
-  # IDs=geno@ped$id
-  # pheno=pheno[pheno$ID %in% IDs,]
-  #
-  # for(i in 1:nrow(assoc_to_run)){
-  #
-  #   cur_SNP = assoc_to_run[i,]$SNP
-  #   cur_phecode = assoc_to_run[i,]$phecode
-  #   cur_SNP_index=which(SNPs %in% c(cur_SNP))
-  #
-  #   g=data.frame(as.matrix(geno[,cur_SNP_index]))
-  #   g$ID = row.names(g)
-  #   names(g)[1]="genotype"
-  #   g=data.table(g,key="ID")
-  #
-  #   g$genotype = abs(g$genotype-2) ## gaston codes things "backwards" from plink. 2== HOM for ref. Flip this around
-  #   d=merge(g,demos,by="ID")
-  #
-  #   p=get_pheno(pheno, cur_phecode,MCC,use_exclude_ranges = use_exclude_ranges)
-  #
-  #   d=merge(d,p,by="ID",all.x=T)
-  #   d[is.na(pheno)]$pheno=0
-  #   d=d[pheno!=-9]
-  #
-  #   phecode_sex=sex_check_phecode(cur_phecode)
-  #   if(phecode_sex !="B"){
-  #     # print("sex specific phecode")
-  #     d=d[sex == phecode_sex]
-  #   }
-  #
-  #   n_case=nrow(d[pheno==1,])
-  #   if(n_case < minimum_case_count ) {
-  #     next
-  #   }
-  #   n_control=nrow(d[pheno==0,])
-  #   table(d$genotype)
-  #   if(phecode_sex =="B"){
-  #     m=glm(formula, data=d,family="binomial")
-  #   } else {
-  #     m=glm(formula_string_no_sex, data=d,family="binomial")
-  #   }
-  #
-  #   conf=confint.default(m)
-  #
-  #   P=summary(m)$coeff[2,4]
-  #   odds_ratio=exp(summary(m)$coeff[2,1])
-  #   if(LOUD==TRUE){
-  #     print("[" %c% i %c% "] SNP: " %c% cur_SNP %c% " Phecode: " %c% cur_phecode %c% " P: " %c% P)
-  #   }
-  #
-  #   L95=exp(conf[2,1])
-  #   U95=exp(conf[2,2])
-  #   result = data.frame(SNP=cur_SNP, phecode=cur_phecode,cases=n_case,controls=n_control, P=P, odds_ratio=odds_ratio, L95=L95, U95=U95)
-  #   results = rbind(results, result)
-  # }
-  # return(results)
-}
