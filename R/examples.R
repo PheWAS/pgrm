@@ -23,7 +23,7 @@ get_RR(anno)
 get_RR(anno,include='all')
 
 ## Get the actual:expected ratio
-get_AE(anno)
+get_AER(anno)
 "
   return(strsplit(ex, split = '\n')[[1L]])}
 

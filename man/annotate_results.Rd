@@ -30,7 +30,7 @@ Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL}
 \item{phecode_version}{A string indicating the phecode version used in the results table. (Currently only V1.2 is supported)}
 
 \item{calculate_power}{If TRUE then power calculations will be conducted using case and control counts from the results file.
-Necessary for get_AE(). Default FALSE}
+Necessary for get_AER(). Default FALSE}
 
 \item{annotate_CI_overlap}{If TRUE then a column called "annotate_CI_overlap" is added to the
 table, values:
@@ -85,7 +85,7 @@ get_RR(anno)
 get_RR(anno,include='all')
 
 ## Get the actual:expected ratio
-get_AE(anno)
+get_AER(anno)
 }
 \seealso{
 Example result sets: \link{results_BBJ}, \link{results_UKBB}, \link{results_BioVU_EUR}, \link{results_BioVU_AFR}, \link{results_MGI}

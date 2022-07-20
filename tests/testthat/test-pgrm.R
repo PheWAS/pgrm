@@ -21,7 +21,7 @@ test_that('test annotate_results with MGI data', {
   MGI_RR_ALL_expected=snapshot(MGI_RR_ALL_observed,"snapshots/MGI_RR_all.qs" )
   expect_equal(MGI_RR_ALL_observed,MGI_RR_ALL_expected)
 
-  MGI_AE_observed=get_AE(MGI_annotate_observed,LOUD=FALSE)
+  MGI_AE_observed=get_AER(MGI_annotate_observed,LOUD=FALSE)
   MGI_AE_expected=snapshot(MGI_AE_observed,"snapshots/MGI_AE.qs" )
   expect_equal(MGI_AE_observed,MGI_AE_expected)
 

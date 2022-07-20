@@ -31,7 +31,7 @@ NULL
 get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T){
 
   ## Avoid warnings about global vars
-   {cat_LOG10_P} = {SNP} = {phecode} = NULL
+   cat_LOG10_P = SNP = . = phecode = NULL
 
    ancestry=toupper(ancestry)
    build=tolower(build)
@@ -41,7 +41,7 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T)
 
 
 
-   PGRM=copy(PGRM_ALL)
+   PGRM=copy(pgrm::PGRM_ALL)
    if(build=="hg19"){
      PGRM$SNP_hg38=NULL
      names(PGRM)[1] = "SNP"
@@ -83,7 +83,7 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T)
 #' @param build A string indicating the genome reference build used in the results table. Options hg19, hg38. Default is hg19.
 #' @param phecode_version A string indicating the phecode version used in the results table. (Currently only V1.2 is supported)
 #' @param calculate_power If TRUE then power calculations will be conducted using case and control counts from the results file.
-#' Necessary for get_AE(). Default FALSE
+#' Necessary for get_AER(). Default FALSE
 #' @param annotate_CI_overlap If TRUE then a column called "annotate_CI_overlap" is added to the
 #' table, values:
 #' **overlap**: 95% CIs of PGRM and test cohort overlap
@@ -126,7 +126,7 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T)
 annotate_results = function(results, use_allele_dir=T,ancestry="all",build="hg19",phecode_version="V1.2",calculate_power=FALSE,annotate_CI_overlap=T,LOUD=TRUE){
 
   ## Avoid warnings about global vars
-  {cases} = {cases_needed} = {risk_allele_dir} = {odds_ratio} = {cat_L95} = {cat_U95} = {rL95} = {rU95} =  NULL
+  cases = cases_needed = risk_allele_dir = odds_ratio = cat_L95 = cat_U95 = rL95 = rU95 =  NULL
 
   PGRM=get_PGRM(ancestry=ancestry,build=build,phecode_version=phecode_version)
   checkResults(results)
@@ -186,6 +186,8 @@ annotate_results = function(results, use_allele_dir=T,ancestry="all",build="hg19
 #'
 #' @export
 get_RR = function(annotated_results,include="powered",LOUD=TRUE){
+  ## Avoid warnings about global vars
+  powered = NULL
 
   include = tolower(include)
   check_RR_include(include)
@@ -215,7 +217,10 @@ get_RR = function(annotated_results,include="powered",LOUD=TRUE){
 #' @return An numeric value of the actual:expected ratio of the result set
 #'
 #' @export
-get_AE = function(annotated_results,LOUD=TRUE){
+get_AER = function(annotated_results,LOUD=TRUE){
+  ## Avoid warnings about global vars
+  Power = NULL
+
   checkAnnotatedResults_forAE(annotated_results)
   r=annotated_results[!is.na(Power)]
   expected=sum(r$Power)
