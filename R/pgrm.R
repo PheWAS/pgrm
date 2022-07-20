@@ -73,12 +73,16 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T)
 #'
 #' This function annotates a result from a test cohort with information from the PGRM
 #'
-#' @param results A data frame (or data.table) with results of a test cohort; columns for SNP, phecode, cases, controls, odds_ratio, P (see demo files for example (e.g results_MGI))
-#' @param use_allele_dir If TRUE, direction of effect is used when assessing if an association is replicated. To use this argument, odds ratios must be reported for the alternative allele
-#' @param ancestry A string that specifies ancestry of the PGRM that is then used to annotate the results file. Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL
+#' @param results A data frame (or data.table) with results of a test cohort; columns for SNP, phecode, cases, controls, odds_ratio,
+#' P (see demo files for example (e.g results_MGI))
+#' @param use_allele_dir If TRUE, direction of effect is used when assessing if an association is replicated. To use this argument,
+#' odds ratios must be reported for the alternative allele
+#' @param ancestry A string that specifies ancestry of the PGRM that is then used to annotate the results file.
+#' Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL
 #' @param build A string indicating the genome reference build used in the results table. Options hg19, hg38. Default is hg19.
 #' @param phecode_version A string indicating the phecode version used in the results table. (Currently only V1.2 is supported)
-#' @param calculate_power If TRUE then power calculations will be conducted using case and control counts from the results file. Necessary for get_AE(). Default FALSE
+#' @param calculate_power If TRUE then power calculations will be conducted using case and control counts from the results file.
+#' Necessary for get_AE(). Default FALSE
 #' @param annotate_CI_overlap If TRUE then a column called "annotate_CI_overlap" is added to the table, values:
 #' **overlap**: 95% CIs of PGRM and test cohort overlap
 #' **test_cohort_greater**: 95% CI of test cohort greater than PGRM

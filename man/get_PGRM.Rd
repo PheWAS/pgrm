@@ -4,7 +4,12 @@
 \alias{get_PGRM}
 \title{Get instance of PGRM}
 \usage{
-get_PGRM(ancestry = "all", build = "hg19", phecode_version = "V1.2")
+get_PGRM(
+  ancestry = "all",
+  build = "hg19",
+  phecode_version = "V1.2",
+  unique = T
+)
 }
 \arguments{
 \item{ancestry}{A string that indicates the ancestry of the PGRM. Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL}
@@ -12,6 +17,8 @@ get_PGRM(ancestry = "all", build = "hg19", phecode_version = "V1.2")
 \item{build}{A string indicating the genome reference build. Options hg19, hg38. Default is hg19.}
 
 \item{phecode_version}{A string indicating the phecode version. Currently only V1.2 is supported, which is the default}
+
+\item{unique}{If TRUE, then rows are uniqued by SNP/phecode (only relevant when ancestry == "ALL")}
 }
 \value{
 A data.table of the PGRM

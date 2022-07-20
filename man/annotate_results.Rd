@@ -63,13 +63,19 @@ for odds_ratio, L95, and U95 are created (rOR, rL95, rU95) that are oriented to 
 }
 \examples{
 library(pgrm)
-## annotate the UK Biobank results set
-annotated_results = annotate_results(results_BioVU_AFR,ancestry="AFR", build="hg19",calculate_power=TRUE)
+## annotate the UK Biobank results set. (Filter by cohort_match==0 to exclude associations that were based in whole or in part of UKBB cohort)
+annotated_results = annotate_results(results_UKBB[cohort_match==0],ancestry="EUR", build="hg38",calculate_power=TRUE)
 
 ## Get the replication rate of associations powered at >80\%
 get_RR(annotated_results)
+## Get the replication rate of all associations (powered or not)
+get_RR(annotated_results,include="all")
+
+## Get the actual:expected ratio
+get_AE(annotated_results)
 
 }
 \seealso{
 Example result sets: \link{results_BBJ}, \link{results_UKBB}, \link{results_BioVU_EUR}, \link{results_BioVU_AFR}, \link{results_MGI}
+Functions that take annotated result sets \code{\link[=get_RR]{get_RR()}},  \code{\link[=get_EA]{get_EA()}}
 }

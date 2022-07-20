@@ -19,3 +19,14 @@ An numeric value of the replication rate of the result set
 \description{
 This function calculates the replicaiton rate in a test cohort that has been annotated with PGRM. By default, it calculates the RR for associations that powered at >80\%.
 }
+\examples{
+library(pgrm)
+## annotate the UK Biobank results set
+annotated_results = annotate_results(results_BioVU_AFR,ancestry="AFR", build="hg19",calculate_power=TRUE)
+
+## Get the replication rate of associations powered at >80\%
+get_RR(annotated_results)
+## Get the replication rate of all associations (powered or not)
+get_RR(annotated_results,include="all")
+
+}
