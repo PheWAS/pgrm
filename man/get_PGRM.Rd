@@ -27,7 +27,7 @@ A data.table of the PGRM
 This function generates a PGRM copy with specified ancestry, build, and phecode version
 }
 \details{
-This function simply returns a copy of PGRM_ALL with specified columns for SNP, AF, and cases_needed
+This function returns a copy of the PGRM with specified columns for SNP, AF, and cases_needed
 according to the arguments specified. The function assigns a column "SNP" as either SNP_hg19 or SNP_hg38, depending
 on the build argument. It also assigns the allele frequency (AF) and cases_needed columns according to the ancestry.
 If the ancestry is != "ALL", then the funciton also subsets PGRM_ALL to include only associations that were based in
@@ -38,8 +38,7 @@ which can be used to annoate the results of a specific test cohort.
 library(pgrm)
 
 ## Get a copy of the PGRM for build hg19, East Asian ancestry
-get_PGRM(build="hg19",ancestry="EAS")
-
+get_PGRM(build='hg19',ancestry='EAS')
 }
 \seealso{
 \link{PGRM_ALL}, \code{\link[=annotate_results]{annotate_results()}}

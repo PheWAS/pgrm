@@ -16,7 +16,7 @@ NULL
 #'
 #' @return A data.table of the PGRM
 #'
-#' @details This function simply returns a copy of PGRM_ALL with specified columns for SNP, AF, and cases_needed
+#' @details This function returns a copy of the PGRM with specified columns for SNP, AF, and cases_needed
 #' according to the arguments specified. The function assigns a column "SNP" as either SNP_hg19 or SNP_hg38, depending
 #' on the build argument. It also assigns the allele frequency (AF) and cases_needed columns according to the ancestry.
 #' If the ancestry is != "ALL", then the funciton also subsets PGRM_ALL to include only associations that were based in
@@ -25,20 +25,21 @@ NULL
 #'
 #' @seealso [PGRM_ALL], [annotate_results()]
 #'
-#' @examples
-#' library(pgrm)
-#'
-#' ## Get a copy of the PGRM for build hg19, East Asian ancestry
-#' get_PGRM(build="hg19",ancestry="EAS")
+#' @eval example_get_PGRM()
 #'
 #' @export
 get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T){
+
+  ## Avoid warnings about global vars
+   #{cat_LOG10_P} = {SNP} = {phecode} = NULL
 
    ancestry=toupper(ancestry)
    build=tolower(build)
    checkBuild(build)
    checkAncestry(ancestry)
    checkPhecodeVersion(phecode_version)
+
+
 
    PGRM=copy(PGRM_ALL)
    if(build=="hg19"){
@@ -112,46 +113,42 @@ get_PGRM = function(ancestry="all",build="hg19",phecode_version="V1.2",unique=T)
 #'   \item A column called rep that indicates if the association is replicated (i.e. p<0.05 in the test cohort; if use_allele_dir==TRUE,
 #'   then the direction of effect from the test cohort must also be consistant with what is reported in the catalog)
 #'   \item If annotate_CI_overlap is true, then information about the relationship between the 95% CIs from the catalog and the test set is
-#'   included in column CI_overlap, and new columns
-#' for odds_ratio, L95, and U95 are created (rOR, rL95, rU95) that are oriented to the risk allele. (This option requires that the confidence
-#' intervals are reported in the test cohort summary statistics)
+#'   included in column CI_overlap, and new columns for odds_ratio, L95, and U95 are created
+#'   (rOR, rL95, rU95) that are oriented to the risk allele. (This option requires that the confidence
+#'   intervals are reported in the test cohort summary statistics)
 #' }
 #'
-#' @examples
-#' library(pgrm)
-#' ## annotate the UK Biobank results set. (Filter by cohort_match==0 to exclude associations that were based in whole or in part of UKBB cohort)
-#' annotated_results = annotate_results(results_UKBB[cohort_match==0],ancestry="EUR", build="hg38",calculate_power=TRUE)
-#'
-#' ## Get the replication rate of associations powered at >80%
-#' get_RR(annotated_results)
-#' ## Get the replication rate of all associations (powered or not)
-#' get_RR(annotated_results,include="all")
-#'
-#' ## Get the actual:expected ratio
-#' get_AE(annotated_results)
+#' @eval annotate_UKBB()
 #'
 #' @seealso Example result sets: [results_BBJ], [results_UKBB], [results_BioVU_EUR], [results_BioVU_AFR], [results_MGI]
-#' Functions that take annotated result sets [get_RR()],  [get_EA()]
 #'
 #' @export
 annotate_results = function(results, use_allele_dir=T,ancestry="all",build="hg19",phecode_version="V1.2",calculate_power=FALSE,annotate_CI_overlap=T,LOUD=TRUE){
+
+  ## Avoid warnings about global vars
+ # {cases} = {cases_needed} = {risk_allele_dir} = {odds_ratio} = {cat_L95} = {cat_U95} = {rL95} = {rU95} =  NULL
+
   PGRM=get_PGRM(ancestry=ancestry,build=build,phecode_version=phecode_version)
   checkResults(results)
   if(annotate_CI_overlap==TRUE){
     checkForCIs(results)
   }
+
   results=data.table(results)
   results$SNP = toupper(results$SNP)
   results=merge(results,PGRM,by=c("SNP","phecode"))
   results$powered = 0
-  results[!is.na(cases_needed) & cases>=cases_needed,]$powered=1
+
+
+
+  results[!is.na(cases_needed) & cases>=cases_needed]$powered=1
 
   results$rep = 0
   results[results$P<0.05,]$rep = 1
 
   if(use_allele_dir){
-    results[risk_allele_dir=="ref" & odds_ratio > 1,]$rep = 0
-    results[risk_allele_dir=="alt" & odds_ratio <1,]$rep = 0
+    results[risk_allele_dir=='ref' & odds_ratio > 1]$rep = 0
+    results[risk_allele_dir=='alt' & odds_ratio <1]$rep = 0
   }
   if(calculate_power==TRUE){
     results=annotate_power(results, LOUD=LOUD)
@@ -175,23 +172,17 @@ annotate_results = function(results, use_allele_dir=T,ancestry="all",build="hg19
 
 #' Calculate the replicaiton rate (RR) of a test cohort
 #'
-#' This function calculates the replicaiton rate in a test cohort that has been annotated with PGRM. By default, it calculates the RR for associations that powered at >80%.
+#' This function calculates the replicaiton rate in a test cohort that has been annotated with PGRM.
+#' By default, it calculates the RR for associations that powered at >80%.
 #'
 #' @param annotated_results A data table of results that have been annotated with the PGRM
-#' @param include A character string. If "powered" then only powered associations are included (default). If "all" then all associations are included
+#' @param include A character string. If "powered" then only powered associations are included.
+#' If "all" then all associations are included
 #' @param LOUD If TRUE then progress info is printed to the terminal. Default TRUE
 #'
 #' @return An numeric value of the replication rate of the result set
 #'
-#' @examples
-#' library(pgrm)
-#' ## annotate the UK Biobank results set
-#' annotated_results = annotate_results(results_BioVU_AFR,ancestry="AFR", build="hg19",calculate_power=TRUE)
-#'
-#' ## Get the replication rate of associations powered at >80%
-#' get_RR(annotated_results)
-#' ## Get the replication rate of all associations (powered or not)
-#' get_RR(annotated_results,include="all")
+#' @eval annotate_UKBB()
 #'
 #' @export
 get_RR = function(annotated_results,include="powered",LOUD=TRUE){
@@ -263,3 +254,9 @@ get_powered_rate = function(annotated_results,LOUD=TRUE){
   return(powered_rate)
 }
 
+#' Define a phenotype from an ICD file and list of person_id
+#'
+#' @export
+get_pheno = function(){
+
+}

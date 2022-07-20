@@ -9,7 +9,8 @@ get_RR(annotated_results, include = "powered", LOUD = TRUE)
 \arguments{
 \item{annotated_results}{A data table of results that have been annotated with the PGRM}
 
-\item{include}{A character string. If "powered" then only powered associations are included (default). If "all" then all associations are included}
+\item{include}{A character string. If "powered" then only powered associations are included.
+If "all" then all associations are included}
 
 \item{LOUD}{If TRUE then progress info is printed to the terminal. Default TRUE}
 }
@@ -17,16 +18,21 @@ get_RR(annotated_results, include = "powered", LOUD = TRUE)
 An numeric value of the replication rate of the result set
 }
 \description{
-This function calculates the replicaiton rate in a test cohort that has been annotated with PGRM. By default, it calculates the RR for associations that powered at >80\%.
+This function calculates the replicaiton rate in a test cohort that has been annotated with PGRM.
+By default, it calculates the RR for associations that powered at >80\%.
 }
 \examples{
 library(pgrm)
-## annotate the UK Biobank results set
-annotated_results = annotate_results(results_BioVU_AFR,ancestry="AFR", build="hg19",calculate_power=TRUE)
+
+## annotate the BioVU African ancestry result set
+anno = annotate_results(results_BioVU_AFR,ancestry='AFR', build='hg19',calculate_power=TRUE)
 
 ## Get the replication rate of associations powered at >80\%
-get_RR(annotated_results)
-## Get the replication rate of all associations (powered or not)
-get_RR(annotated_results,include="all")
+get_RR(anno)
 
+## Get the replication rate of all associations
+get_RR(anno,include='all')
+
+## Get the actual:expected ratio
+get_AE(anno)
 }

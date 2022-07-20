@@ -32,7 +32,8 @@ Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL}
 \item{calculate_power}{If TRUE then power calculations will be conducted using case and control counts from the results file.
 Necessary for get_AE(). Default FALSE}
 
-\item{annotate_CI_overlap}{If TRUE then a column called "annotate_CI_overlap" is added to the table, values:
+\item{annotate_CI_overlap}{If TRUE then a column called "annotate_CI_overlap" is added to the
+table, values:
 \strong{overlap}: 95\% CIs of PGRM and test cohort overlap
 \strong{test_cohort_greater}: 95\% CI of test cohort greater than PGRM
 \strong{PGRM_greater}: 95\% CI of PGRM greater than test cohort
@@ -47,9 +48,11 @@ A data.table of the results file annotated with columsn from the PGRM
 This function annotates a result from a test cohort with information from the PGRM
 }
 \details{
-This function takes a dataframe with summary statistics from a test cohort. For an example of
-the way to format the results data frame, see one of the results sets included in the package (e.g. results_MGI). (NOTE: If the direction
-of effect is used to determine if an association is replicated, then the odds ratios of the result set must be oriented to the alternative allele.)
+This function takes a dataframe with summary statistics from a test cohort. For an
+example of the way to format the results data frame, see one of the results sets included in the
+package (e.g. results_MGI). (NOTE: If the direction
+of effect is used to determine if an association is replicated, then the odds ratios of the
+result set must be oriented to the alternative allele.)
 
 The function returns a data.table with the following annotations:
 \itemize{
@@ -64,26 +67,26 @@ The function returns a data.table with the following annotations:
 \item A column called rep that indicates if the association is replicated (i.e. p<0.05 in the test cohort; if use_allele_dir==TRUE,
 then the direction of effect from the test cohort must also be consistant with what is reported in the catalog)
 \item If annotate_CI_overlap is true, then information about the relationship between the 95\% CIs from the catalog and the test set is
-included in column CI_overlap, and new columns
-for odds_ratio, L95, and U95 are created (rOR, rL95, rU95) that are oriented to the risk allele. (This option requires that the confidence
+included in column CI_overlap, and new columns for odds_ratio, L95, and U95 are created
+(rOR, rL95, rU95) that are oriented to the risk allele. (This option requires that the confidence
 intervals are reported in the test cohort summary statistics)
 }
 }
 \examples{
 library(pgrm)
-## annotate the UK Biobank results set. (Filter by cohort_match==0 to exclude associations that were based in whole or in part of UKBB cohort)
-annotated_results = annotate_results(results_UKBB[cohort_match==0],ancestry="EUR", build="hg38",calculate_power=TRUE)
+
+## annotate the BioVU African ancestry result set
+anno = annotate_results(results_BioVU_AFR,ancestry='AFR', build='hg19',calculate_power=TRUE)
 
 ## Get the replication rate of associations powered at >80\%
-get_RR(annotated_results)
-## Get the replication rate of all associations (powered or not)
-get_RR(annotated_results,include="all")
+get_RR(anno)
+
+## Get the replication rate of all associations
+get_RR(anno,include='all')
 
 ## Get the actual:expected ratio
-get_AE(annotated_results)
-
+get_AE(anno)
 }
 \seealso{
 Example result sets: \link{results_BBJ}, \link{results_UKBB}, \link{results_BioVU_EUR}, \link{results_BioVU_AFR}, \link{results_MGI}
-Functions that take annotated result sets \code{\link[=get_RR]{get_RR()}},  \code{\link[=get_EA]{get_EA()}}
 }
