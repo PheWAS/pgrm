@@ -5,17 +5,19 @@ rawDir = 'data-raw'
 ########################
 # The PGRM. Add allele frequnecies
 
- PGRM_ALL = fread(
-   file.path(rawDir, 'PGRM_ALL.csv'),
-   colClasses = list(character = 'phecode'),
-   na.strings = '-')
+PGRM_ALL = fread(
+  file.path(rawDir, 'PGRM_ALL.csv'),
+  colClasses = list(character = 'phecode'),
+  na.strings = '-')
 setkeyv(PGRM_ALL, c('assoc_ID', 'phecode', 'SNP_hg19'))
- PGRM_AF = fread(file.path(rawDir, 'PGRM_AF.csv'))
- setkeyv(PGRM_AF, c('SNP_hg19'))
- PGRM_ALL = merge(PGRM_ALL, PGRM_AF, by = 'SNP_hg19')
- PGRM_ALL = PGRM_ALL[phecode != '446.2']
- PGRM_ALL[phecode == '555']$phecode_string = 'Inflammatory bowel disease'
- usethis::use_data(PGRM_ALL, overwrite = TRUE)
+
+PGRM_AF = fread(file.path(rawDir, 'PGRM_AF.csv'))
+setkeyv(PGRM_AF, c('SNP_hg19'))
+
+PGRM_ALL = merge(PGRM_ALL, PGRM_AF, by = 'SNP_hg19')
+PGRM_ALL = PGRM_ALL[phecode != '446.2']
+PGRM_ALL[phecode == '555', phecode_string := 'Inflammatory bowel disease']
+usethis::use_data(PGRM_ALL, overwrite = TRUE)
 
 ########################
 # PGRM allele frequencies
