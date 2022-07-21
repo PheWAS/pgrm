@@ -261,9 +261,46 @@ get_powered_rate = function(annotated_results,LOUD=TRUE){
 
 #' Define a phenotype from an ICD file and list of person_id
 #'
+#' @param pheno A data.table of phecode phenotypes. Must have columns `person_id` and `phecode`, as
+#'   well as `N` which specifies the number of times the phecode occurred for that person_id
+#' @param demos A data.table having one row per person in the cohort. Must have
+#'   a column `person_id`. May include other columns used for covariates in later function calls.
+#' @param phecode A string specifying the phecode
+#' @param MCC The minimum code count required for a case (default MCC=2)
+#' @param use_exclude_ranges If TRUE then exclude ranges are applied to controls
+#'
 #' @export
-get_pheno = function(){
+get_pheno = function(pheno, demos ,phecode,MCC=2,use_exclude_ranges=FALSE){
+  checkPhecodeTable(pheno)
+  checkDemosTable(demos)
+  checkPhecode(phecode)
+  checkMCC(MCC)
 
+  cur_phecode = phecode
+
+  p=pheno[pheno$phecode==cur_phecode,c('person_id','N')]
+  p=data.table(p,key="person_id")
+  p$pheno = -9
+  p[p$N>=MCC]$pheno = 1
+
+  if(use_exclude_ranges==T){
+    to_exclude = c()
+    pheno$phecode_num = as.numeric(pheno$phecode)
+    ranges = pgrm::exclude_ranges[phecode==cur_phecode]
+    for(i in 1:nrow(ranges)){
+      to_exclude = union(to_exclude,unique(pheno[phecode_num >= ranges[i,]$range_start & phecode_num < ranges[i,]$range_end]$person_id))
+    }
+    to_exclude=subset(to_exclude, !to_exclude %in% p$person_id)
+    to_exclude=data.table(person_person_id=to_exclude)
+    names(to_exclude)[1]="person_id"
+    to_exclude$N=0
+    to_exclude$pheno=-9
+    p=rbind(p,to_exclude)
+  }
+  p=merge(demos, p,by="person_id",all.x=T)
+  p[is.na(pheno)]$pheno=0
+  p=p[p$pheno!=-9]
+  p[is.na(N)]$N=0
+  return(p)
 }
-
 

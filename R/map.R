@@ -35,6 +35,24 @@
 #' @seealso [get_PGRM()]
 'PGRM_ALL'
 
+#' Information about phecodes
+#'
+#' The data are artificial and do not correspond to real patients.
+#'
+#' @format A data table with the following columns:
+#'
+#' * `phecode`: Character vector of phecode
+#' * `phecode_string`: Character vector or string label for phecode
+#' * `sex`: Indicates if phecode is sex specific. Values `Female`, `Male`, or `Both`
+#' * `leaf`: A boolean value indicating that the phecode is a leaf (has no children)
+#' * `phecode_top`: Character vector of the parent phecode
+#' * `phecode_top`: Character vector of the category label
+#'
+#' @source <https://phewascatalog.org>
+#'
+#' @seealso [get_pheno()]
+'phecode_info'
+
 #' Exclude ranges for phecode controls
 #'
 #' The data are artificial and do not correspond to real patients.

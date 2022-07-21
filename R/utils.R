@@ -45,6 +45,24 @@ checkAnnotatedResults_forAE = function(annotated_results) {
   assertNames(names(annotated_results), must.include = c('SNP','phecode','rep','Power'))
   invisible()}
 
+checkPhecodeTable = function(phecode_table) {
+  assertDataFrame(phecode_table)
+  assertNames(names(phecode_table), must.include = c('person_id','phecode','N'))
+  invisible()}
+
+checkDemosTable = function(demos_table) {
+  assertDataFrame(demos_table)
+  assertNames(names(demos_table), must.include = c('person_id'))
+  invisible()}
+
+checkMCC = function(MCC){
+  assertNumeric(MCC,lower=1)
+}
+
+checkPhecode = function(phecode){
+  assertCharacter(phecode)
+  #assertList(phecode, phecode_info$phecode)
+}
 
 annotate_power = function(annotated_results,LOUD=FALSE){
 

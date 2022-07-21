@@ -4,7 +4,20 @@
 \alias{get_pheno}
 \title{Define a phenotype from an ICD file and list of person_id}
 \usage{
-get_pheno()
+get_pheno(pheno, demos, phecode, MCC = 2, use_exclude_ranges = FALSE)
+}
+\arguments{
+\item{pheno}{A data.table of phecode phenotypes. Must have columns \code{person_id} and \code{phecode}, as
+well as \code{N} which specifies the number of times the phecode occurred for that person_id}
+
+\item{demos}{A data.table having one row per person in the cohort. Must have
+a column \code{person_id}. May include other columns used for covariates in later function calls.}
+
+\item{phecode}{A string specifying the phecode}
+
+\item{MCC}{The minimum code count required for a case (default MCC=2)}
+
+\item{use_exclude_ranges}{If TRUE then exclude ranges are applied to controls}
 }
 \description{
 Define a phenotype from an ICD file and list of person_id

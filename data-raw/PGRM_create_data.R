@@ -38,6 +38,17 @@ setkeyv(PGRM_ALL, c('assoc_ID', 'phecode','SNP_hg19'))
 
  usethis::use_data(exclude_ranges, overwrite = TRUE)
 
+ #######################
+ # phecode information including phecode_string, category, whether sex specific
+
+ phecode_info = fread(
+   file.path(rawDir, 'phecode_info.csv'),
+   colClasses = list(character = 'phecode', character="phecode_top"))
+ setkeyv(phecode_info, c( 'phecode'))
+
+ usethis::use_data(phecode_info, overwrite = TRUE)
+
+
 #######################
 # Results file - BioVU EUR
 
@@ -87,7 +98,6 @@ setkeyv(PGRM_ALL, c('assoc_ID', 'phecode','SNP_hg19'))
  setkeyv(results_UKBB, c('SNP', 'phecode'))
 
  usethis::use_data(results_UKBB, overwrite = TRUE)
-
 
 
 
