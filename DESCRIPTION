@@ -1,7 +1,7 @@
 Package: pgrm
 Type: Package
 Title: title stuff here
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: c(
   person('Lisa', 'Bastarache', , 'lisa.bastarache@vumc.org', c('aut', 'cre')),
   person('Jake', 'Hughey', , 'jakejhughey@gmail.com', 'aut'))
