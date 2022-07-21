@@ -2,8 +2,9 @@
 #' @import data.table
 #' @import gaston
 #' @import genpwr
-#' @importFrom DescTools %c%
+#' @importFrom glue glue
 NULL
+
 
 #' Get instance of PGRM
 #'
@@ -30,48 +31,41 @@ NULL
 #'
 #' @export
 get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', unique = TRUE) {
-
   ## Avoid warnings about global vars
-   cat_LOG10_P = SNP = . = phecode = NULL
+  cat_LOG10_P = SNP = . = phecode = NULL
 
-   ancestry = toupper(ancestry)
-   build = tolower(build)
-   checkBuild(build)
-   checkAncestry(ancestry)
-   checkPhecodeVersion(phecode_version)
+  ancestry = toupper(ancestry)
+  build = tolower(build)
+  checkBuild(build)
+  checkAncestry(ancestry)
+  checkPhecodeVersion(phecode_version)
 
+  PGRM = copy(pgrm::PGRM_ALL)
+  if (build == 'hg19') {
+    PGRM$SNP_hg38 = NULL
+    names(PGRM)[1] = 'SNP'
+  } else if (build == 'hg38') {
+    PGRM$SNP_hg19 = NULL
+    names(PGRM)[2] = 'SNP'}
 
-
-   PGRM = copy(pgrm::PGRM_ALL)
-   if (build == 'hg19') {
-     PGRM$SNP_hg38 = NULL
-     names(PGRM)[1] = 'SNP'
-   }
-   if (build == 'hg38') {
-     PGRM$SNP_hg19 = NULL
-     names(PGRM)[2] = 'SNP'
-   }
   if (ancestry != 'ALL') {
     a = ancestry
-    PGRM <- PGRM[ancestry == a]
-  }
-  if (ancestry == 'ALL' && unique == TRUE) {
+    PGRM = PGRM[ancestry == a]
+  } else if (ancestry == 'ALL' && isTRUE(unique)) {
     ## make the "ALL" PGRM unique by SNP/phecode
     uniq_PGRM = PGRM[, .(cat_LOG10_P = max(cat_LOG10_P)), by = c('SNP', 'phecode')]
-    PGRM = merge(uniq_PGRM, PGRM, by = c('SNP', 'phecode', 'cat_LOG10_P'))
-  }
-   freq_col_name = ancestry %c% '_freq'
-   cases_needed_col_name = 'cases_needed_' %c% ancestry
-   setnames(PGRM, freq_col_name, 'AF')
-   setnames(PGRM, cases_needed_col_name, 'cases_needed')
-   PGRM = PGRM[, c(
-     'assoc_ID', 'SNP', 'ancestry', 'rsID', 'risk_allele_dir', 'risk_allele', 'AF',
-     'phecode', 'phecode_string', 'category_string', 'cat_LOG10_P', 'cat_OR', 'cat_L95',
-     'cat_U95', 'cases_needed', 'Study_accession')]
+    PGRM = merge(uniq_PGRM, PGRM, by = c('SNP', 'phecode', 'cat_LOG10_P'))}
 
+  freq_col_name = glue('{ancestry}_freq')
+  cases_needed_col_name = glue('cases_needed_{ancestry}')
+  setnames(PGRM, freq_col_name, 'AF')
+  setnames(PGRM, cases_needed_col_name, 'cases_needed')
+  PGRM = PGRM[, c(
+   'assoc_ID', 'SNP', 'ancestry', 'rsID', 'risk_allele_dir', 'risk_allele', 'AF',
+   'phecode', 'phecode_string', 'category_string', 'cat_LOG10_P', 'cat_OR', 'cat_L95',
+   'cat_U95', 'cases_needed', 'Study_accession')]
 
-   return(PGRM)
-}
+  return(PGRM)}
 
 
 #' Annotate a result set with the PGRM
@@ -137,53 +131,45 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
 annotate_results = function(
     results, use_allele_dir = TRUE, ancestry = 'all', build = 'hg19', phecode_version = 'V1.2',
     calculate_power = FALSE, annotate_CI_overlap = TRUE, LOUD = TRUE) {
-
   ## Avoid warnings about global vars
   cases = cases_needed = risk_allele_dir = odds_ratio = cat_L95 = cat_U95 = rL95 =
-    rU95 = powered = P = rOR = L95 = U95 = CI_overlap = NULL
+    rU95 = powered = P = rOR = L95 = U95 = CI_overlap = SNP = NULL
 
   PGRM = get_PGRM(ancestry = ancestry, build = build, phecode_version = phecode_version)
   checkResults(results)
-  if (annotate_CI_overlap == TRUE) {
-    checkForCIs(results)
-  }
+  if (isTRUE(annotate_CI_overlap)) {
+    checkForCIs(results)}
 
   results = data.table(results)
-  results$SNP = toupper(results$SNP)
+  results[, SNP := toupper(SNP)]
   results = merge(results, PGRM, by = c('SNP', 'phecode'))
-  results$powered = 0
 
-
-
+  results[, powered := 0]
   results[!is.na(cases_needed) & cases >= cases_needed, powered := 1]
 
-  results$rep = 0
+  results[, rep := 0]
   results[P < 0.05, rep := 1]
 
   if (use_allele_dir) {
     results[risk_allele_dir == 'ref' & odds_ratio > 1, rep := 0]
-    results[risk_allele_dir == 'alt' & odds_ratio < 1, rep := 0]
-  }
+    results[risk_allele_dir == 'alt' & odds_ratio < 1, rep := 0]}
   if (calculate_power == TRUE) {
-    results = annotate_power(results, LOUD = LOUD)
-  }
+    results = annotate_power(results, LOUD = LOUD)}
   if (annotate_CI_overlap == TRUE) {
-    results$rOR = results$odds_ratio
-    results$rL95 = results$L95
-    results$rU95 = results$U95
+    results[, rOR := odds_ratio]
+    results[, rL95 := L95]
+    results[, rU95 := U95]
     results[risk_allele_dir == 'ref', rOR := 1 / odds_ratio]
     results[risk_allele_dir == 'ref', rU95 := 1 / L95]
     results[risk_allele_dir == 'ref', rL95 := 1 / U95]
 
-    results$CI_overlap = ''
+    results[, CI_overlap := '']
     results[rL95 >= cat_L95 & rL95 <= cat_U95, CI_overlap := 'overlap']
-    # is below meant to be rU95 instead of rL95?
     results[rU95 >= cat_L95 & rL95 <= cat_U95, CI_overlap := 'overlap']
     results[rL95 > cat_U95, CI_overlap := 'test_cohort_greater']
-    results[cat_L95 > rU95, CI_overlap := 'PGRM_greater']
-  }
-  return(results)
-}
+    results[cat_L95 > rU95, CI_overlap := 'PGRM_greater']}
+  return(results)}
+
 
 #' Calculate the replicaiton rate (RR) of a test cohort
 #'
@@ -213,14 +199,13 @@ get_RR = function(annotated_results, include = 'powered', LOUD = TRUE) {
     numerator = nrow(annotated_results[powered == 1 & rep == 1])
   } else {
     denominator = nrow(annotated_results)
-    numerator = nrow(annotated_results[rep == 1])
-  }
+    numerator = nrow(annotated_results[rep == 1])}
   RR = numerator / denominator
   if (LOUD == TRUE) {
-    print('Replicated ' %c% numerator %c% ' of ' %c% denominator %c% ' for RR=' %c% sprintf('%1.1f%%', 100 * RR))
-  }
-  return(RR)
-}
+    print(glue('Replicated {numerator} of {denominator} for RR={f_RR}',
+               f_RR = sprintf('%1.1f%%', 100 * RR)))}
+  return(RR)}
+
 
 #' Calculate the acual:expected ratio (A:E) of a test cohort
 #'
@@ -237,6 +222,7 @@ get_AER = function(annotated_results, LOUD = TRUE) {
   Power = NULL
 
   checkAnnotatedResults_forAE(annotated_results)
+
   r = annotated_results[!is.na(Power)]
   expected = sum(r$Power)
   actual = sum(r$rep)
@@ -245,12 +231,10 @@ get_AER = function(annotated_results, LOUD = TRUE) {
   total_assoc = nrow(r)
   uniq_phecode = length(unique(r$phecode))
   if (LOUD == TRUE) {
-    print('Expected ' %c% expected %c% ', replicated ' %c% actual %c% ' for AE='
-          %c% round(AE, 3) %c% ' (' %c% total_assoc %c% ' associations for ' %c%
-          uniq_phecode %c% ' uniq phecodes)')
-  }
-  return(AE)
-}
+    print(glue('Expected {expected}, replicated {actual} for AE={AE_round} ({total_assoc}
+               associations for {uniq_phecode} uniq phecodes)', AE_round = round(AE, 3)))}
+  return(AE)}
+
 
 #' Calculate the percent of associations that are powered in a test set
 #'
@@ -264,6 +248,7 @@ get_AER = function(annotated_results, LOUD = TRUE) {
 #' @export
 get_powered_rate = function(annotated_results, LOUD = TRUE) {
   checkAnnotatedResults(annotated_results, include = 'powered')
+
   total_rows = nrow(annotated_results)
   powered = nrow(annotated_results[powered == 1])
   powered_rate = powered / total_rows
@@ -271,11 +256,10 @@ get_powered_rate = function(annotated_results, LOUD = TRUE) {
 
   if (LOUD == TRUE) {
     uniq_phecode = length(unique(annotated_results[powered == 1]$phecode))
-    print('Powered for ' %c% powered %c% ' of ' %c% total_rows %c% ' associations '
-          %c% pr %c% ' for ' %c% uniq_phecode %c% ' uniq phecodes')
-  }
-  return(powered_rate)
-}
+    print(glue('Powered for {powered} of {total_rows} associations {pr} for {uniq_phecode}
+               uniq phecodes'))}
+  return(powered_rate)}
+
 
 #' Define a phenotype from an ICD file and list of person_id
 #'
