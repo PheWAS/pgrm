@@ -7,8 +7,9 @@
 #' * `assoc_ID`: Integer vector of the unique identifier for each association
 #' * `SNP_hg19`: Character vector variants encoded in hg19 genome reference build
 #' * `SNP_hg38`: Character vector variants encoded in hg38 genome reference build
-#' * `ancestry`: Character vector of the ancestery of the source GWAS using 1000 Genomes superpopulations ancestry groupings
-#'   (**AFR**: African, **EAS**: East Asian, **EUR**: European, **AMR**: AdMixed American, **SAS**: South Asian)
+#' * `ancestry`: Character vector of the ancestery of the source GWAS using 1000
+#' Genomes superpopulations ancestry groupings (**AFR**: African, **EAS**: East Asian,
+#' **EUR**: European, **AMR**: AdMixed American, **SAS**: South Asian)
 #' * `rsID`: Character indicating the Reference SNP cluster ID
 #' * `risk_allele_dir`: Character indicating the specifying the risk allele
 #'   (**alt**: Alternate allele, **ref**: Reference allele)
@@ -26,8 +27,9 @@
 #' * `cases_needed_ALL`: Integer vector of the estimated cases needed at 80% power for multi-ancestry cohort
 #' * `category_string`: Character vector of the phecode category
 #'
-#' @details The odds ratio and 95% confidence intervals (columns cat_OR, cat_L95, and cat_U95) are reported relative to the risk allele
-#' which is specified in the column risk_allele.
+#' @details The odds ratio and 95% confidence intervals (columns cat_OR, cat_L95,
+#' and cat_U95) are reported relative to the risk allele which is specified in the
+#' column risk_allele.
 #'
 #' @source Allele frequencies: <https://gnomad.broadinstitute.org/>
 #' Summary statistics: <https://www.ebi.ac.uk/gwas/>

@@ -8,13 +8,13 @@ rawDir = 'data-raw'
  PGRM_ALL = fread(
    file.path(rawDir, 'PGRM_ALL.csv'),
    colClasses = list(character = 'phecode'),
-   na.strings="-")
-setkeyv(PGRM_ALL, c('assoc_ID', 'phecode','SNP_hg19'))
+   na.strings = '-')
+setkeyv(PGRM_ALL, c('assoc_ID', 'phecode', 'SNP_hg19'))
  PGRM_AF = fread(file.path(rawDir, 'PGRM_AF.csv'))
  setkeyv(PGRM_AF, c('SNP_hg19'))
- PGRM_ALL=merge(PGRM_ALL,PGRM_AF,by="SNP_hg19")
- PGRM_ALL=PGRM_ALL[phecode!="446.2"]
- PGRM_ALL[phecode=="555"]$phecode_string = "Inflammatory bowel disease"
+ PGRM_ALL = merge(PGRM_ALL, PGRM_AF, by = 'SNP_hg19')
+ PGRM_ALL = PGRM_ALL[phecode != '446.2']
+ PGRM_ALL[phecode == '555']$phecode_string = 'Inflammatory bowel disease'
  usethis::use_data(PGRM_ALL, overwrite = TRUE)
 
 ########################
@@ -34,7 +34,7 @@ setkeyv(PGRM_ALL, c('assoc_ID', 'phecode','SNP_hg19'))
  exclude_ranges = fread(
    file.path(rawDir, 'phecode_ranges.csv'),
    colClasses = list(character = 'phecode'))
- setkeyv(exclude_ranges, c( 'phecode'))
+ setkeyv(exclude_ranges, c('phecode'))
 
  usethis::use_data(exclude_ranges, overwrite = TRUE)
 
