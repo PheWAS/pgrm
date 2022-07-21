@@ -61,8 +61,25 @@ checkMCC = function(MCC){
 
 checkPhecode = function(phecode){
   assertCharacter(phecode)
-  #assertList(phecode, phecode_info$phecode)
+  if (! phecode %in% pgrm::phecode_info$phecode) {
+    stop('phecode specified is not a valid phecode')
+  }
+  #assertTRUE(phecode %in% pgrm::phecode_info$phecode)
 }
+
+checkGenotypes = function(genotypes) {
+  assertMultiClass(genotypes, c('BEDMatrix', 'matrix'))
+  assertNames(rownames(genotypes), type = 'unique')
+  assertNames(colnames(genotypes), type = 'unique', disjunct.from = 'score')
+  invisible()}
+
+checkCovarList = function(covariate_list,demos_table) {
+  assertList(covariate_list)
+  demo_cols = names(demos_table)
+  if (! all(covariate_list %in% demo_cols)) {
+    stop('One or more covariates specified in covariate_list is not in the demos table')
+  }
+  invisible()}
 
 annotate_power = function(annotated_results,LOUD=FALSE){
 
@@ -101,4 +118,14 @@ annotate_power = function(annotated_results,LOUD=FALSE){
     annotated_results[i,]$Power = pwr$Power_at_Alpha_0.05
   }
   return(annotated_results)
+}
+
+sex_check_phecode = function(phecode){
+  if(phecode %in% pgrm::phecode_info[sex=="M"]){
+    return("M")
+  }
+  if (phecode %in% pgrm::phecode_info[sex=="F"]){
+    return("F")
+  }
+  return("B")
 }

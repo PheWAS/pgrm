@@ -4,7 +4,14 @@
 \alias{get_pheno}
 \title{Define a phenotype from an ICD file and list of person_id}
 \usage{
-get_pheno(pheno, demos, phecode, MCC = 2, use_exclude_ranges = FALSE)
+get_pheno(
+  pheno,
+  demos,
+  phecode,
+  MCC = 2,
+  use_exclude_ranges = TRUE,
+  check_sex = TRUE
+)
 }
 \arguments{
 \item{pheno}{A data.table of phecode phenotypes. Must have columns \code{person_id} and \code{phecode}, as
@@ -18,6 +25,17 @@ a column \code{person_id}. May include other columns used for covariates in late
 \item{MCC}{The minimum code count required for a case (default MCC=2)}
 
 \item{use_exclude_ranges}{If TRUE then exclude ranges are applied to controls}
+
+\item{check_sex}{If TRUE then individuals with sex == F in the demos table will be excluded
+from male-specific phenotypes, and vice-versa. Sex specific phecodes are specified in
+phecode_info. For this function to work, the demos table must have column \code{sex} and the values
+must be 'M' for Male and 'F' for Female}
+}
+\value{
+A data.table with columns \code{person_id}, \code{phecode}, \code{N} (number of phecode instances),
+and \code{pheno} indicating case, control, or exclude status (represented as 1, 0, NA respectively).
+Any additional columns provided in demos will also be returned
+prevalence.
 }
 \description{
 Define a phenotype from an ICD file and list of person_id

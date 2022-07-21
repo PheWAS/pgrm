@@ -28,6 +28,17 @@ test_that('test annotate_results with MGI data', {
 })
 
 test_that('test make pheno', {
-  phecode_observed=get_pheno(phecode_table_test, demos_table_test, phecode='250.2',MCC=2,use_exclude_ranges = TRUE)
+  phecode_T2D_observed=get_pheno(phecode_table_test, demos_table_test, phecode='250.2',MCC=2,use_exclude_ranges = TRUE)
+  phecode_T2D_expected=snapshot(phecode_T2D_observed,"snapshots/phecode_T2D_observed.qs" )
+  expect_equal(phecode_T2D_observed,phecode_T2D_expected)
+})
 
+
+test_that('test association function', {
+  cur_PGRM=get_PGRM(ancestry='all',build='hg19')
+  assoc_observed = run_PGRM_assoc(geno=geno, pheno=pheno,demos=demos_table_test,covariates = c('last_age','sex'),
+                                  PGRM=cur_PGRM, MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,LOUD=FALSE)
+  #phecode_T2D_observed=get_pheno(phecode_table_test, demos_table_test, phecode='250.2',MCC=2,use_exclude_ranges = TRUE)
+  #phecode_T2D_expected=snapshot(phecode_T2D_observed,"snapshots/phecode_T2D_observed.qs" )
+  #expect_equal(phecode_T2D_observed,phecode_T2D_expected)
 })
