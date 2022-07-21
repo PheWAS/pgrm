@@ -68,13 +68,13 @@ checkPhecode = function(phecode){
 }
 
 checkGenotypes = function(genotypes) {
-  assertMultiClass(genotypes, c('BEDMatrix', 'matrix'))
-  assertNames(rownames(genotypes), type = 'unique')
-  assertNames(colnames(genotypes), type = 'unique', disjunct.from = 'score')
+  assertMultiClass(genotypes, c('BEDMatrix', 'matrix','bed.matrix'))
+  #assertNames(rownames(genotypes), type = 'unique')
+  #assertNames(colnames(genotypes), type = 'unique', disjunct.from = 'score')
   invisible()}
 
 checkCovarList = function(covariate_list,demos_table) {
-  assertList(covariate_list)
+  assertCharacter(covariate_list)
   demo_cols = names(demos_table)
   if (! all(covariate_list %in% demo_cols)) {
     stop('One or more covariates specified in covariate_list is not in the demos table')

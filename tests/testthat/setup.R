@@ -17,6 +17,11 @@ phecode_table_test = data.table(
   N= c(2,2,8,7,8,5,3,7)
 )
 
+
 demos_table_test = data.table(
   person_id = 1:4, sex = c('F', 'M', 'F', 'M'),
   last_age = c(28772,18028,11636,14589))
+
+#phecode_table_test
+#get_pheno(pheno=phecode_table_test, demos=demos_table_test, phecode="185",MCC=1,use_exclude_ranges = T,check_sex=T)
+#library(pgrm)
