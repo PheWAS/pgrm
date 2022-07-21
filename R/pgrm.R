@@ -57,7 +57,7 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
   }
   if (ancestry == 'ALL' && unique == TRUE) {
     ## make the "ALL" PGRM unique by SNP/phecode
-    uniq_PGRM = PGRM[, .(cat_LOG10_P = max(cat_LOG10_P)), by = c(SNP, phecode)]
+    uniq_PGRM = PGRM[, .(cat_LOG10_P = max(cat_LOG10_P)), by = c('SNP', 'phecode')]
     PGRM = merge(uniq_PGRM, PGRM, by = c('SNP', 'phecode', 'cat_LOG10_P'))
   }
    freq_col_name = ancestry %c% '_freq'
@@ -139,7 +139,8 @@ annotate_results = function(
     calculate_power = FALSE, annotate_CI_overlap = TRUE, LOUD = TRUE) {
 
   ## Avoid warnings about global vars
-  cases = cases_needed = risk_allele_dir = odds_ratio = cat_L95 = cat_U95 = rL95 = rU95 =  NULL
+  cases = cases_needed = risk_allele_dir = odds_ratio = cat_L95 = cat_U95 = rL95 =
+    rU95 = powered = P = rOR = L95 = U95 = CI_overlap = NULL
 
   PGRM = get_PGRM(ancestry = ancestry, build = build, phecode_version = phecode_version)
   checkResults(results)
