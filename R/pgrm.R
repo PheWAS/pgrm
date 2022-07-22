@@ -40,32 +40,32 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
   checkAncestry(ancestry)
   checkPhecodeVersion(phecode_version)
 
-  PGRM = copy(pgrm::PGRM_ALL)
+  PGRM_new = copy(pgrm::PGRM_ALL)
   if (build == 'hg19') {
-    PGRM$SNP_hg38 = NULL
-    names(PGRM)[1] = 'SNP'
+    PGRM_new$SNP_hg38 = NULL
+    names(PGRM_new)[1] = 'SNP'
   } else if (build == 'hg38') {
-    PGRM$SNP_hg19 = NULL
-    names(PGRM)[2] = 'SNP'}
+    PGRM_new$SNP_hg19 = NULL
+    names(PGRM_new)[2] = 'SNP'}
 
   if (ancestry != 'ALL') {
     a = ancestry
-    PGRM = PGRM[ancestry == a]
+    PGRM_new = PGRM_new[ancestry == a]
   } else if (ancestry == 'ALL' && isTRUE(unique)) {
     ## make the "ALL" PGRM unique by SNP/phecode
-    uniq_PGRM = PGRM[, .(cat_LOG10_P = max(cat_LOG10_P)), by = c('SNP', 'phecode')]
-    PGRM = merge(uniq_PGRM, PGRM, by = c('SNP', 'phecode', 'cat_LOG10_P'))}
+    uniq_PGRM = PGRM_new[, .(cat_LOG10_P = max(cat_LOG10_P)), by = c('SNP', 'phecode')]
+    PGRM_new = merge(uniq_PGRM, PGRM_new, by = c('SNP', 'phecode', 'cat_LOG10_P'))}
 
   freq_col_name = glue('{ancestry}_freq')
   cases_needed_col_name = glue('cases_needed_{ancestry}')
-  setnames(PGRM, freq_col_name, 'AF')
-  setnames(PGRM, cases_needed_col_name, 'cases_needed')
-  PGRM = PGRM[, c(
+  setnames(PGRM_new, freq_col_name, 'AF')
+  setnames(PGRM_new, cases_needed_col_name, 'cases_needed')
+  PGRM_new = PGRM_new[, c(
    'assoc_ID', 'SNP', 'ancestry', 'rsID', 'risk_allele_dir', 'risk_allele', 'AF',
    'phecode', 'phecode_string', 'category_string', 'cat_LOG10_P', 'cat_OR', 'cat_L95',
    'cat_U95', 'cases_needed', 'Study_accession')]
 
-  return(PGRM)}
+  return(PGRM_new)}
 
 
 #' Annotate a result set with the PGRM
@@ -359,16 +359,29 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
   covar_list = paste(covariates, collapse ='+')
   formula_string=paste("pheno~genotype+", covar_list, collapse='')
   formula_string_no_sex=gsub("sex\\+","",formula_string)
+  if(LOUD==TRUE){
+    print(glue('Formula: {formula_string}'))}
   formula_string=as.formula(formula_string)
   formula_string_no_sex=as.formula(formula_string_no_sex)
 
+  ## Change person_id to character to ensure merging works
+  demos$person_id=as.character(demos$person_id)
+  pheno$person_id=as.character(pheno$person_id)
+
+  # filter demos, pheno, and geno for intersection of IDs
+  IDs=union(geno@ped$id,demos$person_id)
+  demos =demos[person_id %in% IDs]
+  #pheno=pheno[person_id %in% IDs]
+  geno=select.inds(geno, id %in% IDs)
+  pheno =pheno[person_id %in% IDs]
+
   ## get available phecodes list
-   phecode_counts=pheno[N>=MCC, .(cases = .N), by=phecode]
-   available_phecodes = phecode_counts[cases>=minimum_case_count]$phecode
+  phecode_counts=pheno[N>=MCC, .(cases = .N), by=phecode]
+  available_phecodes = phecode_counts[cases>=minimum_case_count]$phecode
 
   # filter PGRM for available SNPs and phecodes
-   SNPs=geno@snps$id
-   PGRM=PGRM[PGRM$SNP %in% SNPs & PGRM$phecode %in% available_phecodes,]
+  SNPs=geno@snps$id
+  PGRM=PGRM[PGRM$SNP %in% SNPs & PGRM$phecode %in% available_phecodes,]
 
   assoc_to_run=unique(PGRM[,c("SNP", "phecode")])
   assoc_num = nrow(assoc_to_run)
@@ -376,74 +389,48 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
     print(glue('Running {assoc_num} associations'))
   }
 
-  # filter covar and geno for intersection of IDs
-  IDs=union(geno@ped$id,demos$person_id)
-  demos =demos[person_id %in% IDs]
-  #pheno=pheno[person_id %in% IDs]
-  geno=select.inds(geno, id %in% IDs)
-
-
   results=data.frame()
 
-   for(i in 1:nrow(assoc_to_run)){
+  for(i in 1:nrow(assoc_to_run)){
     cur_SNP = assoc_to_run[i,]$SNP
     cur_phecode = assoc_to_run[i,]$phecode
     cur_SNP_index=which(SNPs %in% c(cur_SNP))
 
     if(LOUD==TRUE){
-      print(glue('[Replicated]{i} SNP: {cur_SNP} Phecode: {cur_phecode}'))
+      print(glue('{i} SNP: {cur_SNP} Phecode: {cur_phecode}'))
     }
 
-    #g=data.frame(as.matrix(geno[,cur_SNP_index]))
-    #g$person_id = row.names(g)
-    #names(g)[1]="genotype"
-    #g=data.table(g,key="person_id")
-
-
-    g=data.table(as.matrix(geno[,1]))
-    g$person_id = as.integer(row.names(g))
-    head(g)
-    names(g)[1]="genotype"
+    g=data.table(as.matrix(geno[,cur_SNP_index]),keep.rownames=TRUE)
+    names(g)[1]='person_id'
+    names(g)[2]="genotype"
     setkey(g,"person_id")
 
     g$genotype = abs(g$genotype-2) ## gaston codes things "backwards" from plink. 2== HOM for ref. Flip this around
+
     d=merge(g,demos,by="person_id")
+    d=get_pheno(pheno=pheno,demos=d, phecode=cur_phecode,MCC=MCC,
+                use_exclude_ranges=use_exclude_ranges, check_sex=check_sex)
 
-  #  p=get_pheno(pheno, cur_phecode,MCC,use_exclude_ranges = use_exclude_ranges, check_sex=check_sex)
-  #
-  #   d=merge(d,p,by="ID",all.x=T)
-  #   d[is.na(pheno)]$pheno=0
-  #   d=d[pheno!=-9]
-  #
-  #   phecode_sex=sex_check_phecode(cur_phecode)
-  #   if(phecode_sex !="B"){
-  #     # print("sex specific phecode")
-  #     d=d[sex == phecode_sex]
-  #   }
-  #
-  #   n_case=nrow(d[pheno==1,])
-  #   if(n_case < minimum_case_count ) {
-  #     next
-  #   }
-  #   n_control=nrow(d[pheno==0,])
-  #   table(d$genotype)
-  #   if(phecode_sex =="B"){
-  #     m=glm(formula, data=d,family="binomial")
-  #   } else {
-  #     m=glm(formula_string_no_sex, data=d,family="binomial")
-  #   }
-  #
-  #   conf=confint.default(m)
-  #
-  #   P=summary(m)$coeff[2,4]
-  #   odds_ratio=exp(summary(m)$coeff[2,1])
+    if(check_sex==TRUE){
+      phecode_sex=sex_check_phecode(cur_phecode)
+      if(phecode_sex !="B"){
+        formula=formula_string_no_sex
+      }
+    }
 
-  #
-  #   L95=exp(conf[2,1])
-  #   U95=exp(conf[2,2])
-  #   result = data.frame(SNP=cur_SNP, phecode=cur_phecode,cases=n_case,controls=n_control, P=P, odds_ratio=odds_ratio, L95=L95, U95=U95)
-  #   results = rbind(results, result)
-  }
-  # return(results)
-}
+    n_case=nrow(d[pheno==1,])
+    n_control=nrow(d[pheno==0,])
+    if(n_case < minimum_case_count ) {
+      next}
+
+    m=glm(formula_string, data=d,family="binomial")
+    conf=confint.default(m)
+    P=summary(m)$coeff[2,4]
+    odds_ratio=exp(summary(m)$coeff[2,1])
+
+    L95=exp(conf[2,1])
+    U95=exp(conf[2,2])
+    result = data.frame(SNP=cur_SNP, phecode=cur_phecode,cases=n_case,controls=n_control, P=P, odds_ratio=odds_ratio, L95=L95, U95=U95)
+    results = rbind(results, result)}
+  return(results)}
 

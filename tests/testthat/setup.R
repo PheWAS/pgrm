@@ -28,7 +28,12 @@ demos_table_test = data.table(
 
 #library(gaston)
 #geno=read.bed.matrix('~/Documents/GitHub/pgrm/tests/testthat/data/geno_test')
+#geno@snps$id[1]="10:112678657:G:T"
+#cur_SNP_index=1
+#g=data.table(as.matrix(geno[,cur_SNP_index]),keep.rownames=TRUE)
 
+#run_PGRM_assoc(geno=geno, pheno=phecode_table_test,demos=demos_table_test,covariates = c('last_age','sex'),
+#               PGRM=cur_PGRM, MCC=2,minimum_case_count=1,use_exclude_ranges=TRUE,LOUD=TRUE)
 
 #g=data.table(as.matrix(geno[,1]))
 #g$person_id = row.names(g)
