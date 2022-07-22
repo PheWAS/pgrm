@@ -34,6 +34,10 @@ on the build argument. It also assigns the allele frequency (AF) and cases_neede
 If the ancestry is != "ALL", then the funciton also subsets PGRM_ALL to include only associations that were based in
 cohorts with the specified ancestry. This funciton is called inside annotate_results(),
 which can be used to annoate the results of a specific test cohort.
+
+(NOTE: If you used principle components as covariates, make sure they are not coded as numeric.
+Otherwise the logistic regression will treat them as categorical variables, making the function
+run very slowly before failing.)
 }
 \examples{
 library(pgrm)

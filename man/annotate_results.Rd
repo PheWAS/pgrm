@@ -68,7 +68,10 @@ The function returns a data.table with the following annotations:
 odds ratio, and 95\% confidence intervals (cat_LOG10_P, cat_OR, cat_L95, cat_U95)
 \item The study accession ID from the GWAS catalog
 \item A column called powered, which is 1 or 0 indicating whether the test association
-is powered > 80\% (1 if cases >= cases_needed)
+is powered > 80\%. If calculate_power==TRUE, then the power is determined by the case/control
+counts specified in the results data.table. Otherwise, it is derrived from the estimate
+pre-computed cases needed assuming a 1:5 case:control ratio. All power calculations use
+alpha=0.0
 \item A column called rep that indicates if the association is replicated (i.e.
 p<0.05 in the test cohort; if use_allele_dir==TRUE, then the direction of effect
 from the test cohort must also be consistant with what is reported in the catalog)

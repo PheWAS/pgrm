@@ -116,7 +116,10 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
 #'   odds ratio, and 95% confidence intervals (cat_LOG10_P, cat_OR, cat_L95, cat_U95)
 #'   \item The study accession ID from the GWAS catalog
 #'   \item A column called powered, which is 1 or 0 indicating whether the test association
-#'   is powered > 80% (1 if cases >= cases_needed)
+#'   is powered > 80%. If calculate_power==TRUE, then the power is determined by the case/control
+#'   counts specified in the results data.table. Otherwise, it is derrived from the estimate
+#'   pre-computed cases needed assuming a 1:5 case:control ratio. All power calculations use
+#'   alpha=0.0
 #'   \item A column called rep that indicates if the association is replicated (i.e.
 #'   p<0.05 in the test cohort; if use_allele_dir==TRUE, then the direction of effect
 #'   from the test cohort must also be consistant with what is reported in the catalog)
@@ -134,7 +137,7 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
 #' @export
 annotate_results = function(
     results, use_allele_dir = TRUE, ancestry = 'all', build = 'hg19', phecode_version = 'V1.2',
-    calculate_power = FALSE, annotate_CI_overlap = TRUE, LOUD = TRUE) {
+    calculate_power = TRUE, annotate_CI_overlap = TRUE, LOUD = TRUE) {
   ## Avoid warnings about global vars
   cases = cases_needed = risk_allele_dir = odds_ratio = cat_L95 = cat_U95 = rL95 =
     rU95 = powered = P = rOR = L95 = U95 = CI_overlap = SNP = NULL
@@ -158,7 +161,9 @@ annotate_results = function(
     results[risk_allele_dir == 'ref' & odds_ratio > 1, rep := 0]
     results[risk_allele_dir == 'alt' & odds_ratio < 1, rep := 0]}
   if (calculate_power == TRUE) {
-    results = annotate_power(results, LOUD = LOUD)}
+    results = annotate_power(results, LOUD = LOUD)
+    results[, powered := 0]
+    results[!is.na(Power) & Power >= 0.8, powered := 1]}
   if (annotate_CI_overlap == TRUE) {
     results[, rOR := odds_ratio]
     results[, rL95 := L95]
@@ -361,12 +366,9 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
   checkMCC(minimum_case_count)
   # ## create formulas for glm using covariates; formula_string_no_sex is for sex-specific phenotypes
   covar_list = paste(covariates, collapse ='+')
-  formula_string=paste("pheno~genotype+", covar_list, collapse='')
-  formula_string_no_sex=gsub("sex\\+","",formula_string)
-  if(LOUD==TRUE){
-    print(glue('Formula: {formula_string}'))}
-  formula_string=as.formula(formula_string)
-  formula_string_no_sex=as.formula(formula_string_no_sex)
+  formula_string=paste("pheno~genotype+", covar_list, sep='')
+  formula_string_no_sex=gsub("\\+sex","",formula_string)
+  formula_string_no_sex=gsub("sex\\+","",formula_string_no_sex)
 
   ## Change person_id to character to ensure merging works
   demos$person_id=as.character(demos$person_id)
@@ -394,7 +396,7 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
     return(0)}
   if(LOUD==TRUE){
     print(glue('Attempting {assoc_num} association tests'))
-  }
+    print(glue('Formula: {formula_string}'))}
 
   results=data.frame()
 
@@ -418,10 +420,12 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
     d=get_pheno(pheno=pheno,demos=d, phecode=cur_phecode,MCC=MCC,
                 use_exclude_ranges=use_exclude_ranges, check_sex=check_sex)
 
+    formula=as.formula(formula_string)
     if(check_sex==TRUE){
       phecode_sex=sex_check_phecode(cur_phecode)
       if(phecode_sex !="B"){
-        formula=formula_string_no_sex
+        formula=
+        formula=as.formula(formula_string_no_sex)
       }
     }
 
@@ -430,7 +434,7 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
     if(n_case < minimum_case_count ) {
       next}
 
-    m=glm(formula_string, data=d,family="binomial")
+    m=glm(formula, data=d,family="binomial")
     conf=confint.default(m)
     P=summary(m)$coeff[2,4]
     odds_ratio=exp(summary(m)$coeff[2,1])
@@ -439,5 +443,5 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
     U95=exp(conf[2,2])
     result = data.frame(SNP=cur_SNP, phecode=cur_phecode,cases=n_case,controls=n_control, P=P, odds_ratio=odds_ratio, L95=L95, U95=U95)
     results = rbind(results, result)}
-  return(results)}
-
+  return(results)
+}
