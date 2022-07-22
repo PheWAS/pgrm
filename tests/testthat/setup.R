@@ -1,8 +1,5 @@
 library('data.table')
-library('foreach')
-library('qs')
-library('BEDMatrix')
-registerDoSEQ()
+#registerDoSEQ()
 
 snapshot = function(xObs, path) {
   if (file.exists(path)) {
