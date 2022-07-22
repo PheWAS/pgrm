@@ -8,7 +8,7 @@ get_PGRM(
   ancestry = "all",
   build = "hg19",
   phecode_version = "V1.2",
-  unique = T
+  unique = TRUE
 )
 }
 \arguments{
@@ -16,7 +16,8 @@ get_PGRM(
 
 \item{build}{A string indicating the genome reference build. Options hg19, hg38. Default is hg19.}
 
-\item{phecode_version}{A string indicating the phecode version. Currently only V1.2 is supported, which is the default}
+\item{phecode_version}{A string indicating the phecode version. Currently only
+V1.2 is supported, which is the default}
 
 \item{unique}{If TRUE, then rows are uniqued by SNP/phecode (only relevant when ancestry == "ALL")}
 }

@@ -10,8 +10,9 @@ A data.table with the following columns:
 \item \code{assoc_ID}: Integer vector of the unique identifier for each association
 \item \code{SNP_hg19}: Character vector variants encoded in hg19 genome reference build
 \item \code{SNP_hg38}: Character vector variants encoded in hg38 genome reference build
-\item \code{ancestry}: Character vector of the ancestery of the source GWAS using 1000 Genomes superpopulations ancestry groupings
-(\strong{AFR}: African, \strong{EAS}: East Asian, \strong{EUR}: European, \strong{AMR}: AdMixed American, \strong{SAS}: South Asian)
+\item \code{ancestry}: Character vector of the ancestery of the source GWAS using 1000
+Genomes superpopulations ancestry groupings (\strong{AFR}: African, \strong{EAS}: East Asian,
+\strong{EUR}: European, \strong{AMR}: AdMixed American, \strong{SAS}: South Asian)
 \item \code{rsID}: Character indicating the Reference SNP cluster ID
 \item \code{risk_allele_dir}: Character indicating the specifying the risk allele
 (\strong{alt}: Alternate allele, \strong{ref}: Reference allele)
@@ -41,8 +42,9 @@ PGRM_ALL
 This table provides GWAS associations results from the GWAS catalog, annotated by phecodes, ancestry, etc.
 }
 \details{
-The odds ratio and 95\% confidence intervals (columns cat_OR, cat_L95, and cat_U95) are reported relative to the risk allele
-which is specified in the column risk_allele.
+The odds ratio and 95\% confidence intervals (columns cat_OR, cat_L95,
+and cat_U95) are reported relative to the risk allele which is specified in the
+column risk_allele.
 }
 \seealso{
 \code{\link[=get_PGRM]{get_PGRM()}}
