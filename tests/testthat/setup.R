@@ -24,4 +24,18 @@ demos_table_test = data.table(
 
 #phecode_table_test
 #get_pheno(pheno=phecode_table_test, demos=demos_table_test, phecode="185",MCC=1,use_exclude_ranges = T,check_sex=T)
-#library(pgrm)
+#get_pheno(pheno=phecode_table_test, demos=demos_table_test, phecode="185",MCC=1,use_exclude_ranges = T,check_sex=F)
+
+#library(gaston)
+#geno=read.bed.matrix('~/Documents/GitHub/pgrm/tests/testthat/data/geno_test')
+
+
+#g=data.table(as.matrix(geno[,1]))
+#g$person_id = row.names(g)
+
+#head(g)
+#names(g)[1]="genotype"
+#setkey(g,"person_id")
+#head(g)
+
+

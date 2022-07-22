@@ -121,10 +121,10 @@ annotate_power = function(annotated_results,LOUD=FALSE){
 }
 
 sex_check_phecode = function(phecode){
-  if(phecode %in% pgrm::phecode_info[sex=="M"]){
+  if(phecode %in% pgrm::phecode_info[sex=="Male"]$phecode){
     return("M")
   }
-  if (phecode %in% pgrm::phecode_info[sex=="F"]){
+  if (phecode %in% pgrm::phecode_info[sex=="Female"]$phecode){
     return("F")
   }
   return("B")

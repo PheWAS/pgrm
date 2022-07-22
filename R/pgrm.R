@@ -315,10 +315,9 @@ get_pheno = function(pheno, demos ,phecode,MCC=2,use_exclude_ranges=TRUE,check_s
     phecode_sex = sex_check_phecode(cur_phecode)
     print(paste("phecode sex: ",phecode_sex ))
     if(phecode_sex %in% c("F","M")){
-      p[sex!=phecode]$pheno=NA
+      p[sex!=phecode_sex]$pheno=NA
     }
   }
-
   return(p)
 }
 
@@ -336,12 +335,16 @@ get_pheno = function(pheno, demos ,phecode,MCC=2,use_exclude_ranges=TRUE,check_s
 #' @param minimum_case_count An integer specifiying the minimum number of cases required in the test
 #'   cohort to be included in the analysis (default minimum_case_count=100)
 #' @param use_exclude_ranges If TRUE then exclude ranges are applied to controls
+#' @param check_sex If TRUE then individuals with sex == F in the demos table will be excluded
+#'   from male-specific phenotypes, and vice-versa. Sex specific phecodes are specified in
+#'   phecode_info. For this function to work, the demos table must have column `sex` and the values
+#'   must be 'M' for Male and 'F' for Female
 #' @param LOUD If TRUE then progress info is printed to the terminal. Default TRUE
 #'
 #' @return A data.table with annotated results from association tests
 #'
 #' @export
-run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,LOUD=TRUE){
+run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,check_sex=FALSE,LOUD=TRUE){
 
   checkGenotypes(geno)
   checkPhecodeTable(pheno)
@@ -350,48 +353,59 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
   checkMCC(MCC)
   checkMCC(minimum_case_count)
   # ## create formulas for glm using covariates; formula_string_no_sex is for sex-specific phenotypes
-  # formula_string="pheno~genotype+" %c% paste(covariates, collapse ='+')
-  # formula_string
-  # formula_string_no_sex=gsub("sex\\+","",formula_string)
-  # formula=as.formula(formula_string)
-  # formula_no_sex=as.formula(formula_string_no_sex)
-  #
-  # ## get phecode counts
-  # phecode_counts=pheno[N>=MCC, .(cases = .N), by=phecode]
-  # available_phecodes = phecode_counts[cases>=min_case_count]$phecode
-  #
-  # ## filter PGRM for available SNPs and phecodes
-  #
-  # PGRM=PGRM[PGRM$SNP %in% SNPs & PGRM$phecode %in% available_phecodes,]
-  #
-  # assoc_to_run=unique(PGRM[,c("SNP", "phecode")])
-  # assoc_num = nrow(assoc_to_run)
-  # print("Running " %c% assoc_num %c% " associations")
-  # #assoc_num = 44
-  # results=data.frame()
-  #
-  # ## filter covar and geno for intersection of IDs
-  # IDs=geno@ped$id
-  # covar =covar[ID %in% IDs]
-  # geno=select.inds(geno, id %in% covar$ID)
-  # IDs=geno@ped$id
-  # pheno=pheno[pheno$ID %in% IDs,]
-  #
-  # for(i in 1:nrow(assoc_to_run)){
-  #
-  #   cur_SNP = assoc_to_run[i,]$SNP
-  #   cur_phecode = assoc_to_run[i,]$phecode
-  #   cur_SNP_index=which(SNPs %in% c(cur_SNP))
-  #
-  #   g=data.frame(as.matrix(geno[,cur_SNP_index]))
-  #   g$ID = row.names(g)
-  #   names(g)[1]="genotype"
-  #   g=data.table(g,key="ID")
-  #
-  #   g$genotype = abs(g$genotype-2) ## gaston codes things "backwards" from plink. 2== HOM for ref. Flip this around
-  #   d=merge(g,covar,by="ID")
-  #
-  #   p=get_pheno(pheno, cur_phecode,MCC,use_exclude_ranges = use_exclude_ranges)
+   formula_string="pheno~genotype+" %c% paste(covariates, collapse ='+')
+   formula_string_no_sex=gsub("sex\\+","",formula_string)
+   formula_string=as.formula(formula_string)
+   formula_string_no_sex=as.formula(formula_string_no_sex)
+
+  ## get available phecodes list
+   phecode_counts=pheno[N>=MCC, .(cases = .N), by=phecode]
+   available_phecodes = phecode_counts[cases>=minimum_case_count]$phecode
+
+  # filter PGRM for available SNPs and phecodes
+   SNPs=geno@snps$id
+   PGRM=PGRM[PGRM$SNP %in% SNPs & PGRM$phecode %in% available_phecodes,]
+
+  assoc_to_run=unique(PGRM[,c("SNP", "phecode")])
+  assoc_num = nrow(assoc_to_run)
+  if(LOUD==TRUE){
+    print("Running " %c% assoc_num %c% " associations")
+  }
+
+  # filter covar and geno for intersection of IDs
+  IDs=union(geno@ped$id,demos$person_id)
+  demos =demos[person_id %in% IDs]
+  #pheno=pheno[person_id %in% IDs]
+  geno=select.inds(geno, id %in% IDs)
+
+
+  results=data.frame()
+
+   for(i in 1:nrow(assoc_to_run)){
+    cur_SNP = assoc_to_run[i,]$SNP
+    cur_phecode = assoc_to_run[i,]$phecode
+    cur_SNP_index=which(SNPs %in% c(cur_SNP))
+
+    if(LOUD==TRUE){
+      print("[" %c% i %c% "] SNP: " %c% cur_SNP %c% " Phecode: " %c% cur_phecode)
+    }
+
+    #g=data.frame(as.matrix(geno[,cur_SNP_index]))
+    #g$person_id = row.names(g)
+    #names(g)[1]="genotype"
+    #g=data.table(g,key="person_id")
+
+
+    g=data.table(as.matrix(geno[,1]))
+    g$person_id = as.integer(row.names(g))
+    head(g)
+    names(g)[1]="genotype"
+    setkey(g,"person_id")
+
+    g$genotype = abs(g$genotype-2) ## gaston codes things "backwards" from plink. 2== HOM for ref. Flip this around
+    d=merge(g,demos,by="person_id")
+
+  #  p=get_pheno(pheno, cur_phecode,MCC,use_exclude_ranges = use_exclude_ranges, check_sex=check_sex)
   #
   #   d=merge(d,p,by="ID",all.x=T)
   #   d[is.na(pheno)]$pheno=0
@@ -419,15 +433,13 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
   #
   #   P=summary(m)$coeff[2,4]
   #   odds_ratio=exp(summary(m)$coeff[2,1])
-  #   if(LOUD==TRUE){
-  #     print("[" %c% i %c% "] SNP: " %c% cur_SNP %c% " Phecode: " %c% cur_phecode %c% " P: " %c% P)
-  #   }
+
   #
   #   L95=exp(conf[2,1])
   #   U95=exp(conf[2,2])
   #   result = data.frame(SNP=cur_SNP, phecode=cur_phecode,cases=n_case,controls=n_control, P=P, odds_ratio=odds_ratio, L95=L95, U95=U95)
   #   results = rbind(results, result)
-  # }
+  }
   # return(results)
 }
 
