@@ -13,6 +13,45 @@
     <loc>https://pgrm.hugheylab.org/news/index.html</loc>
   </url>
   <url>
+    <loc>https://pgrm.hugheylab.org/reference/PGRM_ALL.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/annotate_results.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/exclude_ranges.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/get_AER.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/get_PGRM.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/get_RR.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/get_pheno.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/get_powered_rate.html</loc>
+  </url>
+  <url>
     <loc>https://pgrm.hugheylab.org/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/results_BBJ.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/results_BioVU_AFR.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/results_BioVU_EUR.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/results_MGI.html</loc>
+  </url>
+  <url>
+    <loc>https://pgrm.hugheylab.org/reference/results_UKBB.html</loc>
   </url>
 </urlset>
