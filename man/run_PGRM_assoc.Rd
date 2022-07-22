@@ -14,6 +14,7 @@ run_PGRM_assoc(
   MCC = 2,
   minimum_case_count = 100,
   use_exclude_ranges = TRUE,
+  check_sex = FALSE,
   LOUD = TRUE
 )
 }
@@ -36,6 +37,11 @@ listed must be present in the demos table}
 cohort to be included in the analysis (default minimum_case_count=100)}
 
 \item{use_exclude_ranges}{If TRUE then exclude ranges are applied to controls}
+
+\item{check_sex}{If TRUE then individuals with sex == F in the demos table will be excluded
+from male-specific phenotypes, and vice-versa. Sex specific phecodes are specified in
+phecode_info. For this function to work, the demos table must have column \code{sex} and the values
+must be 'M' for Male and 'F' for Female}
 
 \item{LOUD}{If TRUE then progress info is printed to the terminal. Default TRUE}
 }

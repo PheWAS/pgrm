@@ -10,7 +10,7 @@ get_pheno(
   phecode,
   MCC = 2,
   use_exclude_ranges = TRUE,
-  check_sex = TRUE
+  check_sex = FALSE
 )
 }
 \arguments{

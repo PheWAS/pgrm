@@ -356,10 +356,11 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
   checkMCC(MCC)
   checkMCC(minimum_case_count)
   # ## create formulas for glm using covariates; formula_string_no_sex is for sex-specific phenotypes
-   formula_string="pheno~genotype+" %c% paste(covariates, collapse ='+')
-   formula_string_no_sex=gsub("sex\\+","",formula_string)
-   formula_string=as.formula(formula_string)
-   formula_string_no_sex=as.formula(formula_string_no_sex)
+  covar_list = paste(covariates, collapse ='+')
+  formula_string=paste("pheno~genotype+", covar_list, collapse='')
+  formula_string_no_sex=gsub("sex\\+","",formula_string)
+  formula_string=as.formula(formula_string)
+  formula_string_no_sex=as.formula(formula_string_no_sex)
 
   ## get available phecodes list
    phecode_counts=pheno[N>=MCC, .(cases = .N), by=phecode]
@@ -372,7 +373,7 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
   assoc_to_run=unique(PGRM[,c("SNP", "phecode")])
   assoc_num = nrow(assoc_to_run)
   if(LOUD==TRUE){
-    print("Running " %c% assoc_num %c% " associations")
+    print(glue('Running {assoc_num} associations'))
   }
 
   # filter covar and geno for intersection of IDs
@@ -390,7 +391,7 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
     cur_SNP_index=which(SNPs %in% c(cur_SNP))
 
     if(LOUD==TRUE){
-      print("[" %c% i %c% "] SNP: " %c% cur_SNP %c% " Phecode: " %c% cur_phecode)
+      print(glue('[Replicated]{i} SNP: {cur_SNP} Phecode: {cur_phecode}'))
     }
 
     #g=data.frame(as.matrix(geno[,cur_SNP_index]))
