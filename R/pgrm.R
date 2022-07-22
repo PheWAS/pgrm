@@ -25,6 +25,10 @@ NULL
 #' cohorts with the specified ancestry. This funciton is called inside annotate_results(),
 #' which can be used to annoate the results of a specific test cohort.
 #'
+#' (NOTE: If you used principle components as covariates, make sure they are not coded as numeric.
+#' Otherwise the logistic regression will treat them as categorical variables, making the function
+#' run very slowly before failing.)
+#'
 #' @seealso [PGRM_ALL], [annotate_results()]
 #'
 #' @eval example_get_PGRM()
@@ -385,8 +389,11 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
 
   assoc_to_run=unique(PGRM[,c("SNP", "phecode")])
   assoc_num = nrow(assoc_to_run)
+  if(assoc_num == 0){
+    print("There are no eligable associations to run")
+    return(0)}
   if(LOUD==TRUE){
-    print(glue('Running {assoc_num} associations'))
+    print(glue('Attempting {assoc_num} association tests'))
   }
 
   results=data.frame()
