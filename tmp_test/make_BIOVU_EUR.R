@@ -34,6 +34,8 @@ covar=merge(ages,covar,by="person_id")
 covar=covar[person_id %in% IDs]
 names(covar)[3]="last_age"
 covar=covar[last_age>=18*365.25]
+covar=covar[UNIQ_DATE>=4]
+nrow(covar) ## 62777
 
 ## read phenotype file
 pheno=read.csv(pheno_file,header=TRUE,colClasses=c("character","character","integer"),stringsAsFactors = F)
@@ -49,7 +51,10 @@ r_anno=annotate_results(r,ancestry="EUR",build="hg19",calculate_power = TRUE)
 r_anno=merge(r_anno,cohort_info,by="assoc_ID")
 get_RR(r_anno[BioVU_only==0])
 get_AER(r_anno[BioVU_only==0])
+nrow(r_anno[Power>0.8])
+nrow(r_anno[cases>=cases_needed])
 
 new_BioVU_EUR=r_anno[,c('SNP','phecode','cases','controls','odds_ratio','P','L95','U95','BioVU_only')]
 names(new_BioVU_EUR)[9]="cohort_match"
 write.table(new_BioVU_EUR,file="results_BioVU_EUR.csv",row.names = F, col.names = T)
+

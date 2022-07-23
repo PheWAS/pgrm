@@ -10,7 +10,7 @@ annotate_results(
   ancestry = "all",
   build = "hg19",
   phecode_version = "V1.2",
-  calculate_power = FALSE,
+  calculate_power = TRUE,
   annotate_CI_overlap = TRUE,
   LOUD = TRUE
 )

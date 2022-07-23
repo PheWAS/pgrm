@@ -10,7 +10,7 @@ pheno_file = "~/Dropbox (VUMC)/PGRM/code/data/phecodes_V1_2_UP.csv"
 
 
 ## Load PGRM
-PGRM=get_PGRM(ancestry="ALL",build="hg19")
+PGRM=get_PGRM(ancestry="AFR",build="hg19")
 
 cohort_info = read.csv(file="~/Dropbox (VUMC)/PGRM/code/PGRM/PGRM_cohort.csv",stringsAsFactors = F)
 
@@ -36,6 +36,8 @@ covar=merge(ages,covar,by="person_id")
 covar=covar[person_id %in% IDs]
 names(covar)[3]="last_age"
 covar=covar[last_age>=18*365.25]
+covar=covar[UNIQ_DATE>=4]
+nrow(covar) ## 12142
 
 ## read phenotype file
 pheno=read.csv(pheno_file,header=TRUE,colClasses=c("character","character","integer"),stringsAsFactors = F)
