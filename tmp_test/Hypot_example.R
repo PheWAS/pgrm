@@ -1,6 +1,8 @@
 library(gaston)
 library(data.table)
+library(glue)
 library(pgrm)
+
 
 geno_file="~/Dropbox (VUMC)/PGRM/code/data/PGRM_MEGA4_Eur_adult_V1"
 covar_file = "~/Dropbox (VUMC)/PGRM/code/data/covariates_MEGA4_EUR.csv"
@@ -103,322 +105,185 @@ x = list(
 library(ggvenn)
 ggvenn(x,  stroke_size = 0.5, show_percentage = T )
 
-
+library(pgrm)
 PGRM=get_PGRM(ancestry = "EUR",build="hg19")
 GRS=make_GRS(PGRM,geno,phecode="244",prune=T,R2=0.2)
 
 nrow(d)
 nrow(GRS)
+
+head(d)
 head(GRS)
 d=merge(d,GRS,by="person_id")
 
 head(d)
-m=glm(phecode~GRS+PL+lab+med+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d)
+m=glm(phecode2~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d)
 summary(m)
 summary(m)$coeff['GRS',4]
-
-m=glm(PL~GRS+TSH+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d)
-summary(m)$coeff['GRS',4]
-
-#d$any_meas = 0
-#d[TSH_meas == 1 | FT4_meas==1]$any_meas = 1
-#table(d$any_meas)
-
-
-## read meds
-
-#med=read.csv("data/MEGA_hypot_med_lim.csv",header=T)
-med=read.csv("data/MEGA_hypot_med_2x.csv",header=T)
-nrow(med)
-med$med = 1
-d = merge(d, med, by="ID", all.x=T)
-d[is.na(med)]$med= 0
-table(d$med)
-table(d$med,d$any_lab)
-table(d$med,d$any_meas)
-
-## set pheno
-phecode=pheno[phecode=="244" & N>=1,'ID']
-phecode$phecode = 1
-d = merge(d, phecode, by="ID", all.x=T)
-d[is.na(phecode)]$phecode= 0
-
-## set pheno_MCC2
-phecode2=pheno[phecode=="244" & N>=2,'ID']
-phecode2$phecode_MCC2 = 1
-d = merge(d, phecode2, by="ID", all.x=T)
-d[is.na(phecode_MCC2)]$phecode_MCC2= 0
-d[phecode_MCC2 == 0 & phecode==1]$phecode_MCC2=NA
-table(d$phecode,d$phecode_MCC2)
-
-## set PRS
-PRS=make_PRS(PGRM,geno,"244",prune=T,R2=0.2)
-d=merge(d,PRS[,c('ID','PRS')],by="ID")
-
-x = list(
-  phecode = d[phecode==1,]$ID,
-  med = d[med==1,]$ID,
-  TSH = d[TSH==1,]$ID,
-  FT4 = d[FT4==1,]$ID
-)
-
-#x = list(
-#  phecode = d[phecode==1,]$ID,
-#  med = d[med==1,]$ID,
-#  any_lab = d[any_lab==1,]$ID
-#)
-
-
-library(ggvenn)
-ggvenn(x,  stroke_size = 0.5, show_percentage = T )
-
-d$phe_OR_lab_plus_med = 0
-d[(any_lab==1 | phecode == 1) & med==1]$phe_OR_lab_plus_med = 1
-table(d$phe_OR_lab_plus_med,useNA = "always")
-
-d$phe2_OR_lab_plus_med = 0
-d[(any_lab==1 | phecode_MCC2 == 1) & med==1]$phe2_OR_lab_plus_med = 1
-d[phe2_OR_lab_plus_med == 0 & (any_lab==1 | phecode == 1 | med == 1)]$phe2_OR_lab_plus_med =NA
-table(d$phe2_OR_lab_plus_med,useNA = "always")
-
-d$gold_all = 0
-d[any_lab==1 & phecode == 1 & med==1]$gold_all = 1
-d[gold_all == 0 & (any_lab==1 | phecode == 1 | med == 1)]$gold_all =NA
-table(d$gold_all,useNA = "always")
-
-## test phecode MCC2
 
 r=data.frame()
 
-table(d$phecode)
-phenotype = "Phecode, MCC=1 (n=11,961)"
-m=glm(phecode~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+## Phecode MCC=1
+#phenotype = glue('phecode (MCC=1) (n={table(d$phecode)[["1"]]})')
+#phenotype
+#m=glm(phecode~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+#summary(m)$coeff[2,4] ##  2.343958e-75
+#c=confint.default(m)
+#r=rbind(r,data.frame(i=1,phenotype,cases=table(d$phecode)[["1"]], controls=table(d$phecode)[["0"]],
+#                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+
+## Phecode MCC=2
+d$phecode2_ex = d$phecode2
+d[phecode==1 & phecode2==0]$phecode2_ex=NA
+phenotype = glue('phecode (MCC=2) (n={table(d$phecode2_ex)[["1"]]})')
+phenotype
+m=glm(phecode2_ex~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
 summary(m)
-summary(m)$coeff[2,4] ##  3.206464e-72
+summary(m)$coeff[2,4] ##  2.343958e-75
 c=confint.default(m)
-r=rbind(r,data.frame(i=1,phenotype,cases=table(d$phecode)[["1"]], controls=table(d$phecode)[["0"]], P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+r=rbind(r,data.frame(i=2,phenotype,cases=table(d$phecode2_ex)[["1"]], controls=table(d$phecode2_ex)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
-table(d$phecode_MCC2)
-phenotype = "Phecode, MCC=2 (n=9,068)"
-m=glm(phecode_MCC2~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-summary(m)
-summary(m)$coeff[2,4] ##  2.708795e-78
+## Meds
+phenotype = glue('meds (n={table(d$meds)[["1"]]})')
+phenotype
+m=glm(meds~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  6.724116e-104
 c=confint.default(m)
-r=rbind(r,data.frame(i=2,phenotype,cases=table(d$phecode)[["1"]], controls=table(d$phecode)[["0"]], P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+r=rbind(r,data.frame(i=3,phenotype,cases=table(d$meds)[["1"]], controls=table(d$meds)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
-table(d$med)
-phenotype = "Medication use (n=12,782)"
-m=glm(med~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-summary(m)
-summary(m)$coeff[2,4] ##  2.708795e-78
+## labs
+phenotype = glue('lab (n={table(d$lab)[["1"]]})')
+phenotype
+m=glm(lab~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  1.898473e-79
 c=confint.default(m)
-r=rbind(r,data.frame(i=3,phenotype,cases=table(d$phecode)[["1"]], controls=table(d$phecode)[["0"]], P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+r=rbind(r,data.frame(i=4,phenotype,cases=table(d$lab)[["1"]], controls=table(d$lab)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
-
-table(d$TSH)
-phenotype = "TSH high (n=6,873)"
-m=glm(TSH~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-summary(m)
-summary(m)$coeff[2,4] ##  2.708795e-78
+## PL
+phenotype = glue('PL (n={table(d$PL)[["1"]]})')
+phenotype
+m=glm(PL~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  2.667879e-80
 c=confint.default(m)
-r=rbind(r,data.frame(i=4,phenotype,cases=table(d$phecode)[["1"]], controls=table(d$phecode)[["0"]], P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+r=rbind(r,data.frame(i=5,phenotype,cases=table(d$PL)[["1"]], controls=table(d$PL)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
-table(d$FT4)
-phenotype = "Low FT4 (n=784)"
-m=glm(FT4~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-summary(m)
-summary(m)$coeff[2,4] ##  2.708795e-78
+
+
+## Phecode+meds+lab+PL
+d$everything = 0
+d[meds+lab+PL+phecode2==4]$everything = 1
+d[everything==0 & PL+meds+lab+phecode>0]$everything = NA
+phenotype = glue('phecode ∩ meds ∩ labs ∩ PL (n={table(d$everything)[["1"]]})')
+phenotype
+m=glm(everything~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  2.667879e-80
 c=confint.default(m)
-r=rbind(r,data.frame(i=5,phenotype,cases=table(d$phecode)[["1"]], controls=table(d$phecode)[["0"]], P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+r=rbind(r,data.frame(i=6,phenotype,cases=table(d$everything)[["1"]], controls=table(d$everything)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
-table(d$any_lab)
-phenotype = "Abnormal lab (n=7089)"
-m=glm(any_lab~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-summary(m)
-summary(m)$coeff[2,4] ## 3.597616e-81
+## phecode alone
+#d$phecode_only = d$phecode
+#d[phecode_only == 1 & meds+lab+PL>0]$phecode_only = NA
+#phenotype = glue('PL (n={table(d$phecode_only)[["1"]]})')
+#phenotype
+#m=glm(phecode_only~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+#summary(m)$coeff[2,4] ##  2.667879e-80
+#c=confint.default(m)
+#r=rbind(r,data.frame(i=6,phenotype,cases=table(d$phecode_only)[["1"]], controls=table(d$phecode_only)[["0"]],
+#                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+
+## Only phecode MCC=2
+d$phecode2_only = d$phecode2_ex
+d[phecode2_only == 1 & meds+lab+PL>0]$phecode2_only = NA
+phenotype = glue('Only phecode (n={table(d$phecode2_only)[["1"]]})')
+phenotype
+m=glm(phecode2_only~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  2.667879e-80
 c=confint.default(m)
-r=rbind(r,data.frame(i=6,phenotype,cases=table(d$phecode)[["1"]], controls=table(d$phecode)[["0"]], P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+r=rbind(r,data.frame(i=7,phenotype,cases=table(d$phecode2_only)[["1"]], controls=table(d$phecode2_only)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
-
-
-## test gold
-table(d$phe_OR_lab_plus_med,useNA="always")  # 9231
-phenotype = "(Phecode | lab) + med (n=10,332)"
-m=glm(phe_OR_lab_plus_med~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-summary(m)
-summary(m)$coeff[2,4] ##  3.733946e-98
+## Only med
+d$meds_only = d$meds
+d[meds_only == 1 & (lab+PL+phecode2>0)]$meds_only = NA
+phenotype = glue('Only med (n={table(d$meds_only)[["1"]]})')
+phenotype
+m=glm(meds_only~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  2.667879e-80
 c=confint.default(m)
-r=rbind(r,data.frame(i=7,phenotype,cases=table(d$phecode)[["1"]], controls=table(d$phecode)[["0"]], P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+r=rbind(r,data.frame(i=8,phenotype,cases=table(d$meds_only)[["1"]], controls=table(d$meds_only)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
-table(d$phe2_OR_lab_plus_med,useNA="always")  # 9231
-phenotype = "Phecode2 | lab + (med) (n=9096)"
-m=glm(phe_OR_lab_plus_med~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-summary(m)
-summary(m)$coeff[2,4] ##  3.733946e-98
+## Only lab
+d$lab_only = d$lab
+d[lab_only == 1 & meds+PL+phecode2>0]$lab_only = NA
+phenotype = glue('Only lab (n={table(d$lab_only)[["1"]]})')
+phenotype
+m=glm(lab_only~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  2.667879e-80
 c=confint.default(m)
-r=rbind(r,data.frame(i=8,phenotype,cases=table(d$phecode)[["1"]], controls=table(d$phecode)[["0"]], P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+r=rbind(r,data.frame(i=9,phenotype,cases=table(d$lab_only)[["1"]], controls=table(d$lab_only)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
-table(d$gold_all,useNA="always")
-phenotype = "Phecode + med + lab (n=4666)"
-m=glm(gold_all~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-summary(m)
-summary(m)$coeff[2,4] ##  3.733946e-98
+## Only PL
+d$PL_only = d$PL
+d[PL_only == 1 & meds+lab+phecode2>0]$PL_only = NA
+phenotype = glue('Only PL (n={table(d$PL_only)[["1"]]})')
+phenotype
+m=glm(PL_only~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  2.667879e-80
 c=confint.default(m)
-r=rbind(r,data.frame(i=9,phenotype,cases=table(d$phecode)[["1"]], controls=table(d$phecode)[["0"]], P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+r=rbind(r,data.frame(i=10,phenotype,cases=table(d$PL_only)[["1"]], controls=table(d$PL_only)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
-ggplot(r, aes(x=exp(Beta),y=reorder(phenotype,i)))+geom_errorbar(aes(xmin=exp(L95), xmax=exp(U95)), width=.1)+geom_point()+ylab('')+scale_y_discrete(limits=rev)+theme_classic()+geom_vline(xintercept=1,color="grey",linetype="dashed")
-
-
-rc[2,]
-#    2.5 %    97.5 %
-# 0.8810339 1.0621652
-
-## Rand 5%
-cases = d[gold==1]
-cases_ID= cases[sample(nrow(cases)*0.05)]$ID
-controls=d[gold==0]
-control_ID=controls[sample(length(cases_ID))]$ID
-d$gold_rand05 = d$gold
-d[ID %in% cases_ID]$gold_rand05=0
-d[ID %in% control_ID]$gold_rand05=1
-table(d$gold,d$gold_rand05)
-m=glm(gold_rand05~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-summary(m)
-summary(m)$coeff[2,4] ##  1.911651e-85
+## Any
+d$anything = 0
+d[PL+meds+lab+phecode2>0]$anything = 1
+d[anything==0 & phecode==1]$anything = NA
+phenotype = glue('phecode U meds U labs ⋃ PL (n={table(d$anything)[["1"]]})')
+phenotype
+m=glm(anything~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  2.667879e-80
 c=confint.default(m)
-c[2,]
-#     2.5 %     97.5 %
-# 0.8101696 0.9903139
-
-run_rand_assoc= function(d,rand=0,swap=F){
-  len=round(nrow(d[gold==1])*rand,0)
-
-  total_number_of_cases = nrow(d[gold==1])
-  cases_ID= sample(d[gold==1]$ID,size=len,replace=F)
-  control_ID_total=sample(d[gold==0]$ID,size=total_number_of_cases,replace=F)
-  control_ID=sample(control_ID_total,size=len,replace=F)
+r=rbind(r,data.frame(i=10,phenotype,cases=table(d$anything)[["1"]], controls=table(d$anything)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
 
-  d$gold_rand = d$gold
-  if(swap==T){
-    d[ID %in% cases_ID]$gold_rand=0
-  } else {
-    d[ID %in% cases_ID]$gold_rand=NA
-    d[gold == 0 & ID %in% control_ID_total]$gold_rand = NA
-  }
-  d[ID %in% control_ID]$gold_rand=1
-  table(d$gold,d$gold_rand,useNA = "always")
-  m=glm(gold_rand~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-  summary(m)
-  P=summary(m)$coeff[2,4] ##  2.160914e-77
-  Beta=summary(m)$coeff[2,1]
-  c=confint.default(m)
-  L95=c[2,1]
-  U95=c[2,2]
-  Cstat=Cstat(m)
-  results = data.frame(Rand=rand,Perecent_random= paste0(rand*100, "%"),
-                       cases=nrow(d[gold_rand==1]), controls=nrow(d[gold_rand==0]), P=P, Beta = Beta, L95=L95, U95=U95,Cstat=Cstat)
-  return(results)
-}
-
-randomize_pheno = function(d,rand=0,swap=T){
-  len=round(nrow(d[gold==1])*rand,0)
-
-  total_number_of_cases = nrow(d[gold==1])
-  cases_ID= sample(d[gold==1]$ID,size=len,replace=F)
-  control_ID_total=sample(d[gold==0]$ID,size=total_number_of_cases,replace=F)
-  control_ID=sample(control_ID_total,size=len,replace=F)
-  d$gold_rand = d$gold
-  if(swap==T){
-    d[ID %in% cases_ID]$gold_rand=0
-  } else {
-    d[ID %in% cases_ID]$gold_rand=NA
-    d[gold == 0 & ID %in% control_ID_total]$gold_rand = NA
-  }
-  d[ID %in% control_ID]$gold_rand=1
-  return(d)
-}
-
-#func = function(DataSet,indices,rand=0.05){
-#  d=DataSet[indices,]
-#  d=randomize_pheno(d,rand=0.1,swap=T)
-#  fit = glm(gold_rand~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-#  return(DescTools::Cstat(fit))
-#}
-#library(boot)
-#library(DescTools)
-#res = boot(d,statistic=func,R=1000)
-#plot(res)
-#boot.ci(res,type="norm")
+## Phecode no med
+d$phecode_no_med = d$phecode2_ex
+d[!is.na(phecode_no_med) &  phecode_no_med == 1 & meds == 1]$phecode_no_med = NA
+phenotype = glue('phecode ⊄ med (n={table(d$phecode_no_med)[["1"]]})')
+phenotype
+m=glm(phecode_no_med~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  2.667879e-80
+c=confint.default(m)
+r=rbind(r,data.frame(i=12,phenotype,cases=table(d$phecode_no_med)[["1"]], controls=table(d$phecode_no_med)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
 
-foo=randomize_pheno(d,rand=0.1,swap=T)
+## eMERGE algorithm
+d$eMERGE = 0
+d[phecode2+lab+PL>0 & d$meds == 1 ]$eMERGE = 1
+d[eMERGE==0 & phecode+lab+meds+PL>0]$eMERGE=NA
+phenotype = glue('phecode U lab U PL ⋂ med (n={table(d$eMERGE)[["1"]]})')
+phenotype
+m=glm(eMERGE~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  2.667879e-80
+c=confint.default(m)
+r=rbind(r,data.frame(i=13,phenotype,cases=table(d$eMERGE)[["1"]], controls=table(d$eMERGE)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
-run_rand_assoc(d,rand=0.1,swap=F)
-run_rand_assoc(d,rand=0.1,swap=T)
-
-rands=seq(from=0, to=1,by=.05)
-r_rand = data.frame()
-for(i in 1:length(rands)){
-  r_rand=rbind(r_rand,run_rand_assoc(d,rand=rands[i],swap=F))
-}
-r_rand
-write.table(r_rand,"results/BioVU_EUR_hypot_rand.txt",sep="\t",row.names = F,col.names = T)
-
-
-
+r
 
 
+r$P_lab=glue('P={formatC(r$P, format = "e",digits=1)}')
+
+ggplot(r, aes(x=exp(Beta),y=reorder(phenotype,i),label=P_lab))+geom_errorbar(aes(xmin=exp(L95), xmax=exp(U95)), width=.1)+
+  geom_point()+geom_text(hjust=-.4, vjust=-1)+ylab('')+xlab('GRS Beta')+scale_y_discrete(limits=rev)+theme_classic()+
+  geom_vline(xintercept=1,color="grey",linetype="dashed")
 
 
-
-library(ggplot2)
-r_rand$Rand=as.factor(r_rand$Rand)
-ggplot(r_rand, aes(x=Beta, y=Rand)) +geom_errorbar(aes(xmin=L95, xmax=U95), width=.1)+geom_point()+scale_y_discrete(limits=rev)+theme_bw()
-
-
-
-
-d1=randomize_pheno(d,rand=0,swap=F)
-d2=randomize_pheno(d,rand=0.05,swap=F)
-m1=glm(gold_rand~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d1,family="binomial")
-m2=glm(gold_rand~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d2,family="binomial")
-
-d1$set = "rand_00"
-d2$set = "rand_01"
-d_full=rbind(d1,d2)
-m=glm(gold_rand~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8+set,data=d_full,family="binomial")
-summary(m)
-
-AIC(m1,m2)
-anova(m1, m2, test = "LRT")
-Cstat(m1)
-Cstat(m2)
-
-
-func = function(DataSet,indices){
-  d=DataSet[indices,]
-  fit = glm(gold_rand~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
-  return(DescTools::Cstat(fit))
-}
-res = boot(d1,statistic=func,R=100,parallel="multicore")
-plot(res)
-boot.ci(res,type="norm")
-#95%   ( 0.6890,  0.7003 )
-
-d2=randomize_pheno(d,rand=0.05,swap=F)
-res2 = boot(d2,statistic=func,R=100)
-plot(res2)
-boot.ci(res2,type="norm")
-# 95%   ( 0.6783,  0.6884 )
-
-GetBootStrap_Pvalue <- function(formula,DataSet1,DataSet2,indices) {
-  d1 <- DataSet1[indices,]
-  d2 <- DataSet2[indices,]
-  fit1 = glm(formula,data=d1, family="binomial")
-  result1=DescTools::Cstat(fit1)
-  fit2 = glm(formula,data=d2, family="binomial")
-  result2=DescTools::Cstat(fit2)
-  return(result1-result2)
-}
-formula=as.formula("gold_rand~PRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8")
