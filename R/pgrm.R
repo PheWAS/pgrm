@@ -506,8 +506,9 @@ make_GRS = function(PGRM,geno,phecode,prune=TRUE,R2=0.2,LOUD=TRUE){
   sub_geno$ID = row.names(sub_geno)
 
   n_SNP=ncol(sub_geno)-1
-  sub_geno=melt(sub_geno,id=ncol(sub_geno),measure=1:n_SNP)
   sub_geno=data.table(sub_geno,key="ID")
+  sub_geno=melt(sub_geno,id=ncol(sub_geno),measure=1:n_SNP)
+
   names(sub_geno)[2] = 'SNP'
   names(sub_geno)[3] = 'state'
   sub_geno$state = abs(sub_geno$state-2) ## gaston codes things "backwards" from plink. 2== HOM for ref. Flip this around

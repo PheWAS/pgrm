@@ -277,6 +277,19 @@ c=confint.default(m)
 r=rbind(r,data.frame(i=13,phenotype,cases=table(d$eMERGE)[["1"]], controls=table(d$eMERGE)[["0"]],
                      P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
 
+
+## Med + (lab or PL or phecode) algorithm
+d$eMERGE = 0
+d[phecode2+lab+PL>0 & d$meds == 1 ]$eMERGE = 1
+d[eMERGE==0 & phecode+lab+meds+PL>0]$eMERGE=NA
+phenotype = glue('phecode U lab U PL ⋂ med (n={table(d$eMERGE)[["1"]]})')
+phenotype
+m=glm(eMERGE~GRS+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d,family="binomial")
+summary(m)$coeff[2,4] ##  2.667879e-80
+c=confint.default(m)
+r=rbind(r,data.frame(i=13,phenotype,cases=table(d$eMERGE)[["1"]], controls=table(d$eMERGE)[["0"]],
+                     P=summary(m)$coeff[2,4] , Beta=summary(m)$coeff[2,1], L95=c[2,1], U95=c[2,2]))
+
 r
 
 
