@@ -1,5 +1,6 @@
 library(gaston)
 library(data.table)
+library(pgrm)
 
 geno_file="~/Dropbox (VUMC)/PGRM/code/data/PGRM_MEGA4_Eur_adult_V1"
 covar_file = "~/Dropbox (VUMC)/PGRM/code/data/covariates_MEGA4_EUR.csv"
@@ -13,7 +14,10 @@ hypot_meds = "~/Dropbox (VUMC)/PGRM/code/data/MEGA_hypot_med_2x.csv"
 geno=read.bed.matrix(geno_file)
 geno=select.snps(geno, maf > 0.01)
 geno=select.snps(geno, callrate > 0.98)
+select.snps(geno, id %in% c('2:43698028:A:T','2:227092150:T:A'))
 IDs=geno@ped$id
+
+
 
 ## Read covariate file
 covar=read.csv(covar_file,header=TRUE,stringsAsFactors = F)
@@ -99,15 +103,22 @@ x = list(
 library(ggvenn)
 ggvenn(x,  stroke_size = 0.5, show_percentage = T )
 
-source('~/Dropbox (VUMC)/PGRM/code/run_PGRM_functions.R')
+
 PGRM=get_PGRM(ancestry = "EUR",build="hg19")
+GRS=make_GRS(PGRM,geno,phecode="244",prune=T,R2=0.2)
 
-PRS=make_PRS(PGRM,geno,"244",prune=T,R2=0.2)
+nrow(d)
+nrow(GRS)
+head(GRS)
+d=merge(d,GRS,by="person_id")
 
+head(d)
+m=glm(phecode~GRS+PL+lab+med+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d)
+summary(m)
+summary(m)$coeff['GRS',4]
 
-
-
-
+m=glm(PL~GRS+TSH+sex+last_age+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8,data=d)
+summary(m)$coeff['GRS',4]
 
 #d$any_meas = 0
 #d[TSH_meas == 1 | FT4_meas==1]$any_meas = 1

@@ -357,13 +357,16 @@ get_pheno = function(pheno, demos ,phecode,MCC=2,use_exclude_ranges=TRUE,check_s
 #'
 #' @export
 run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,check_sex=FALSE,LOUD=TRUE){
-
+  ## Add check PGRM
   checkGenotypes(geno)
   checkPhecodeTable(pheno)
   checkDemosTable(demos)
   checkCovarList(covariates,demos)
   checkMCC(MCC)
   checkMCC(minimum_case_count)
+  checkBool(use_exclude_ranges)
+  checkBool(check_sex)
+  checkBool(LOUD)
   # ## create formulas for glm using covariates; formula_string_no_sex is for sex-specific phenotypes
   covar_list = paste(covariates, collapse ='+')
   formula_string=paste("pheno~genotype+", covar_list, sep='')
@@ -444,4 +447,85 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
     result = data.frame(SNP=cur_SNP, phecode=cur_phecode,cases=n_case,controls=n_control, P=P, odds_ratio=odds_ratio, L95=L95, U95=U95)
     results = rbind(results, result)}
   return(results)
+}
+
+#' Generate a genetic risk score (GRS) based on variants in the PGRM.
+#'
+#' @param PGRM A data.table of the PGRM, generated with get_PGRM()
+#' @param geno A matrix or 'BEDMatrix' object containing genetic data
+#' @param phecode A string specifying the phecode
+#' @param prune If TRUE, then the SNP list is pruded at the R2 threshold specified
+#' @param R2 A numeric value between 0 and 1 indicating the desired R2 value
+#' @param LOUD If TRUE then progress info is printed to the terminal. Default TRUE
+#'
+#' @return A data.table with columns `person_id` and `GRS`
+#'
+#' @export
+
+make_GRS = function(PGRM,geno,phecode,prune=TRUE,R2=0.2,LOUD=TRUE){
+  ## Add check PGRM
+  checkGenotypes(geno)
+  checkPhecode(phecode)
+  ## add check bool
+  checkBool(prune)
+  ## add R2
+
+  cur_phecode=phecode
+  print(glue('Doing {cur_phecode}'))
+  GRS=data.frame()
+
+  sub_PGRM=PGRM[phecode==cur_phecode]
+  sub_PGRM$Beta = log(sub_PGRM$cat_L95)
+  #sub_PGRM$Beta = log(sub_PGRM$cat_OR)
+
+  ## try with confidence interval and test difference
+  sub_PGRM[sub_PGRM$risk_allele_dir=="ref",]$Beta = sub_PGRM[sub_PGRM$risk_allele_dir=="ref",]$Beta * -1
+
+  sub_PGRM=sub_PGRM[phecode==cur_phecode & SNP %in% geno@snps$id,c("SNP","assoc_ID","Beta","risk_allele_dir")]
+  if(prune){
+    total_SNP = nrow(sub_PGRM)
+  #   #SNPs_for_GRS=get_SNPs_for_GRS(PGRM,geno,cur_phecode,R2=R2)
+    to_prune=get_pruned_SNPs(PGRM, geno, cur_phecode, R2)
+    sub_PGRM=sub_PGRM[!SNP %in% to_prune]
+    SNPs_left = nrow(sub_PGRM)
+    pruned_SNP = total_SNP - SNPs_left
+    if(LOUD==TRUE){
+      print(glue('Pruned {pruned_SNP} for phecode {cur_phecode} with {SNPs_left} SNPs left'))}
+  }
+
+  n_SNPs = nrow(sub_PGRM)
+  if(n_SNPs<3){
+    print("Not enough eligable SNPs. Only " %c% n_SNPs %c% " for phenotype " %c%  cur_phecode)
+    return(GRS)}
+  if(LOUD==TRUE){
+    print(glue('There are {n_SNPs} SNPs available for {cur_phecode} GRS'))}
+
+  SNPs_to_include=unique(sub_PGRM$SNP)
+  sub_geno=select.snps(geno, id %in% SNPs_to_include)
+  sub_geno=data.frame(as.matrix(sub_geno),check.names=F,stringsAsFactors = F)
+  sub_geno$ID = row.names(sub_geno)
+
+  n_SNP=ncol(sub_geno)-1
+  sub_geno=melt(sub_geno,id=ncol(sub_geno),measure=1:n_SNP)
+  sub_geno=data.table(sub_geno,key="ID")
+  names(sub_geno)[2] = 'SNP'
+  names(sub_geno)[3] = 'state'
+  sub_geno$state = abs(sub_geno$state-2) ## gaston codes things "backwards" from plink. 2== HOM for ref. Flip this around
+  foo=sub_geno[!is.na(state), .( mean_state = mean(state)), by=SNP]
+  sub_geno$state=as.numeric(sub_geno$state)
+  sub_geno=merge(sub_geno,foo,by='SNP')
+  ## set missing to zero
+  sub_geno[is.na(state)]$state = sub_geno[is.na(state)]$mean_state
+
+  sub_geno=data.table(sub_geno,key='SNP')
+
+  GRS=merge(sub_geno,sub_PGRM,by='SNP')
+
+  GRS$eff = GRS$state * GRS$Beta
+
+  GRS=GRS[, .(GRS=sum(eff)), by=ID]
+  GRS$GRS_SNP_count = n_SNPs
+  names(GRS)[1]='person_id'
+
+  return(GRS)
 }

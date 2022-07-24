@@ -34,12 +34,10 @@ test_that('test make pheno', {
   expect_equal(phecode_T2D_observed,phecode_T2D_expected)
 })
 
-
-test_that('test association function', {
-  cur_PGRM=get_PGRM(ancestry='all',build='hg19')
-  geno=read.bed.matrix('data/geno_test')
-  geno@snps$id[1]='10:112678657:G:T'
-  geno@snps$id[2]='10:104414221:A:G'
-  assoc_observed = run_PGRM_assoc(geno=geno, pheno=phecode_table_test,demos=demos_table_test,covariates = c('last_age','sex'),
-                                  PGRM=cur_PGRM, MCC=2,minimum_case_count=1,use_exclude_ranges=TRUE,LOUD=TRUE)
-})
+## need a new test file
+#test_that('test GRS', {
+#  cur_PGRM=get_PGRM(ancestry='all',build='hg19')
+#  geno=read.bed.matrix('data/geno_test')
+#  geno@snps$id[1]='10:112678657:G:T'
+#  geno@snps$id[2]='10:104414221:A:G'
+#})
