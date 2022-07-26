@@ -3,25 +3,36 @@ library(data.table)
 
 
 biovu_EUR=annotate_results(results_BioVU_EUR[cohort_match==0], build="hg19",ancestry="EUR")
-get_RR(biovu_EUR)
-get_AER(biovu_EUR)
+get_RR(biovu_EUR) # Replicated 643 of 833 for RR=77.2%
+get_AER(biovu_EUR) # Expected 1656.8, replicated 1354 for AE=0.817 (3268 associations for 106 uniq phecodes)
 
 biovu_AFR=annotate_results(results_BioVU_AFR[cohort_match==0], build="hg19",ancestry="AFR")
-get_RR(biovu_AFR)
-get_AER(biovu_AFR)
+get_RR(biovu_AFR) ## Replicated 11 of 14 for RR=78.6%
+get_AER(biovu_AFR) ## Expected 20, replicated 19 for AE=0.948 (31 associations for 14 uniq phecodes)
 
 anno_BBJ=annotate_results(results_BBJ[cohort_match==0], build="hg19",ancestry="EAS")
-get_RR(anno_BBJ)
-get_AER(anno_BBJ)
+get_RR(anno_BBJ) ## Replicated 167 of 218 for RR=76.6%
+get_AER(anno_BBJ) ## Expected 259.6, replicated 205 for AE=0.79 (384 associations for 26 uniq phecodes)
 
 
 anno_MGI=annotate_results(results_MGI[cohort_match==0], build="hg38",ancestry="EUR")
-get_RR(anno_MGI)
-get_AER(anno_MGI)
+get_RR(anno_MGI) ## Replicated 694 of 905 for RR=76.7%
+get_AER(anno_MGI) ## Expected 1907.5, replicated 1521 for AE=0.797 (4117 associations for 109 uniq phecodes)
 
 anno_UKBB=annotate_results(results_UKBB[cohort_match==0], build="hg38",ancestry="EUR")
-get_RR(anno_UKBB)
-get_AER(anno_UKBB)
+get_RR(anno_UKBB) # Replicated 706 of 818 for RR=86.3%
+get_AER(anno_UKBB) # Expected 1327.5, replicated 1274 for AE=0.96 (2236 associations for 81 uniq phecodes)
+
+RR=c(get_RR(biovu_EUR),get_RR(biovu_AFR),get_RR(anno_BBJ), get_RR(anno_MGI), get_RR(anno_UKBB))
+AER=c(get_AER(biovu_EUR),get_AER(biovu_AFR),get_AER(anno_BBJ), get_AER(anno_MGI), get_AER(anno_UKBB))
+
+df <- data.frame(rr, aer)
+t.test(rr,aer)
+wilcox.test(rr,aer)
+cor(rr,aer)
+## without AFR 0.9957431
+
+
 
 biovu_EUR$BioVU = 1
 biovu_EUR$BioVU_rep = 0
@@ -37,7 +48,8 @@ anno_UKBB[rep==1]$UKBB_rep = 1
 
 d=merge(biovu_EUR[powered==1,c("assoc_ID","BioVU","BioVU_rep")],anno_MGI[powered==1,c("assoc_ID","MGI","MGI_rep")],by="assoc_ID")
 d=merge(d,anno_UKBB[powered==1,c("assoc_ID","UKBB","UKBB_rep")],by="assoc_ID")
-nrow(d)
+nrow(d) ## 379
+
 
 
 ## Venn diagram
@@ -52,12 +64,14 @@ library(ggvenn)
 ggvenn(
   x,
   fill_color = c("#EFC000FF", "#0073C2FF", "#CD534CFF", "#CD534CFF"),
-  stroke_size = 0.8, set_name_size = 8, show_percentage=TRUE
+  stroke_size = 0.8, set_name_size = 8, show_percentage=TRUE,digits=0,text_size=0
 )
 
-table(PGRM_ALL[assoc_ID %in% d[BioVU_rep==0 & MGI_rep==0 & UKBB_rep == 0]$assoc_ID]$phecode_string)
-
+table(PGRM_ALL[assoc_ID %in% d$assoc_ID]$category_string)
 table(PGRM_ALL[assoc_ID %in% d[BioVU_rep==0 & MGI_rep==0 & UKBB_rep == 0]$assoc_ID]$category)
+#table(PGRM_ALL[assoc_ID %in% d[BioVU_rep==0 & MGI_rep==0 & UKBB_rep == 0]$assoc_ID]$phecode_string)
+#table(PGRM_ALL$category_string)
+
 #psych==5
 
 table(PGRM_ALL[assoc_ID %in% d$assoc_ID]$category)
