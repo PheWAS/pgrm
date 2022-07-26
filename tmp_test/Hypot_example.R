@@ -300,3 +300,4 @@ ggplot(r, aes(x=exp(Beta),y=reorder(phenotype,i),label=P_lab))+geom_errorbar(aes
   geom_vline(xintercept=1,color="grey",linetype="dashed")
 
 
+write.table(r,"hypot_ex.txt",sep="\t",row.names = F)
