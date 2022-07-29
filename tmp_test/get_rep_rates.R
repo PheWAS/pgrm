@@ -5,6 +5,9 @@ library(data.table)
 biovu_EUR=annotate_results(results_BioVU_EUR[cohort_match==0], build="hg19",ancestry="EUR")
 get_RR(biovu_EUR) # Replicated 643 of 833 for RR=77.2%
 get_AER(biovu_EUR) # Expected 1656.8, replicated 1354 for AE=0.817 (3268 associations for 106 uniq phecodes)
+table(biovu_EUR$CI_overlap)
+
+
 
 biovu_AFR=annotate_results(results_BioVU_AFR[cohort_match==0], build="hg19",ancestry="AFR")
 get_RR(biovu_AFR) ## Replicated 11 of 14 for RR=78.6%
@@ -22,6 +25,8 @@ get_AER(anno_MGI) ## Expected 1907.5, replicated 1521 for AE=0.797 (4117 associa
 anno_UKBB=annotate_results(results_UKBB[cohort_match==0], build="hg38",ancestry="EUR")
 get_RR(anno_UKBB) # Replicated 706 of 818 for RR=86.3%
 get_AER(anno_UKBB) # Expected 1327.5, replicated 1274 for AE=0.96 (2236 associations for 81 uniq phecodes)
+
+
 
 RR=c(get_RR(biovu_EUR),get_RR(biovu_AFR),get_RR(anno_BBJ), get_RR(anno_MGI), get_RR(anno_UKBB))
 AER=c(get_AER(biovu_EUR),get_AER(biovu_AFR),get_AER(anno_BBJ), get_AER(anno_MGI), get_AER(anno_UKBB))
@@ -79,8 +84,25 @@ table(PGRM_ALL[assoc_ID %in% d$assoc_ID]$category)
 
 ## by category
 
+biovu_EUR[, .(power_rep=sum(d$rep[d$powered==1]),Powered=sum(Power),Expected=sum(Power),actual=sum(rep)), by = "category_string"]
+
+biovu_cat=biovu_EUR[, .(power_rep=uniqueN(assoc_ID[powered==1 & rep==1]),powered=sum(powered),RR_power=uniqueN(assoc_ID[powered==1 & rep==1])/sum(powered),
+                        total_rep=sum(rep),Expected=sum(Power),AER=sum(rep)/sum(Power)), by = "category_string"]
+
+MGI_cat=anno_MGI[, .(power_rep=uniqueN(assoc_ID[powered==1 & rep==1]),powered=sum(powered),RR_power=uniqueN(assoc_ID[powered==1 & rep==1])/sum(powered),
+                        total_rep=sum(rep),Expected=sum(Power),AER=sum(rep)/sum(Power)), by = "category_string"]
+
+UKBB_cat=anno_UKBB[, .(power_rep=uniqueN(assoc_ID[powered==1 & rep==1]),powered=sum(powered),RR_power=uniqueN(assoc_ID[powered==1 & rep==1])/sum(powered),
+                     total_rep=sum(rep),Expected=sum(Power),AER=sum(rep)/sum(Power)), by = "category_string"]
+
+biovu_afr_cat=biovu_AFR[, .(power_rep=uniqueN(assoc_ID[powered==1 & rep==1]),powered=sum(powered),RR_power=uniqueN(assoc_ID[powered==1 & rep==1])/sum(powered),
+                        total_rep=sum(rep),Expected=sum(Power),AER=sum(rep)/sum(Power)), by = "category_string"]
+
+BBJ_cat=anno_BBJ[, .(power_rep=uniqueN(assoc_ID[powered==1 & rep==1]),powered=sum(powered),RR_power=uniqueN(assoc_ID[powered==1 & rep==1])/sum(powered),
+                            total_rep=sum(rep),Expected=sum(Power),AER=sum(rep)/sum(Power)), by = "category_string"]
+
 biovu_cat=as.data.frame.matrix(table(biovu_EUR[powered==1]$category_string, biovu_EUR[powered==1]$rep))
-biovu_cat$BioVU_rep = biovu_cat$`1`/(biovu_cat$`1`+biovu_cat$`0`)
+#biovu_cat$BioVU_rep = biovu_cat$`1`/(biovu_cat$`1`+biovu_cat$`0`)
 biovu_cat$cat = rownames(biovu_cat)
 biovu_cat
 
