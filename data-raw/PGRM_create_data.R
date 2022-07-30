@@ -105,12 +105,12 @@ usethis::use_data(PGRM_ALL, overwrite = TRUE)
  #######################
  # Annotated results file
 
- results_annotated = fread(
-   file.path(rawDir, 'annotated_results.txt'),sep="\t",
-   colClasses = list(character = 'phecode'))
- setkeyv(results_annotated, c('assoc_ID'))
+ #results_annotated = fread(
+ #  file.path(rawDir, 'annotated_results.txt'),sep="\t",
+#   colClasses = list(character = 'phecode'))
+ #setkeyv(results_annotated, c('assoc_ID'))
 
- usethis::use_data(results_annotated, overwrite = TRUE)
+ #usethis::use_data(results_annotated, overwrite = TRUE)
 
 
  # ########################
