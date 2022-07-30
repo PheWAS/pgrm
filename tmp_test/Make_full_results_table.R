@@ -1,7 +1,6 @@
 library(pgrm)
 library(data.table)
 library(glue)
-library(DescTools)
 
 prep_table = function(anno, prefix=""){
   anno = anno[,c(10,3:9,24:26,30)]
@@ -10,6 +9,7 @@ prep_table = function(anno, prefix=""){
   }
   return(anno)
 }
+
 
 biovu_EUR=annotate_results(results_BioVU_EUR, build="hg19",ancestry="EUR")
 get_RR(biovu_EUR) # Replicated 643 of 833 for RR=77.2%
