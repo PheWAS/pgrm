@@ -3,13 +3,6 @@ library(data.table)
 library(glue)
 library(DescTools)
 
-biovu_EUR=annotate_results(results_BioVU_EUR, build="hg19",ancestry="EUR")
-get_RR(biovu_EUR) # Replicated 643 of 833 for RR=77.2%
-get_AER(biovu_EUR) # Expected 1656.8, replicated 1354 for AE=0.817 (3268 associations for 106 uniq phecodes)
-table(biovu_EUR$CI_overlap)
-
-
-
 prep_table = function(anno, prefix=""){
   anno = anno[,c(10,3:9,24:26,30)]
   for(i in 2:ncol(anno)){
@@ -17,6 +10,15 @@ prep_table = function(anno, prefix=""){
   }
   return(anno)
 }
+
+biovu_EUR=annotate_results(results_BioVU_EUR, build="hg19",ancestry="EUR")
+get_RR(biovu_EUR) # Replicated 643 of 833 for RR=77.2%
+get_AER(biovu_EUR) # Expected 1656.8, replicated 1354 for AE=0.817 (3268 associations for 106 uniq phecodes)
+table(biovu_EUR$CI_overlap)
+
+
+
+
 
 biovu_AFR=annotate_results(results_BioVU_AFR, build="hg19",ancestry="AFR")
 get_RR(biovu_AFR) ## Replicated 11 of 14 for RR=78.6%
@@ -45,5 +47,7 @@ d=merge(d,prep_table(anno_MGI,"MGI"), by="assoc_ID",all.x=TRUE)
 d=merge(d,prep_table(anno_UKBB,"UKBB"), by="assoc_ID",all.x=TRUE)
 d=merge(d,prep_table(anno_BBJ,"BBJ"), by="assoc_ID",all.x=TRUE)
 head(d)
+
+
 
 write.table(d,file="all_results.txt",sep="\t",col.names = T,row.names = F)

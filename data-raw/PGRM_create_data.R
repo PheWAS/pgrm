@@ -92,7 +92,7 @@ usethis::use_data(PGRM_ALL, overwrite = TRUE)
  usethis::use_data(results_MGI, overwrite = TRUE)
 
 #######################
-# Results file - MGI
+# Results file - UKBB
 
  results_UKBB = fread(
    file.path(rawDir, 'results_UKBB.csv'),
@@ -101,6 +101,16 @@ usethis::use_data(PGRM_ALL, overwrite = TRUE)
 
  usethis::use_data(results_UKBB, overwrite = TRUE)
 
+
+ #######################
+ # Annotated results file
+
+ results_annotated = fread(
+   file.path(rawDir, 'annotated_results.txt'),sep="\t",
+   colClasses = list(character = 'phecode'))
+ setkeyv(results_annotated, c('anno_ID'))
+
+ usethis::use_data(results_annotated, overwrite = TRUE)
 
 
  # ########################

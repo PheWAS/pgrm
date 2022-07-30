@@ -51,10 +51,14 @@ anno_UKBB$UKBB=1
 anno_UKBB$UKBB_rep=0
 anno_UKBB[rep==1]$UKBB_rep = 1
 
-d=merge(biovu_EUR[powered==1,c("assoc_ID","BioVU","BioVU_rep")],anno_MGI[powered==1,c("assoc_ID","MGI","MGI_rep")],by="assoc_ID")
-d=merge(d,anno_UKBB[powered==1,c("assoc_ID","UKBB","UKBB_rep")],by="assoc_ID")
-nrow(d) ## 379
+#d=PGRM_ALL[,c('assoc_ID','phecode','phecode_string','category_string','ancestry','cat_LOG10_P','cat_OR', 'cat_L95','cat_U95')]
+#head(biovu_EUR)
 
+
+#d=merge(biovu_EUR[powered==1,c("assoc_ID","BioVU","BioVU_rep")],anno_MGI[powered==1,c("assoc_ID","MGI","MGI_rep")],by="assoc_ID")
+#d=merge(d,anno_UKBB[powered==1,c("assoc_ID","UKBB","UKBB_rep")],by="assoc_ID")
+#nrow(d) ## 379
+#head(d)
 
 
 ## Venn diagram
@@ -92,8 +96,10 @@ biovu_cat=biovu_EUR[, .(power_rep=uniqueN(assoc_ID[powered==1 & rep==1]),powered
 MGI_cat=anno_MGI[, .(power_rep=uniqueN(assoc_ID[powered==1 & rep==1]),powered=sum(powered),RR_power=uniqueN(assoc_ID[powered==1 & rep==1])/sum(powered),
                         total_rep=sum(rep),Expected=sum(Power),AER=sum(rep)/sum(Power)), by = "category_string"]
 
-UKBB_cat=anno_UKBB[, .(power_rep=uniqueN(assoc_ID[powered==1 & rep==1]),powered=sum(powered),RR_power=uniqueN(assoc_ID[powered==1 & rep==1])/sum(powered),
+UKBB_cat=anno_UKBB[!is.na(Power), .(power_rep=uniqueN(assoc_ID[powered==1 & rep==1]),powered=sum(powered),RR_power=uniqueN(assoc_ID[powered==1 & rep==1])/sum(powered),
                      total_rep=sum(rep),Expected=sum(Power),AER=sum(rep)/sum(Power)), by = "category_string"]
+UKBB_cat
+
 
 biovu_afr_cat=biovu_AFR[, .(power_rep=uniqueN(assoc_ID[powered==1 & rep==1]),powered=sum(powered),RR_power=uniqueN(assoc_ID[powered==1 & rep==1])/sum(powered),
                         total_rep=sum(rep),Expected=sum(Power),AER=sum(rep)/sum(Power)), by = "category_string"]
@@ -117,6 +123,7 @@ ukbb_cat$cat= rownames(ukbb_cat)
 
 d=merge(biovu_cat, mgi_cat,by="cat")
 d=merge(d,ukbb_cat,by="cat")
+d
 
 ?pheatmap
 library(pheatmap)
