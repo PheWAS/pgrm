@@ -65,9 +65,9 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
   setnames(PGRM_new, freq_col_name, 'AF')
   setnames(PGRM_new, cases_needed_col_name, 'cases_needed')
   PGRM_new = PGRM_new[, c(
-   'assoc_ID', 'SNP', 'ancestry', 'rsID', 'risk_allele_dir', 'risk_allele', 'AF',
+   'assoc_ID', 'SNP', 'ancestry', 'rsID', 'risk_allele_dir', 'AF',
    'phecode', 'phecode_string', 'category_string', 'cat_LOG10_P', 'cat_OR', 'cat_L95',
-   'cat_U95', 'cases_needed', 'Study_accession')]
+   'cat_U95', 'cases_needed', 'Study_accession','pub_count','first_pub_date')]
 
   return(PGRM_new)}
 
@@ -140,8 +140,7 @@ annotate_results = function(
     calculate_power = TRUE, annotate_CI_overlap = TRUE, LOUD = TRUE) {
   ## Avoid warnings about global vars
   cases = cases_needed = risk_allele_dir = odds_ratio = cat_L95 = cat_U95 = rL95 =
-    rU95 = powered = P = rOR = L95 = U95 = CI_overlap = SNP = NULL
-
+    rU95 = powered = P = rOR = L95 = U95 = CI_overlap = SNP = Power = NULL
   PGRM = get_PGRM(ancestry = ancestry, build = build, phecode_version = phecode_version)
   checkResults(results)
   if (isTRUE(annotate_CI_overlap)) {
@@ -177,6 +176,9 @@ annotate_results = function(
     results[rU95 >= cat_L95 & rL95 <= cat_U95, CI_overlap := 'overlap']
     results[rL95 > cat_U95, CI_overlap := 'test_cohort_greater']
     results[cat_L95 > rU95, CI_overlap := 'PGRM_greater']}
+
+  setcolorder(results,results[ , c("assoc_ID",   names(results)[names(results) != "assoc_ID"])])
+
   return(results)}
 
 
@@ -297,6 +299,8 @@ get_pheno = function(pheno, demos ,phecode,MCC=2,use_exclude_ranges=TRUE,check_s
   checkPhecode(phecode)
   checkMCC(MCC)
 
+  phecode_num = N = sex = NULL
+
   cur_phecode = phecode
 
   p=pheno[pheno$phecode==cur_phecode,c('person_id','N')]
@@ -357,6 +361,7 @@ get_pheno = function(pheno, demos ,phecode,MCC=2,use_exclude_ranges=TRUE,check_s
 #'
 #' @export
 run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,check_sex=FALSE,LOUD=TRUE){
+  person_id = id = N = . = phecode = cases = NULL
   ## Add check PGRM
   checkGenotypes(geno)
   checkPhecodeTable(pheno)
@@ -463,6 +468,7 @@ run_PGRM_assoc = function(geno, pheno, demos,covariates, PGRM,MCC=2,minimum_case
 #' @export
 
 make_GRS = function(PGRM,geno,phecode,prune=TRUE,R2=0.2,LOUD=TRUE){
+  SNP = id = state = eff = ID = . = NULL
   ## Add check PGRM
   checkGenotypes(geno)
   checkPhecode(phecode)
@@ -495,7 +501,7 @@ make_GRS = function(PGRM,geno,phecode,prune=TRUE,R2=0.2,LOUD=TRUE){
 
   n_SNPs = nrow(sub_PGRM)
   if(n_SNPs<3){
-    print("Not enough eligable SNPs. Only " %c% n_SNPs %c% " for phenotype " %c%  cur_phecode)
+    print(glue('Not enough eligable SNPs. Only {n_SNPs} for phenotype {cur_phecode}'))
     return(GRS)}
   if(LOUD==TRUE){
     print(glue('There are {n_SNPs} SNPs available for {cur_phecode} GRS'))}

@@ -100,7 +100,9 @@ annotate_power = function(annotated_results, LOUD = FALSE) {
   for (i in seq_len(total)) {
     if (isTRUE(LOUD) && i %% 100 == 0) {
       print(glue('{i} of {total}'))}
+
     annotated_results_tmp = annotated_results[i]
+
     odds_ratio = annotated_results_tmp$cat_L95
     AF = annotated_results_tmp$AF
     ## change AF to risk allele
@@ -113,20 +115,26 @@ annotate_power = function(annotated_results, LOUD = FALSE) {
     }
     k = annotated_results_tmp$controls / annotated_results_tmp$cases
     N = annotated_results_tmp$controls + annotated_results_tmp$cases
-    ## control:case ratio ceiling of 20
-    if (k > 20) {
-      k = 20
-      N = annotated_results_tmp$cases * 20
+    ## control:case ratio ceiling of 40
+    if (k > 40) {
+      k = 40
+      N = annotated_results_tmp$cases * 40
     }
 
     pwr = genpwr.calc(calc = 'power', model = 'logistic', ge.interaction = NULL,
                       Case.Rate = NULL, k = k, N = N, MAF = AF, OR = odds_ratio,
                       Alpha = 0.05, Power = NULL, True.Model = c('Additive'),
                       Test.Model = c('Additive'))
-    annotated_results[i]$Power = pwr$Power_at_Alpha_0.05}
+    annotated_results[i]$Power = pwr$Power_at_Alpha_0.05
+  #  assoc_ID = annotated_results_tmp$assoc_ID
+  #  x=pwr$Power_at_Alpha_0.05
+  #  print(glue('{assoc_ID} {x} k={k} N={N} AF={AF} OR={odds_ratio}'))
+
+  }
   return(annotated_results)}
 
 sex_check_phecode = function(phecode){
+  sex == NULL
   if(phecode %in% pgrm::phecode_info[sex=='Male']$phecode){
     return('M')}
   if (phecode %in% pgrm::phecode_info[sex=='Female']$phecode){
@@ -134,6 +142,8 @@ sex_check_phecode = function(phecode){
   return('B')}
 
 get_pruned_SNPs = function(PGRM, geno, phecode, R2){
+  SNP = prune = id = NULL
+
   to_prune = c()
   cur_phecode = phecode
   SNPs=geno@snps$id

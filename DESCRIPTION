@@ -18,7 +18,8 @@ Imports:
   data.table (>= 1.5.0),
   gaston (>= 1.5.7),
   genpwr (>= 1.0.2),
-  glue (>= 1.6.2)
+  glue (>= 1.6.2),
+  stats,
 Suggests:
   doParallel (>= 1.0.17),
   knitr,

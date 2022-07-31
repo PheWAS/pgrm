@@ -9,14 +9,31 @@ PGRM_ALL = fread(
   file.path(rawDir, 'PGRM_ALL.csv'),
   colClasses = list(character = 'phecode'),
   na.strings = '-')
-setkeyv(PGRM_ALL, c('assoc_ID', 'phecode', 'SNP_hg19'))
+setkeyv(PGRM_ALL, c('assoc_ID', 'phecode', 'SNP_hg19','SNP_hg38'))
 
 PGRM_AF = fread(file.path(rawDir, 'PGRM_AF.csv'))
 setkeyv(PGRM_AF, c('SNP_hg19'))
 
 PGRM_ALL = merge(PGRM_ALL, PGRM_AF, by = 'SNP_hg19')
-PGRM_ALL = PGRM_ALL[phecode != '446.2']
 PGRM_ALL[phecode == '555', phecode_string := 'Inflammatory bowel disease']
+
+PGRM_pubinfo = fread(
+  file.path(rawDir, 'PGRM_pubinfo.csv'))
+setkeyv(PGRM_pubinfo, c('assoc_ID'))
+PGRM_ALL = merge(PGRM_ALL, PGRM_pubinfo, by = 'assoc_ID')
+PGRM_ALL$first_pub_date=as.Date(PGRM_ALL$first_pub_date)
+nrow(PGRM_ALL)
+head(PGRM_ALL)
+ncol(PGRM_ALL)
+
+setcolorder(PGRM_ALL, c('assoc_ID', 'SNP_hg19', 'SNP_hg38','rsID', 'risk_allele_dir','risk_allele',
+                  'phecode','phecode_string','category_string','ancestry',
+                  'cat_LOG10_P','cat_OR','cat_L95','cat_U95','Study_accession','pubmedid','pub_count','first_pub_date',
+                  'cases_needed_AFR','cases_needed_EAS','cases_needed_EUR','cases_needed_AMR','cases_needed_SAS','cases_needed_ALL',
+                  'AFR_freq','EUR_freq','EAS_freq','AMR_freq','SAS_freq','ALL_freq'))
+
+head(PGRM_ALL)
+
 usethis::use_data(PGRM_ALL, overwrite = TRUE)
 
 ########################
@@ -101,28 +118,19 @@ usethis::use_data(PGRM_ALL, overwrite = TRUE)
 
  usethis::use_data(results_UKBB, overwrite = TRUE)
 
+#######################
+# Benchmark results
 
- #######################
- # Annotated results file
-
- #results_annotated = fread(
- #  file.path(rawDir, 'annotated_results.txt'),sep="\t",
-#   colClasses = list(character = 'phecode'))
- #setkeyv(results_annotated, c('assoc_ID'))
-
- #usethis::use_data(results_annotated, overwrite = TRUE)
-
-
- # ########################
- # # PGRM. Open the map and allele frequencies. Merge on SNP_hg19
- #
- # PGRM = fread(
- #   file.path(rawDir, 'PGRM.csv'),
- #   colClasses = list(character = 'phecode'),
- #   na.strings="-")
- # setkeyv(PGRM, c('assoc_ID', 'phecode','SNP_hg19'))
- # PGRM_AF = fread(file.path(rawDir, 'PGRM_AF.csv'))
- # setkeyv(PGRM_AF, c('SNP_hg19'))
- # PGRM=merge(PGRM,PGRM_AF,by="SNP_hg19")
- #
- # usethis::use_data(PGRM, overwrite = TRUE)
+ benchmark_results = fread(
+   file.path(rawDir, 'annotated_results.csv'),
+   colClasses = list(character = 'phecode'))
+ setkeyv(benchmark_results, c('assoc_ID'))
+ benchmark_results$cohort_match = NULL
+ benchmark_results$SNP = NULL
+ benchmark_results$risk_allele = NULL
+ benchmark_results$cases_needed = NULL
+ benchmark_results$MAF = NULL
+ benchmark_results$logP = NULL
+ benchmark_results$cat_L95_trans = NULL
+ benchmark_results$first_pub_year = NULL
+ usethis::use_data(benchmark_results, overwrite = TRUE)

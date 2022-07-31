@@ -10,25 +10,35 @@ A data.table with the following columns:
 \item \code{assoc_ID}: Integer vector of the unique identifier for each association
 \item \code{SNP_hg19}: Character vector variants encoded in hg19 genome reference build
 \item \code{SNP_hg38}: Character vector variants encoded in hg38 genome reference build
+\item \code{rsID}: Character indicating the Reference SNP cluster ID
+\item \code{risk_allele_dir}: Character vector specifying the risk allele direction
+(\strong{alt}: Alternate allele, \strong{ref}: Reference allele)
+\item \code{risk_allele}: Character specifying the risk allele
+\item \code{phecode}: Character vector of the phecode for the association
+\item \code{phecode_string}: Character vector of the phecode string label
+\item \code{category_string}: Character vector of the phecode category
 \item \code{ancestry}: Character vector of the ancestery of the source GWAS using 1000
 Genomes superpopulations ancestry groupings (\strong{AFR}: African, \strong{EAS}: East Asian,
 \strong{EUR}: European, \strong{AMR}: AdMixed American, \strong{SAS}: South Asian)
-\item \code{rsID}: Character indicating the Reference SNP cluster ID
-\item \code{risk_allele_dir}: Character indicating the specifying the risk allele
-(\strong{alt}: Alternate allele, \strong{ref}: Reference allele)
-\item \code{phecode}: Character vector of the phecode for the association
-\item \code{phecode_string}: Character vector of the phecode string label
 \item \code{cat_LOG10_P}: Numeric vector of the -log10(P) of the association from the catalog
-\item \code{cat_OR}: Numeric vector of the odds ratio of the association
-\item \code{cat_L95}: Numeric vector of the 95\% lower confidence interval of the association
-\item \code{cat_U95}: Numeric vector of the 95\% upper confidence interval of the association
+\item \code{cat_OR}: Numeric value of the odds ratio of the association
+\item \code{cat_L95}: Numeric value of the 95\% lower confidence interval of the association
+\item \code{cat_U95}: Numeric value of the 95\% upper confidence interval of the association
 \item \code{Study_accession}: Character vector of the study accession ID from the GWAS catalog
-\item \code{cases_needed_AFR}: Integer vector of the estimated cases needed at 80\% power for African ancestry cohort
-\item \code{cases_needed_EAS}: Integer vector of the estimated cases needed at 80\% power for East Asian ancestry cohort
-\item \code{cases_needed_AMR}: Integer vector of the estimated cases needed at 80\% power for AdMixed American ancestry cohort
-\item \code{cases_needed_SAS}: Integer vector of the estimated cases needed at 80\% power for South Asian ancestry cohort
-\item \code{cases_needed_ALL}: Integer vector of the estimated cases needed at 80\% power for multi-ancestry cohort
-\item \code{category_string}: Character vector of the phecode category
+\item \code{pubmedid}: Numeric value of the PubMed ID for source publication of association
+\item \code{pub_count}: Numeric value indicating how many times association has been published in GWAS catalog
+\item \code{first_pub_date}: Date of the first date the association was published
+\item \code{cases_needed_AFR}: Numeric value of the estimated cases needed at 80\% power for African ancestry cohort
+\item \code{cases_needed_EAS}: Numeric value of the estimated cases needed at 80\% power for East Asian ancestry cohort
+\item \code{cases_needed_AMR}: Numeric value  of the estimated cases needed at 80\% power for Latino/Admixed American ancestry cohort
+\item \code{cases_needed_SAS}: Numeric value  of the estimated cases needed at 80\% power for South Asian ancestry cohort
+\item \code{cases_needed_ALL}: Numeric value  of the estimated cases needed at 80\% power for multi-ancestry cohort
+\item \code{AFR_freq}: Numeric value of the African ancestry allele frequency from gnomAD
+\item \code{EUR_freq}: Numeric value of the European (non-Finnish) ancestry allele frequency from gnomAD
+\item \code{EAS_freq}: Numeric value of the East Asian ancestry allele frequency from gnomAD
+\item \code{AMR_freq}: Numeric value of the Latino/Admixed American ancestry allele frequency from gnomAD
+\item \code{SAS_freq}: Numeric value of the South Asian ancestry allele frequency from gnomAD
+\item \code{ALL_freq}: Numeric value of the allele frequency from gnomAD
 }
 }
 \source{

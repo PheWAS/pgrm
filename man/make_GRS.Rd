@@ -4,7 +4,7 @@
 \alias{make_GRS}
 \title{Generate a genetic risk score (GRS) based on variants in the PGRM.}
 \usage{
-make_GRS(PGRM, geno, phecode, prune = TRUE, R2 = 0.2)
+make_GRS(PGRM, geno, phecode, prune = TRUE, R2 = 0.2, LOUD = TRUE)
 }
 \arguments{
 \item{PGRM}{A data.table of the PGRM, generated with get_PGRM()}
