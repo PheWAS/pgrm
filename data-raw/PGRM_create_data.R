@@ -125,12 +125,7 @@ usethis::use_data(PGRM_ALL, overwrite = TRUE)
    file.path(rawDir, 'annotated_results.csv'),
    colClasses = list(character = 'phecode'))
  setkeyv(benchmark_results, c('assoc_ID'))
- benchmark_results$cohort_match = NULL
- benchmark_results$SNP = NULL
- benchmark_results$risk_allele = NULL
- benchmark_results$cases_needed = NULL
- benchmark_results$MAF = NULL
- benchmark_results$logP = NULL
- benchmark_results$cat_L95_trans = NULL
- benchmark_results$first_pub_year = NULL
+ head(benchmark_results)
+
+ benchmark_results$first_pub_date=as.Date(benchmark_results$first_pub_date)
  usethis::use_data(benchmark_results, overwrite = TRUE)

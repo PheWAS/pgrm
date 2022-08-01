@@ -29,6 +29,29 @@ get_RR(anno_UKBB) # Replicated 706 of 818 for RR=86.3%
 get_AER(anno_UKBB) # Expected 1349.5, replicated 1274 for AE=0.944 (2238 associations for 81 uniq phecodes)
 anno_UKBB[is.na(Power)]
 
+
+biovu_EUR$cohort = 'BioVU_EUR'
+biovu_AFR$cohort = 'BioVU_AFR'
+anno_BBJ$cohort = 'BBJ'
+anno_MGI$cohort = 'MGI'
+anno_UKBB$cohort = 'UKBB'
+
+
+d=rbind(biovu_EUR,biovu_AFR,anno_BBJ,anno_MGI,anno_UKBB)
+d$cases_needed = NULL
+d$cohort_match = NULL
+d$SNP = NULL
+setcolorder(d, c('assoc_ID', 'rsID', 'risk_allele_dir',
+                        'phecode','phecode_string','category_string','ancestry',
+                        'cohort','cases','controls','odds_ratio','P','L95','U95',
+                 'powered','rep','Power','CI_overlap','rOR','rL95','rU95',
+                        'Study_accession','cat_LOG10_P','cat_OR','cat_L95','cat_U95','AF',
+                        'pub_count','first_pub_date'))
+
+head(d)
+write.table(d,file="annotated_results.csv",sep=",",row.names = F, col.names = T)
+
+
 ## total power assoc
 852+14+219+924+844
 ## total assoc
@@ -42,19 +65,11 @@ aer=c(get_AER(biovu_EUR),get_AER(biovu_AFR),get_AER(anno_BBJ), get_AER(anno_MGI)
 df <- data.frame(rr, aer)
 t.test(rr,aer)
 wilcox.test(rr,aer)
-cor(rr,aer,method="pearson")
+cor(rr,aer,method="pearson") ##
 cor(rr,aer,method="kendall")
 cor(rr,aer,method="spearman")
 plot(rr,aer)
 
-## without AFR 0.9957431
 
-biovu_EUR$cohort = 'BioVU_EUR'
-biovu_AFR$cohort = 'BioVU_AFR'
-anno_BBJ$cohort = 'BBJ'
-anno_MGI$cohort = 'MGI'
-anno_UKBB$cohort = 'UKBB'
 
-d=rbind(biovu_EUR,biovu_AFR,anno_BBJ,anno_MGI,anno_UKBB)
-write.table(d,file="annotated_results.csv",sep=",",row.names = F, col.names = T)
 

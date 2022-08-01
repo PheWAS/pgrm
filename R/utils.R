@@ -134,7 +134,6 @@ annotate_power = function(annotated_results, LOUD = FALSE) {
   return(annotated_results)}
 
 sex_check_phecode = function(phecode){
-  sex == NULL
   if(phecode %in% pgrm::phecode_info[sex=='Male']$phecode){
     return('M')}
   if (phecode %in% pgrm::phecode_info[sex=='Female']$phecode){

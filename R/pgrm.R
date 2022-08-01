@@ -47,10 +47,11 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
   PGRM_new = copy(pgrm::PGRM_ALL)
   if (build == 'hg19') {
     PGRM_new$SNP_hg38 = NULL
-    names(PGRM_new)[1] = 'SNP'
+    setnames(PGRM_new, 'SNP_hg19', 'SNP')
   } else if (build == 'hg38') {
     PGRM_new$SNP_hg19 = NULL
-    names(PGRM_new)[2] = 'SNP'}
+    setnames(PGRM_new, 'SNP_hg38', 'SNP')
+    }
 
   if (ancestry != 'ALL') {
     a = ancestry
