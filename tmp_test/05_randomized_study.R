@@ -6,6 +6,7 @@ geno_file="~/Dropbox (VUMC)/PGRM/code/data/PGRM_MEGA4_Eur_adult_V1"
 covar_file = "~/Dropbox (VUMC)/PGRM/code/data/covariates_MEGA4_EUR.csv"
 pheno_file = "~/Dropbox (VUMC)/PGRM/code/data/phecodes_V1_2_UP.csv"
 
+set.seed(4)
 
 ## Load PGRM
 PGRM=get_PGRM(ancestry="EUR",build="hg19")
@@ -20,6 +21,8 @@ SNPs=geno@snps$id
 length(SNPs) ## 5721
 IDs=geno@ped$id
 length(IDs)  # 65682
+
+
 
 ## Read covariate file
 covar=read.csv(covar_file,header=TRUE,stringsAsFactors = F)
@@ -44,26 +47,48 @@ names(pheno)[2]="phecode"
 pheno=pheno[pheno$person_id %in% IDs,] ## include only individuals with genotype data
 pheno=data.table(pheno,key="person_id")
 
-sex_specific=c('182','185','615','618','180.1','256.4','187.2','626.12','174.11','174.2','184.11','218.1')
-PGRM[!phecode %in% sex_specific]
+#sex_specific=c('182','185','615','618','180.1','256.4','187.2','626.12','174.11','174.2','184.11','218.1')
+#PGRM=PGRM[!phecode %in% sex_specific]
+
+foo=annotate_results(results_BioVU_EUR,ancestry="EUR")
+PGRM=PGRM[!assoc_ID %in% foo[cohort_match==1]$assoc_ID]
 
 
-r=run_PGRM_assoc(geno=geno, pheno=pheno,demos=covar,covariates = c('last_age','sex','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8'),
+
+
+run_rand_assoc = function(rand_frac){
+  ID_map = data.table(sample(covar$person_id))
+  names(ID_map)[1]="person_id"
+  ID_len=nrow(ID_map)
+  ID_map$person_id_rand = ID_map$person_id
+  ID_map[1:round(ID_len*rand_frac,0),]$person_id_rand=sample(ID_map[1:round(ID_len*rand_frac,0),]$person_id_rand)
+  nrow(ID_map[person_id != person_id_rand])
+  nrow(ID_map)
+  setkeyv(ID_map, c('person_id'))
+
+  c = merge(covar, ID_map,by="person_id")
+  c$person_id=c$person_id_rand
+
+  p = merge(pheno, ID_map,by="person_id")
+  p$person_id=p$person_id_rand
+  p=p[,1:3]
+
+  r=run_PGRM_assoc(geno=geno, pheno=pheno,demos=covar,covariates = c('last_age','sex','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8'),
                  PGRM=PGRM, MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,LOUD=TRUE,check_sex = TRUE)
-
-r_anno=annotate_results(r,ancestry="EUR",build="hg19",calculate_power = TRUE)
-r_anno=merge(r_anno,cohort_info,by="assoc_ID")
-get_RR(r_anno[BioVU_only==0])
-get_AER(r_anno[BioVU_only==0])
-nrow(r_anno[Power>0.8])
-nrow(r_anno[cases>=cases_needed])
-
-IDs=covar$person_id
+  r=annotate_results(r,ancestry="EUR",build="hg19",calculate_power = TRUE)
+  return(r)
+}
 
 
+#r000=run_rand_assoc(rand_frac=0)
+#get_RR(r000[!assoc_ID %in% foo[cohort_match==1]$assoc_ID])
 
+r025=run_rand_assoc(rand_frac=0.25)
 
-new_BioVU_EUR=r_anno[,c('SNP','phecode','cases','controls','odds_ratio','P','L95','U95','BioVU_only')]
-names(new_BioVU_EUR)[9]="cohort_match"
-write.table(new_BioVU_EUR,file="results_BioVU_EUR.csv",row.names = F, col.names = T)
+r050=run_rand_assoc(rand_frac=0.50)
 
+r075=run_rand_assoc(rand_frac=0.75)
+get_RR(r075)
+
+r100=run_rand_assoc(rand_frac=1.0)
+get_RR(r100)
