@@ -90,7 +90,7 @@ checkCovarList = function(covariate_list,demos_table) {
   }
   invisible()}
 
-annotate_power = function(annotated_results, LOUD = FALSE) {
+annotate_power = function(annotated_results, LOUD = FALSE,max_thresh=40) {
   Power = NULL
 
   annotated_results[, Power := as.numeric(NA)]
@@ -103,7 +103,7 @@ annotate_power = function(annotated_results, LOUD = FALSE) {
 
     annotated_results_tmp = annotated_results[i]
 
-    odds_ratio = annotated_results_tmp$cat_L95
+    odds_ratio = annotated_results_tmp$cat_OR
     AF = annotated_results_tmp$AF
     ## change AF to risk allele
     if (annotated_results_tmp$risk_allele_dir == 'ref') {
@@ -115,10 +115,10 @@ annotate_power = function(annotated_results, LOUD = FALSE) {
     }
     k = annotated_results_tmp$controls / annotated_results_tmp$cases
     N = annotated_results_tmp$controls + annotated_results_tmp$cases
-    ## control:case ratio ceiling of 40
-    if (k > 40) {
-      k = 40
-      N = annotated_results_tmp$cases * 40
+    ## control:case ratio ceiling of max_thresh
+    if (k > max_thresh) {
+      k = max_thresh
+      N = annotated_results_tmp$cases * max_thresh
     }
 
     pwr = genpwr.calc(calc = 'power', model = 'logistic', ge.interaction = NULL,

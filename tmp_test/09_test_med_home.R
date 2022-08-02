@@ -5,7 +5,7 @@ library(glue)
 geno_file="~/Dropbox (VUMC)/PGRM/code/data/PGRM_MEGA4_Eur_adult_V1"
 covar_file = "~/Dropbox (VUMC)/PGRM/code/data/covariates_MEGA4_EUR.csv"
 pheno_file = "~/Dropbox (VUMC)/PGRM/code/data/phecodes_V1_2_UP.csv"
-cancer_reg_file = "~/Dropbox (VUMC)/PGRM/code/data/MEGA_in_cancer_reg.csv"
+med_home_file = "~/Dropbox (VUMC)/PGRM/code/data/MEGA_med_home.csv"
 
 set.seed(4)
 
@@ -17,7 +17,6 @@ cohort_info=data.table(cohort_info)
 
 PGRM=PGRM[!assoc_ID %in% cohort_info[BioVU_only==1]$assoc_ID]
 
-
 ## Read genotype file
 geno=read.bed.matrix(geno_file)
 geno=select.snps(geno, maf > 0.01)
@@ -26,7 +25,6 @@ SNPs=geno@snps$id
 length(SNPs) ## 5721
 IDs=geno@ped$id
 length(IDs)  # 65682
-
 
 ## Read covariate file
 covar=read.csv(covar_file,header=TRUE,stringsAsFactors = F)
@@ -44,6 +42,23 @@ covar=covar[last_age>=18*365.25]
 covar=covar[UNIQ_DATE>=4]
 nrow(covar) ## 62777
 
+
+## read med home info
+med_home = read.csv(med_home_file,header=TRUE,stringsAsFactors = F)
+med_home = data.table(med_home)
+med_home = med_home[person_id %in% IDs]
+med_home = med_home[person_id %in% covar$person_id]
+nrow(med_home) ## 59373
+nrow(med_home[cpt_date>=2]) # 50189
+nrow(med_home[cpt_year>=2]) # 44712
+nrow(med_home[cpt_year>=3]) # 32594
+nrow(med_home[cpt_year>=4]) # 24497
+
+med_home_IDs = sample(med_home[cpt_year>=2]$person_id)
+length(med_home_IDs)
+nrow(covar[!person_id %in% med_home_IDs])
+
+
 ## read phenotype file
 pheno=read.csv(pheno_file,header=TRUE,colClasses=c("character","character","integer"),stringsAsFactors = F)
 names(pheno)[1]="person_id"
@@ -51,43 +66,40 @@ names(pheno)[2]="phecode"
 pheno=pheno[pheno$person_id %in% IDs,] ## include only individuals with genotype data
 pheno=data.table(pheno,key="person_id")
 
-## read cohort info
-cancer_reg = read.csv(cancer_reg_file,header=TRUE,stringsAsFactors = F)
-nrow(cancer_reg) ## 17696
-
-
-covar_cancer_reg = covar[covar$person_id %in% cancer_reg$person_id]
-pheno_cancer_reg = pheno[pheno$person_id %in% cancer_reg$person_id]
-geno_cancer_reg = select.inds(geno, id %in% covar_cancer_reg$person_id)
-IDs_cancer_reg=geno_cancer_reg@ped$id
-length(IDs_cancer_reg)  # 15302
-nrow(covar_cancer_reg) ## 15302
 
 
 
-r_cancer_reg=run_PGRM_assoc(geno=geno_cancer_reg, pheno=pheno_cancer_reg,demos=covar_cancer_reg,covariates = c('last_age','sex','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8'),
+covar_med_home = covar[covar$person_id %in% med_home_IDs]
+pheno_med_home = pheno[pheno$person_id %in% med_home_IDs]
+geno_med_home = select.inds(geno, id %in% med_home_IDs)
+IDs_med_home=geno_med_home@ped$id
+length(IDs_med_home)  # 15302
+nrow(covar_med_home) ## 15302
+
+
+
+r_med_home=run_PGRM_assoc(geno=geno_med_home, pheno=pheno_med_home,demos=covar_med_home,covariates = c('last_age','sex','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8'),
                  PGRM=PGRM, MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,LOUD=TRUE,check_sex = TRUE)
-r_cancer_reg=annotate_results(r_cancer_reg,ancestry="EUR",build="hg19",calculate_power = TRUE)
-get_RR(r_cancer_reg) ## Replicated 140 of 208 for RR=67.3%
-get_AER(r_cancer_reg) ## Expected 737.3, replicated 544 for AE=0.738 (2785 associations for 74 uniq phecodes)
+r_med_home=annotate_results(r_med_home,ancestry="EUR",build="hg19",calculate_power = TRUE)
+get_RR(r_med_home) ## Replicated 514 of 710 for RR=72.4%
+get_AER(r_med_home) ## Expected 1525, replicated 1205 for AE=0.79 (3255 associations for 103 uniq phecodes)
 
-write.table(r_cancer_reg,file="anno_BioVU_EUR_cancer_reg.csv",row.names = F, col.names = T)
+write.table(r_med_home,file="anno_BioVU_EUR_med_home2.csv",row.names = F, col.names = T)
+
+r=annotate_results(results_BioVU_EUR[cohort_match ==0],ancestry="EUR",build="hg19",calculate_power = TRUE)
+get_RR(r) ##
+get_AER(r) ##
+
+r[!assoc_ID %in% r_med_home$assoc_ID]
+r_med_home[!assoc_ID %in% r$assoc_ID]
 
 
+get_RR(r_med_home[Power==1])
+get_RR(r[Power==1])
 
-IDs_no_cancer = sample(covar[!covar$person_id %in% cancer_reg$person_id]$person_id,size=nrow(covar_cancer_reg))
-covar_no_cancer_reg = covar[covar$person_id %in% IDs_no_cancer]
-pheno_no_cancer_reg = pheno[pheno$person_id %in% IDs_no_cancer]
-geno_no_cancer_reg = select.inds(geno, id %in% covar_no_cancer_reg$covar_no_cancer_reg)
-IDs_no_cancer_reg=geno_no_cancer_reg@ped$id
-length(IDs_no_cancer_reg)  # 15302
-nrow(covar_no_cancer_reg) ## 15302
+prop.table(table(r[rep==1]$CI_overlap))
+prop.table(table(r_med_home[rep==1]$CI_overlap))
 
-r_no_cancer_reg=run_PGRM_assoc(geno=geno_no_cancer_reg, pheno=pheno_no_cancer_reg,demos=covar_no_cancer_reg,covariates = c('last_age','sex','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8'),
-                            PGRM=PGRM, MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,LOUD=TRUE,check_sex = TRUE)
-r_no_cancer_reg=annotate_results(r_no_cancer_reg,ancestry="EUR",build="hg19",calculate_power = TRUE)
-get_RR(r_no_cancer_reg) ## Replicated 143 of 213 for RR=67.1%
-get_AER(r_no_cancer_reg) ## Expected 787.9, replicated 586 for AE=0.744 (2885 associations for 75 uniq phecodes)
+get_AER(r[assoc_ID %in% r_med_home$assoc_ID])
 
-write.table(r_no_cancer_reg,file="anno_BioVU_EUR_no_cancer_reg.csv",row.names = F, col.names = T)
-
+cor(r_med_home$Power,r_med_home$rep)

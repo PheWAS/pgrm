@@ -78,7 +78,7 @@ write.table(r_cancer_reg,file="anno_BioVU_EUR_cancer_reg.csv",row.names = F, col
 IDs_no_cancer = sample(covar[!covar$person_id %in% cancer_reg$person_id]$person_id,size=nrow(covar_cancer_reg))
 covar_no_cancer_reg = covar[covar$person_id %in% IDs_no_cancer]
 pheno_no_cancer_reg = pheno[pheno$person_id %in% IDs_no_cancer]
-geno_no_cancer_reg = select.inds(geno, id %in% covar_no_cancer_reg$covar_no_cancer_reg)
+geno_no_cancer_reg = select.inds(geno, id %in% IDs_no_cancer)
 IDs_no_cancer_reg=geno_no_cancer_reg@ped$id
 length(IDs_no_cancer_reg)  # 15302
 nrow(covar_no_cancer_reg) ## 15302
@@ -86,8 +86,8 @@ nrow(covar_no_cancer_reg) ## 15302
 r_no_cancer_reg=run_PGRM_assoc(geno=geno_no_cancer_reg, pheno=pheno_no_cancer_reg,demos=covar_no_cancer_reg,covariates = c('last_age','sex','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8'),
                                PGRM=PGRM, MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,LOUD=TRUE,check_sex = TRUE)
 r_no_cancer_reg=annotate_results(r_no_cancer_reg,ancestry="EUR",build="hg19",calculate_power = TRUE)
-get_RR(r_no_cancer_reg) ## Replicated 143 of 213 for RR=67.1%
-get_AER(r_no_cancer_reg) ## Expected 787.9, replicated 586 for AE=0.744 (2885 associations for 75 uniq phecodes)
+get_RR(r_no_cancer_reg) ## Replicated 103 of 174 for RR=59.2%
+get_AER(r_no_cancer_reg) ## Expected 694.8, replicated 479 for AE=0.689 (2766 associations for 72 uniq phecodes)
 
 write.table(r_no_cancer_reg,file="anno_BioVU_EUR_no_cancer_reg.csv",row.names = F, col.names = T)
 

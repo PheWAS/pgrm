@@ -330,7 +330,6 @@ get_pheno = function(pheno, demos ,phecode,MCC=2,use_exclude_ranges=TRUE,check_s
 
   if(check_sex==TRUE){
     phecode_sex = sex_check_phecode(cur_phecode)
-    print(paste("phecode sex: ",phecode_sex ))
     if(phecode_sex %in% c("F","M")){
       p[sex!=phecode_sex]$pheno=NA
     }
