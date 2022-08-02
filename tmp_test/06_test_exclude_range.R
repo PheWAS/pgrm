@@ -52,50 +52,14 @@ pheno=data.table(pheno,key="person_id")
 
 foo=annotate_results(results_BioVU_EUR,ancestry="EUR")
 PGRM=PGRM[!assoc_ID %in% foo[cohort_match==1]$assoc_ID]
+get_RR(foo)
 
-#PGRM=head(PGRM,n=20)
+r_no_exclude=run_PGRM_assoc(geno=geno, pheno=pheno,demos=covar,covariates = c('last_age','sex','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8'),
+                 PGRM=PGRM, MCC=2,minimum_case_count=100,use_exclude_ranges=FALSE,LOUD=TRUE,check_sex = TRUE)
+r_no_exclude=annotate_results(r_no_exclude,ancestry="EUR",build="hg19",calculate_power = TRUE)
+get_RR(r_no_exclude) ## Replicated 644 of 859 for RR=75.0%
+get_AER(r_no_exclude) ## Expected 1686.8, replicated 1331 for AE=0.789 (3268 associations for 106 uniq phecodes)
 
+write.table(r_no_exclude,file="anno_BioVU_EUR_no_exclude.csv",row.names = F, col.names = T)
 
-run_rand_assoc = function(rand_frac){
-  ID_map = data.table(sample(covar$person_id))
-  names(ID_map)[1]="person_id"
-  ID_len=nrow(ID_map)
-  ID_map$person_id_rand = ID_map$person_id
-  ID_map[1:round(ID_len*rand_frac,0),]$person_id_rand=sample(ID_map[1:round(ID_len*rand_frac,0),]$person_id_rand)
-  nrow(ID_map[person_id != person_id_rand])
-  nrow(ID_map)
-  setkeyv(ID_map, c('person_id'))
-
-  c = merge(covar, ID_map,by="person_id")
-  c$person_id=c$person_id_rand
-
-  p = merge(pheno, ID_map,by="person_id")
-  p$person_id=p$person_id_rand
-  p=p[,1:3]
-
-  r=run_PGRM_assoc(geno=geno, pheno=p,demos=c,covariates = c('last_age','sex','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8'),
-                 PGRM=PGRM, MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,LOUD=TRUE,check_sex = TRUE)
-  r=annotate_results(r,ancestry="EUR",build="hg19",calculate_power = TRUE)
-  return(r)
-}
-
-
-#r000=run_rand_assoc(rand_frac=0)
-#get_RR(r000[!assoc_ID %in% foo[cohort_match==1]$assoc_ID])
-
-r100=run_rand_assoc(rand_frac=1.0)
-get_RR(r100)
-
-r075=run_rand_assoc(rand_frac=0.75)
-get_RR(r075)
-
-
-
-r050=run_rand_assoc(rand_frac=0.50)
-get_RR(r050)
-
-
-r025=run_rand_assoc(rand_frac=0.25)
-get_RR(r025)
-get_AER(r025)
 
