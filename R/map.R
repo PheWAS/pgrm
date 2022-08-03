@@ -30,12 +30,12 @@
 #' * `cases_needed_AMR`: Numeric value  of the estimated cases needed at 80% power for Latino/Admixed American ancestry cohort
 #' * `cases_needed_SAS`: Numeric value  of the estimated cases needed at 80% power for South Asian ancestry cohort
 #' * `cases_needed_ALL`: Numeric value  of the estimated cases needed at 80% power for multi-ancestry cohort
-#' * `AFR_freq`: Numeric value of the African ancestry allele frequency from gnomAD
-#' * `EUR_freq`: Numeric value of the European (non-Finnish) ancestry allele frequency from gnomAD
-#' * `EAS_freq`: Numeric value of the East Asian ancestry allele frequency from gnomAD
-#' * `AMR_freq`: Numeric value of the Latino/Admixed American ancestry allele frequency from gnomAD
-#' * `SAS_freq`: Numeric value of the South Asian ancestry allele frequency from gnomAD
-#' * `ALL_freq`: Numeric value of the allele frequency from gnomAD
+#' * `AFR_RAF`: Numeric value of the African ancestry risk allele frequency from gnomAD
+#' * `EUR_RAF`: Numeric value of the European (non-Finnish) ancestry risk allele frequency from gnomAD
+#' * `EAS_RAF`: Numeric value of the East Asian ancestry risk allele frequency from gnomAD
+#' * `AMR_RAF`: Numeric value of the Latino/Admixed American ancestry risk allele frequency from gnomAD
+#' * `SAS_RAF`: Numeric value of the South Asian ancestry risk allele frequency from gnomAD
+#' * `ALL_RAF`: Numeric value of the risk allele frequency from gnomAD
 #'
 #' @details The odds ratio and 95% confidence intervals (columns cat_OR, cat_L95,
 #' and cat_U95) are reported relative to the risk allele which is specified in the
@@ -200,7 +200,7 @@
 #' * `rsID`: Character indicating the Reference SNP cluster ID
 #' * `risk_allele_dir`: Character indicating the specifying the risk allele direction
 #'   (**alt**: Alternate allele, **ref**: Reference allele)
-#' * `AF`: GnomAD frequency of risk allele, matched to ancestry
+#' * `RAF`: GnomAD frequency of risk allele, matched to ancestry
 #' * `cat_LOG10_P`: Numeric vector of the -log10(P) of the association from the catalog
 #' * `cat_OR`: Numeric vector of the odds ratio of the association
 #' * `cat_L95`: Numeric vector of the 95% lower confidence interval of the association

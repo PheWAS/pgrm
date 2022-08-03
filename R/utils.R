@@ -43,7 +43,7 @@ checkR2 = function(R2) {
 
 checkAnnotatedResults = function(annotated_results, include) {
   assertDataFrame(annotated_results)
-  assertNames(names(annotated_results), must.include = c('SNP', 'phecode', 'rep'))
+  assertNames(names(annotated_results), must.include = c( 'assoc_ID', 'rep'))
   if (include == 'powered') {
     assertNames(names(annotated_results), must.include = c('powered'))}
   invisible()}
@@ -51,7 +51,7 @@ checkAnnotatedResults = function(annotated_results, include) {
 
 checkAnnotatedResults_forAE = function(annotated_results) {
   assertDataFrame(annotated_results)
-  assertNames(names(annotated_results), must.include = c('SNP', 'phecode', 'rep', 'Power'))
+  assertNames(names(annotated_results), must.include = c('assoc_ID', 'rep', 'Power'))
   invisible()}
 
 checkPhecodeTable = function(phecode_table) {
@@ -90,7 +90,9 @@ checkCovarList = function(covariate_list,demos_table) {
   }
   invisible()}
 
-annotate_power = function(annotated_results, LOUD = FALSE,max_thresh=40) {
+
+
+annotate_power = function(annotated_results, LOUD = FALSE,max_thresh=50) {
   Power = NULL
 
   annotated_results[, Power := as.numeric(NA)]
@@ -103,11 +105,8 @@ annotate_power = function(annotated_results, LOUD = FALSE,max_thresh=40) {
 
     annotated_results_tmp = annotated_results[i]
 
-    odds_ratio = annotated_results_tmp$cat_OR
-    AF = annotated_results_tmp$AF
-    ## change AF to risk allele
-    if (annotated_results_tmp$risk_allele_dir == 'ref') {
-      AF = 1 - AF}
+    odds_ratio = annotated_results_tmp$cat_L95
+    AF = annotated_results_tmp$RAF
     ## flip AF and OR to minor allele
     if (AF > 0.5) {
       AF = 1 - AF

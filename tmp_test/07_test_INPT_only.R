@@ -59,3 +59,26 @@ get_RR(r_inpt_only) ## Replicated 286 of 375 for RR=76.3%
 get_AER(r_inpt_only) ## Expected 1014, replicated 828 for AE=0.817 (2805 associations for 71 uniq phecodes)
 
 write.table(r_inpt_only,file="anno_BioVU_EUR_INPT_only.csv",row.names = F, col.names = T)
+
+
+#######
+
+r_inpt_only=fread(file="anno_BioVU_EUR_INPT_only.csv",header=T,colClasses = list(character = 'phecode'))
+
+r_inpt_only=r_inpt_only[,c('SNP','phecode','cases','controls','P','odds_ratio','L95','U95')]
+
+r_inpt_only=annotate_results(r_inpt_only,ancestry="EUR",build="hg19",calculate_power = TRUE)
+nrow(r_inpt_only)
+get_RR(r_inpt_only,include="all") ##
+get_powered_rate(r_inpt_only)
+get_RR(r_inpt_only,include="powered") ##
+get_AER(r_inpt_only) ##
+r_inpt_only[is.na(Power)]
+
+prop.table(table(r_inpt_only$CI_overlap))
+
+t.test(r_inpt_only$cat_OR,r_inpt_only$rOR,paired=T) ## mean diff 0.08509277
+t.test(r_inpt_only[rep==1]$cat_OR,r_inpt_only[rep==1]$rOR,paired=T) ## mean diff 0.06459039
+
+
+compare_annotated_results(benchmark_results[cohort=="BioVU_EUR"],r_inpt_only)

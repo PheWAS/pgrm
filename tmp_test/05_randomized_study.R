@@ -61,7 +61,7 @@ run_rand_assoc = function(rand_frac){
   names(ID_map)[1]="person_id"
   ID_len=nrow(ID_map)
   ID_map$person_id_rand = ID_map$person_id
-  ID_map[1:round(ID_len*rand_frac,0),]$person_id_rand=sample(ID_map[1:round(ID_len*rand_frac,0),]$person_id_rand)
+  ID_map[1:round(ID_len*rand_frac,0),]$person_id_rand=sample(ID_map[1:round(ID_len*rand_frac,0),]$person_id_rand,replace=F)
   nrow(ID_map[person_id != person_id_rand])
   nrow(ID_map)
   setkeyv(ID_map, c('person_id'))
@@ -84,18 +84,66 @@ run_rand_assoc = function(rand_frac){
 #get_RR(r000[!assoc_ID %in% foo[cohort_match==1]$assoc_ID])
 
 r100=run_rand_assoc(rand_frac=1.0)
-get_RR(r100)
+write.table(r100,file="tmp_test/OUT/r100.csv",row.names = F, col.names = T)
+
 
 r075=run_rand_assoc(rand_frac=0.75)
-get_RR(r075)
+write.table(r075,file="tmp_test/OUT/r075.csv",row.names = F, col.names = T)
 
 
 
 r050=run_rand_assoc(rand_frac=0.50)
-get_RR(r050)
+write.table(r050,file="tmp_test/OUT/r050.csv",row.names = F, col.names = T)
 
 
 r025=run_rand_assoc(rand_frac=0.25)
+write.table(r025,file="tmp_test/OUT/r025.csv",row.names = F, col.names = T)
+
+
+r000=run_rand_assoc(rand_frac=0)
+write.table(r000,file="tmp_test/OUT/r000.csv",row.names = F, col.names = T)
+
+
+r010=run_rand_assoc(rand_frac=0.10)
+write.table(r010,file="tmp_test/OUT/r010.csv",row.names = F, col.names = T)
+
+
+r020=run_rand_assoc(rand_frac=0.20)
+write.table(r020,file="tmp_test/OUT/r020.csv",row.names = F, col.names = T)
+
+
+r030=run_rand_assoc(rand_frac=0.30)
+write.table(r030,file="tmp_test/OUT/r030.csv",row.names = F, col.names = T)
+
+
+r040=run_rand_assoc(rand_frac=0.40)
+write.table(r040,file="tmp_test/OUT/r040.csv",row.names = F, col.names = T)
+
+
+
+get_RR(r100)
+get_AER(r100)
+
+get_RR(r075)
+get_AER(r075)
+
+get_RR(r050)
+get_AER(r050)
+
 get_RR(r025)
 get_AER(r025)
 
+get_RR(r000)
+get_AER(r000)
+
+get_RR(r010)
+get_AER(r010)
+
+get_RR(r020)
+get_AER(r020)
+
+get_RR(r030)
+get_AER(r030)
+
+get_RR(r040)
+get_AER(r040)

@@ -25,12 +25,19 @@ PGRM_ALL$first_pub_date=as.Date(PGRM_ALL$first_pub_date)
 nrow(PGRM_ALL)
 head(PGRM_ALL)
 ncol(PGRM_ALL)
+PGRM_ALL[risk_allele_dir=="ref"]$AFR_RAF=1-PGRM_ALL[risk_allele_dir=="ref"]$AFR_RAF
+PGRM_ALL[risk_allele_dir=="ref"]$EUR_RAF=1-PGRM_ALL[risk_allele_dir=="ref"]$EUR_RAF
+PGRM_ALL[risk_allele_dir=="ref"]$EAS_RAF=1-PGRM_ALL[risk_allele_dir=="ref"]$EAS_RAF
+PGRM_ALL[risk_allele_dir=="ref"]$AMR_RAF=1-PGRM_ALL[risk_allele_dir=="ref"]$AMR_RAF
+PGRM_ALL[risk_allele_dir=="ref"]$SAS_RAF=1-PGRM_ALL[risk_allele_dir=="ref"]$SAS_RAF
+PGRM_ALL[risk_allele_dir=="ref"]$ALL_RAF=1-PGRM_ALL[risk_allele_dir=="ref"]$ALL_RAF
+head(PGRM_ALL)
 
 setcolorder(PGRM_ALL, c('assoc_ID', 'SNP_hg19', 'SNP_hg38','rsID', 'risk_allele_dir','risk_allele',
                   'phecode','phecode_string','category_string','ancestry',
                   'cat_LOG10_P','cat_OR','cat_L95','cat_U95','Study_accession','pubmedid','pub_count','first_pub_date',
                   'cases_needed_AFR','cases_needed_EAS','cases_needed_EUR','cases_needed_AMR','cases_needed_SAS','cases_needed_ALL',
-                  'AFR_freq','EUR_freq','EAS_freq','AMR_freq','SAS_freq','ALL_freq'))
+                  'AFR_RAF','EUR_RAF','EAS_RAF','AMR_RAF','SAS_RAF','ALL_RAF'))
 
 head(PGRM_ALL)
 

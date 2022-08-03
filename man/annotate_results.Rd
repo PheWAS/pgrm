@@ -61,7 +61,7 @@ the result set must be oriented to the alternative allele.)
 The function returns a data.table with the following annotations:
 \itemize{
 \item Phecode informtion, including phecode_string and phecode_category
-\item Allele frequencies from GnomAD (column AF), ancestry specified by the ancestry argument
+\item Risk allele frequency from GnomAD (column RAF), ancestry specified by the ancestry argument
 \item The rsID
 \item The direction of effect (ref or alt) and risk allele of the original association
 \item Summary statistics from the GWAS catalog association, including the -log10(P),

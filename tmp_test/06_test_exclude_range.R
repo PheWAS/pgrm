@@ -62,4 +62,24 @@ get_AER(r_no_exclude) ## Expected 1686.8, replicated 1331 for AE=0.789 (3268 ass
 
 write.table(r_no_exclude,file="anno_BioVU_EUR_no_exclude.csv",row.names = F, col.names = T)
 
+####
+
+r_no_exclude=fread(file="anno_BioVU_EUR_no_exclude.csv",header=T,colClasses = list(character = 'phecode'))
+
+r_no_exclude=r_no_exclude[,c('SNP','phecode','cases','controls','P','odds_ratio','L95','U95')]
+
+r_no_exclude=annotate_results(r_no_exclude,ancestry="EUR",build="hg19",calculate_power = TRUE)
+nrow(r_no_exclude)
+get_RR(r_no_exclude,include="all") ##
+get_powered_rate(r_no_exclude)
+get_RR(r_no_exclude,include="powered") ##
+get_AER(r_no_exclude) ##
+r_no_exclude[is.na(Power)]
+
+prop.table(table(r_no_exclude$CI_overlap))
+
+#t.test(r_inpt_only$cat_OR,r_inpt_only$rOR,paired=T) ## mean diff 0.08509277
+#t.test(r_inpt_only[rep==1]$cat_OR,r_inpt_only[rep==1]$rOR,paired=T) ## mean diff 0.06459039
+
+compare_annotated_results(benchmark_results[cohort=="BioVU_EUR"],r_no_exclude)
 

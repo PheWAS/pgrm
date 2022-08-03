@@ -33,12 +33,12 @@ Genomes superpopulations ancestry groupings (\strong{AFR}: African, \strong{EAS}
 \item \code{cases_needed_AMR}: Numeric value  of the estimated cases needed at 80\% power for Latino/Admixed American ancestry cohort
 \item \code{cases_needed_SAS}: Numeric value  of the estimated cases needed at 80\% power for South Asian ancestry cohort
 \item \code{cases_needed_ALL}: Numeric value  of the estimated cases needed at 80\% power for multi-ancestry cohort
-\item \code{AFR_freq}: Numeric value of the African ancestry allele frequency from gnomAD
-\item \code{EUR_freq}: Numeric value of the European (non-Finnish) ancestry allele frequency from gnomAD
-\item \code{EAS_freq}: Numeric value of the East Asian ancestry allele frequency from gnomAD
-\item \code{AMR_freq}: Numeric value of the Latino/Admixed American ancestry allele frequency from gnomAD
-\item \code{SAS_freq}: Numeric value of the South Asian ancestry allele frequency from gnomAD
-\item \code{ALL_freq}: Numeric value of the allele frequency from gnomAD
+\item \code{AFR_RAF}: Numeric value of the African ancestry risk allele frequency from gnomAD
+\item \code{EUR_RAF}: Numeric value of the European (non-Finnish) ancestry risk allele frequency from gnomAD
+\item \code{EAS_RAF}: Numeric value of the East Asian ancestry risk allele frequency from gnomAD
+\item \code{AMR_RAF}: Numeric value of the Latino/Admixed American ancestry risk allele frequency from gnomAD
+\item \code{SAS_RAF}: Numeric value of the South Asian ancestry risk allele frequency from gnomAD
+\item \code{ALL_RAF}: Numeric value of the risk allele frequency from gnomAD
 }
 }
 \source{

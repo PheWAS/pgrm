@@ -23,7 +23,7 @@ Genomes superpopulations ancestry groupings (\strong{AFR}: African, \strong{EAS}
 \item \code{rsID}: Character indicating the Reference SNP cluster ID
 \item \code{risk_allele_dir}: Character indicating the specifying the risk allele direction
 (\strong{alt}: Alternate allele, \strong{ref}: Reference allele)
-\item \code{AF}: GnomAD frequency of risk allele, matched to ancestry
+\item \code{RAF}: GnomAD frequency of risk allele, matched to ancestry
 \item \code{cat_LOG10_P}: Numeric vector of the -log10(P) of the association from the catalog
 \item \code{cat_OR}: Numeric vector of the odds ratio of the association
 \item \code{cat_L95}: Numeric vector of the 95\% lower confidence interval of the association

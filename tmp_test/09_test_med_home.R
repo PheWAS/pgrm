@@ -86,20 +86,18 @@ get_AER(r_med_home) ## Expected 1525, replicated 1205 for AE=0.79 (3255 associat
 
 write.table(r_med_home,file="anno_BioVU_EUR_med_home2.csv",row.names = F, col.names = T)
 
-r=annotate_results(results_BioVU_EUR[cohort_match ==0],ancestry="EUR",build="hg19",calculate_power = TRUE)
-get_RR(r) ##
-get_AER(r) ##
 
-r[!assoc_ID %in% r_med_home$assoc_ID]
-r_med_home[!assoc_ID %in% r$assoc_ID]
+#####
+
+r_med_home=fread(file="anno_BioVU_EUR_med_home2.csv",header=T,colClasses = list(character = 'phecode'))
 
 
-get_RR(r_med_home[Power==1])
-get_RR(r[Power==1])
+r_cancer_only=r_cancer_only[,c('SNP','phecode','cases','controls','P','odds_ratio','L95','U95')]
+r_no_cancer=r_no_cancer[,c('SNP','phecode','cases','controls','P','odds_ratio','L95','U95')]
+r_cancer_only=annotate_results(r_cancer_only,ancestry="EUR",build="hg19",calculate_power = TRUE)
+r_no_cancer=annotate_results(r_no_cancer,ancestry="EUR",build="hg19",calculate_power = TRUE)
+get_RR(r_cancer_only)
+get_RR(r_no_cancer)
 
-prop.table(table(r[rep==1]$CI_overlap))
-prop.table(table(r_med_home[rep==1]$CI_overlap))
 
-get_AER(r[assoc_ID %in% r_med_home$assoc_ID])
-
-cor(r_med_home$Power,r_med_home$rep)
+compare_annotated_results(benchmark_results[cohort=="BioVU_EUR"],r_cancer_only)

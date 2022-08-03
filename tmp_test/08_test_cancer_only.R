@@ -91,3 +91,19 @@ get_AER(r_no_cancer_reg) ## Expected 694.8, replicated 479 for AE=0.689 (2766 as
 
 write.table(r_no_cancer_reg,file="anno_BioVU_EUR_no_cancer_reg.csv",row.names = F, col.names = T)
 
+#####
+
+r_cancer_only=fread(file="anno_BioVU_EUR_cancer_reg.csv",header=T,colClasses = list(character = 'phecode'))
+r_no_cancer=fread(file="anno_BioVU_EUR_no_cancer_reg.csv",header=T,colClasses = list(character = 'phecode'))
+
+r_cancer_only=r_cancer_only[,c('SNP','phecode','cases','controls','P','odds_ratio','L95','U95')]
+r_no_cancer=r_no_cancer[,c('SNP','phecode','cases','controls','P','odds_ratio','L95','U95')]
+r_cancer_only=annotate_results(r_cancer_only,ancestry="EUR",build="hg19",calculate_power = TRUE)
+r_no_cancer=annotate_results(r_no_cancer,ancestry="EUR",build="hg19",calculate_power = TRUE)
+get_RR(r_cancer_only)
+get_RR(r_no_cancer)
+
+
+compare_annotated_results(benchmark_results[cohort=="BioVU_EUR"],r_cancer_only)
+
+compare_annotated_results(benchmark_results[cohort=="BioVU_EUR"],r_no_cancer)
