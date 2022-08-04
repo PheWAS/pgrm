@@ -4,7 +4,7 @@
 \alias{get_powered_rate}
 \title{Calculate the percent of associations that are powered in a test set}
 \usage{
-get_powered_rate(annotated_results, LOUD = TRUE)
+get_powered_rate(annotated_results, include_missing_pheno = TRUE, LOUD = TRUE)
 }
 \arguments{
 \item{annotated_results}{A data table of results that have been annotated with the PGRM}

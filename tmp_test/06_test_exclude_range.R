@@ -54,6 +54,8 @@ foo=annotate_results(results_BioVU_EUR,ancestry="EUR")
 PGRM=PGRM[!assoc_ID %in% foo[cohort_match==1]$assoc_ID]
 get_RR(foo)
 
+
+
 r_no_exclude=run_PGRM_assoc(geno=geno, pheno=pheno,demos=covar,covariates = c('last_age','sex','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8'),
                  PGRM=PGRM, MCC=2,minimum_case_count=100,use_exclude_ranges=FALSE,LOUD=TRUE,check_sex = TRUE)
 r_no_exclude=annotate_results(r_no_exclude,ancestry="EUR",build="hg19",calculate_power = TRUE)

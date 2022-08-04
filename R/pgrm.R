@@ -272,7 +272,14 @@ get_powered_rate = function(annotated_results, include_missing_pheno=TRUE,LOUD =
   return(powered_rate)}
 
 
-#' Define a phenotype from an ICD file and list of person_id
+#' Compare two annotated result sets
+#'
+#' @param results1 A data.table of results that have been annotated with the PGRM
+#' @param results2 A data.table of results that have been annotated with the PGRM
+#'
+#' @return foobar
+#'
+#' @export
 #'
 #' @param pheno A data.table of phecode phenotypes. Must have columns `person_id` and `phecode`, as
 #'   well as `N` which specifies the number of times the phecode occurred for that person_id
@@ -292,7 +299,6 @@ get_powered_rate = function(annotated_results, include_missing_pheno=TRUE,LOUD =
 #'   prevalence.
 #'
 #' @export
-
 
 compare_annotated_results = function(results1, results2){
   summary=data.table()

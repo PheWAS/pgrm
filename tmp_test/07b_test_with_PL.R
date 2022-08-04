@@ -4,7 +4,7 @@ library(pgrm)
 library(glue)
 geno_file="~/Dropbox (VUMC)/PGRM/code/data/PGRM_MEGA4_Eur_adult_V1"
 covar_file = "~/Dropbox (VUMC)/PGRM/code/data/covariates_MEGA4_EUR.csv"
-pheno_file = "~/Dropbox (VUMC)/PGRM/code/data/phecodes_V1_2_UP_I.csv"
+pheno_file = "~/Dropbox (VUMC)/PGRM/code/data/phecodes_V1_2_UP_plus_PL.csv"
 
 set.seed(4)
 
@@ -52,13 +52,13 @@ foo=annotate_results(results_BioVU_EUR,ancestry="EUR")
 PGRM=PGRM[!assoc_ID %in% foo[cohort_match==1]$assoc_ID]
 get_RR(foo)
 
-r_inpt_only=run_PGRM_assoc(geno=geno, pheno=pheno,demos=covar,covariates = c('last_age','sex','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8'),
+r_with_PL=run_PGRM_assoc(geno=geno, pheno=pheno,demos=covar,covariates = c('last_age','sex','PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8'),
                  PGRM=PGRM, MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,LOUD=TRUE,check_sex = TRUE)
-r_inpt_only=annotate_results(r_inpt_only,ancestry="EUR",build="hg19",calculate_power = TRUE)
-get_RR(r_inpt_only) ## Replicated 286 of 375 for RR=76.3%
-get_AER(r_inpt_only) ## Expected 1014, replicated 828 for AE=0.817 (2805 associations for 71 uniq phecodes)
-
-write.table(r_inpt_only,file="anno_BioVU_EUR_INPT_only.csv",row.names = F, col.names = T)
+r_with_PL=annotate_results(r_with_PL,ancestry="EUR",build="hg19",calculate_power = TRUE)
+get_RR(r_with_PL) ## Replicated 286 of 375 for RR=76.3%
+get_AER(r_with_PL) ## Expected 1014, replicated 828 for AE=0.817 (2805 associations for 71 uniq phecodes)
+get_powered_rate(r_with_PL)
+write.table(r_with_PL,file="anno_BioVU_EUR_with_PL.csv",row.names = F, col.names = T)
 
 
 #######
@@ -82,3 +82,33 @@ t.test(r_inpt_only[rep==1]$cat_OR,r_inpt_only[rep==1]$rOR,paired=T) ## mean diff
 
 
 compare_annotated_results(benchmark_results[cohort=="BioVU_EUR"],r_inpt_only)
+
+
+r_inpt_only
+
+table(benchmark_results$cohort)
+orig=benchmark_results[cohort=="BioVU_EUR"]
+
+m        = c(mean(orig$rOR), mean(r_inpt_only$rOR),mean(r_no_exclude$rOR))
+names(m) = c("Standard", "Inpatient only","no exclude")
+se       = c(sd(orig$rOR)/sqrt(length(orig$rOR)),
+                 sd(r_inpt_only$rOR)/sqrt(length(r_inpt_only$rOR)),
+                 sd(r_no_exclude$rOR)/sqrt(length(r_no_exclude$rOR)))
+
+bp= barplot(m, ylim=c(1,1.1), xpd=FALSE)
+box()
+arrows(x0=bp, y0=m-se, y1=m+se, code=3, angle=90)
+bp
+m
+
+m        = c(mean(orig$rep), mean(r_inpt_only$rep),mean(r_no_exclude$rep))
+names(m) = c("Standard", "Inpatient only","no exclude")
+se       = c(sd(orig$rep)/sqrt(length(orig$rep)),
+             sd(r_inpt_only$rep)/sqrt(length(r_inpt_only$rep)),
+             sd(r_no_exclude$rep)/sqrt(length(r_no_exclude$rep)))
+
+bp= barplot(m, ylim=c(0,1), xpd=FALSE)
+box()
+arrows(x0=bp, y0=m-se, y1=m+se, code=3, angle=90)
+bp
+m
