@@ -73,22 +73,27 @@ for(i in 1:8){
   r_MCC=rbind(r_MCC,r)
   #write.table(r,file=outfile,row.names = F, col.names = T)
 }
-MCC_summary=data.table(MCC=1, RR=get_RR(r_MCC[MCC==1]), RR_all=get_RR(r_MCC[MCC==1], include="all"), Power=get_powered_rate(r_MCC[MCC==1]),AER=get_AER(r_MCC[MCC==1]))
-MCC_summary=rbind(MCC_summary,data.table(MCC=2, RR=get_RR(r_MCC[MCC==2]), RR_all=get_RR(r_MCC[MCC==2], include="all"), Power=get_powered_rate(r_MCC[MCC==2]), AER=get_AER(r_MCC[MCC==2])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=3, RR=get_RR(r_MCC[MCC==3]), RR_all=get_RR(r_MCC[MCC==3], include="all"), Power=get_powered_rate(r_MCC[MCC==3]),AER=get_AER(r_MCC[MCC==3])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=4, RR=get_RR(r_MCC[MCC==4]), RR_all=get_RR(r_MCC[MCC==4], include="all"), Power=get_powered_rate(r_MCC[MCC==4]),AER=get_AER(r_MCC[MCC==4])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=5, RR=get_RR(r_MCC[MCC==5]), RR_all=get_RR(r_MCC[MCC==5], include="all"), Power=get_powered_rate(r_MCC[MCC==5]),AER=get_AER(r_MCC[MCC==5])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=6, RR=get_RR(r_MCC[MCC==6]), RR_all=get_RR(r_MCC[MCC==6], include="all"), Power=get_powered_rate(r_MCC[MCC==6]),AER=get_AER(r_MCC[MCC==6])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=7, RR=get_RR(r_MCC[MCC==7]), RR_all=get_RR(r_MCC[MCC==7], include="all"), Power=get_powered_rate(r_MCC[MCC==7]),AER=get_AER(r_MCC[MCC==7])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=8, RR=get_RR(r_MCC[MCC==8]), RR_all=get_RR(r_MCC[MCC==8], include="all"), Power=get_powered_rate(r_MCC[MCC==8]),AER=get_AER(r_MCC[MCC==8])))
+MCC_summary=data.table(MCC=1, RR=get_RR(r_MCC[MCC==1]), RR_all=get_RR(r_MCC[MCC==1], include="all"),nPower=sum(r_MCC[MCC==1]$powered), Power=get_powered_rate(r_MCC[MCC==1]),AER=get_AER(r_MCC[MCC==1]))
+MCC_summary=rbind(MCC_summary,data.table(MCC=2, RR=get_RR(r_MCC[MCC==2]), RR_all=get_RR(r_MCC[MCC==2], include="all"), nPower=sum(r_MCC[MCC==2]$powered), Power=get_powered_rate(r_MCC[MCC==2]), AER=get_AER(r_MCC[MCC==2])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=3, RR=get_RR(r_MCC[MCC==3]), RR_all=get_RR(r_MCC[MCC==3], include="all"), nPower=sum(r_MCC[MCC==3]$powered),Power=get_powered_rate(r_MCC[MCC==3]),AER=get_AER(r_MCC[MCC==3])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=4, RR=get_RR(r_MCC[MCC==4]), RR_all=get_RR(r_MCC[MCC==4], include="all"), nPower=sum(r_MCC[MCC==4]$powered),Power=get_powered_rate(r_MCC[MCC==4]),AER=get_AER(r_MCC[MCC==4])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=5, RR=get_RR(r_MCC[MCC==5]), RR_all=get_RR(r_MCC[MCC==5], include="all"), nPower=sum(r_MCC[MCC==5]$powered),Power=get_powered_rate(r_MCC[MCC==5]),AER=get_AER(r_MCC[MCC==5])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=6, RR=get_RR(r_MCC[MCC==6]), RR_all=get_RR(r_MCC[MCC==6], include="all"), nPower=sum(r_MCC[MCC==6]$powered),Power=get_powered_rate(r_MCC[MCC==6]),AER=get_AER(r_MCC[MCC==6])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=7, RR=get_RR(r_MCC[MCC==7]), RR_all=get_RR(r_MCC[MCC==7], include="all"), nPower=sum(r_MCC[MCC==7]$powered),Power=get_powered_rate(r_MCC[MCC==7]),AER=get_AER(r_MCC[MCC==7])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=8, RR=get_RR(r_MCC[MCC==8]), RR_all=get_RR(r_MCC[MCC==8], include="all"), nPower=sum(r_MCC[MCC==8]$powered),Power=get_powered_rate(r_MCC[MCC==8]),AER=get_AER(r_MCC[MCC==8])))
 #MCC_summary$MCC=as.factor(MCC_summary$MCC)
 
-RR_plot=ggplot(MCC_summary)+geom_point(aes(x=MCC, y=RR),stat="identity",size=2.8,color="red")+geom_line(aes(x=MCC, y=RR),linetype = "dashed",color="red")+
-  geom_point(aes(x=MCC,y=RR_all),size=2.8,stat="identity",color="blue")+geom_line(aes(x=MCC,y=RR_all),linetype = "dashed")+
-  scale_y_continuous(labels = scales::percent,n.breaks=10)+theme_classic()+
+#scale_y_continuous(labels = scales::percent,n.breaks=10,name = expression(RR[Power]*""),sec.axis = sec_axis( trans=~.*10000, name="Second Axis"))+
+RR_plot=ggplot()+geom_bar(data=MCC_summary,aes(x=MCC,y=nPower),stat="identity")+
+  geom_point(data=MCC_summary,aes(x=MCC, y=RR*100),stat="identity",size=2.8,color="red")+
+  scale_y_continuous(name = "Powered associations",sec.axis = sec_axis(~ .*100,name= expression(RR[Power]*"")))+
+  theme_classic()+
   scale_x_continuous(n.breaks=8)+
-  labs(x="Minimum code count",y="Replication rate")
+  labs(x="Minimum code count")
 RR_plot
+#geom_point(aes(x=MCC,y=RR_all),size=2.8,stat="identity",color="blue")+geom_line(aes(x=MCC,y=RR_all),linetype = "dashed")+
+
++geom_line(aes(x=MCC, y=RR),linetype = "dashed",color="red")+
 
 #geom_point(aes(x=MCC,y=RR_all),size=2.8,stat="identity",color="blue")+geom_line(aes(x=MCC,y=RR_all),linetype = "dashed")+
 
