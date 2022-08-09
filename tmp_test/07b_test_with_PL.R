@@ -63,7 +63,7 @@ write.table(r_with_PL,file="anno_BioVU_EUR_with_PL.csv",row.names = F, col.names
 
 #######
 
-r_inpt_only=fread(file="anno_BioVU_EUR_INPT_only.csv",header=T,colClasses = list(character = 'phecode'))
+r_inpt_only=fread(file="anno_BioVU_EUR_with_PL.csv",header=T,colClasses = list(character = 'phecode'))
 
 r_inpt_only=r_inpt_only[,c('SNP','phecode','cases','controls','P','odds_ratio','L95','U95')]
 

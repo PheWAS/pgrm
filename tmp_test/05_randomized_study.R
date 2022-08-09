@@ -122,7 +122,7 @@ r040=run_rand_assoc(rand_frac=0.40)
 write.table(r040,file="tmp_test/OUT/r040.csv",row.names = F, col.names = T)
 
 r060=run_rand_assoc(rand_frac=0.60)
-write.table(r040,file="tmp_test/OUT/r060.csv",row.names = F, col.names = T)
+write.table(r060,file="tmp_test/OUT/r060.csv",row.names = F, col.names = T)
 
 r070=run_rand_assoc(rand_frac=0.70)
 write.table(r070,file="tmp_test/OUT/r070.csv",row.names = F, col.names = T)
@@ -132,6 +132,40 @@ write.table(r080,file="tmp_test/OUT/r080.csv",row.names = F, col.names = T)
 
 r090=run_rand_assoc(rand_frac=0.90)
 write.table(r090,file="tmp_test/OUT/r090.csv",row.names = F, col.names = T)
+
+rand=data.table()
+rand_list = c('000','010','020','030','040','050','060','070','080','090','100')
+for(i in 1:length(rand_list)){
+  cur_rand = rand_list[i]
+  infile=glue("~/Documents/GitHub/pgrm/tmp_test/OUT/r{cur_rand}.csv")
+  r=fread(infile)
+  r$rand= cur_rand
+  rand=rbind(rand,r)
+  #write.table(r,file=outfile,row.names = F, col.names = T)
+}
+
+infile=glue("~/Documents/GitHub/pgrm/tmp_test/OUT/r060.csv")
+tmp=fread(infile)
+get_RR(tmp)
+foo=rand[,.(associations_tested=.N, powered_associations=sum(powered), replicated_associations=sum(rep),
+        RR_all=sum(rep)/.N, RR_powered=sum(rep[powered==1])/sum(powered), AER=sum(rep)/sum(Power)),
+     by="rand"]
+foo
+write.table(foo,"~/Documents/GitHub/pgrm/tmp_test/OUT/rand_summary_for_supp.txt",sep="\t",row.names = F)
+
+
+compare_annotated_results(rand[rand=="000"],rand[rand=="010"])
+compare_annotated_results(rand[rand=="010"],rand[rand=="020"])
+compare_annotated_results(rand[rand=="020"],rand[rand=="030"])
+
+compare_annotated_results(rand[rand=="030"],rand[rand=="040"])
+compare_annotated_results(rand[rand=="040"],rand[rand=="050"])
+compare_annotated_results(rand[rand=="050"],rand[rand=="060"])
+
+compare_annotated_results(rand[rand=="060"],rand[rand=="070"])
+compare_annotated_results(rand[rand=="070"],rand[rand=="080"])
+compare_annotated_results(rand[rand=="080"],rand[rand=="090"])
+compare_annotated_results(rand[rand=="090"],rand[rand=="100"])
 
 
 rand_summary=data.table()

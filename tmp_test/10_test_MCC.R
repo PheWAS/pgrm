@@ -73,15 +73,92 @@ for(i in 1:8){
   r_MCC=rbind(r_MCC,r)
   #write.table(r,file=outfile,row.names = F, col.names = T)
 }
-MCC_summary=data.table(MCC=1, RR=get_RR(r_MCC[MCC==1]), RR_all=get_RR(r_MCC[MCC==1], include="all"),nPower=sum(r_MCC[MCC==1]$powered), Power=get_powered_rate(r_MCC[MCC==1]),AER=get_AER(r_MCC[MCC==1]))
-MCC_summary=rbind(MCC_summary,data.table(MCC=2, RR=get_RR(r_MCC[MCC==2]), RR_all=get_RR(r_MCC[MCC==2], include="all"), nPower=sum(r_MCC[MCC==2]$powered), Power=get_powered_rate(r_MCC[MCC==2]), AER=get_AER(r_MCC[MCC==2])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=3, RR=get_RR(r_MCC[MCC==3]), RR_all=get_RR(r_MCC[MCC==3], include="all"), nPower=sum(r_MCC[MCC==3]$powered),Power=get_powered_rate(r_MCC[MCC==3]),AER=get_AER(r_MCC[MCC==3])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=4, RR=get_RR(r_MCC[MCC==4]), RR_all=get_RR(r_MCC[MCC==4], include="all"), nPower=sum(r_MCC[MCC==4]$powered),Power=get_powered_rate(r_MCC[MCC==4]),AER=get_AER(r_MCC[MCC==4])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=5, RR=get_RR(r_MCC[MCC==5]), RR_all=get_RR(r_MCC[MCC==5], include="all"), nPower=sum(r_MCC[MCC==5]$powered),Power=get_powered_rate(r_MCC[MCC==5]),AER=get_AER(r_MCC[MCC==5])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=6, RR=get_RR(r_MCC[MCC==6]), RR_all=get_RR(r_MCC[MCC==6], include="all"), nPower=sum(r_MCC[MCC==6]$powered),Power=get_powered_rate(r_MCC[MCC==6]),AER=get_AER(r_MCC[MCC==6])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=7, RR=get_RR(r_MCC[MCC==7]), RR_all=get_RR(r_MCC[MCC==7], include="all"), nPower=sum(r_MCC[MCC==7]$powered),Power=get_powered_rate(r_MCC[MCC==7]),AER=get_AER(r_MCC[MCC==7])))
-MCC_summary=rbind(MCC_summary,data.table(MCC=8, RR=get_RR(r_MCC[MCC==8]), RR_all=get_RR(r_MCC[MCC==8], include="all"), nPower=sum(r_MCC[MCC==8]$powered),Power=get_powered_rate(r_MCC[MCC==8]),AER=get_AER(r_MCC[MCC==8])))
+MCC_summary=data.table(MCC=1, RR=get_RR(r_MCC[MCC==1]), assoc_tested=.N,RR_all=get_RR(r_MCC[MCC==1], include="all"),nPower=sum(r_MCC[MCC==1]$powered), Power=get_powered_rate(r_MCC[MCC==1]),AER=get_AER(r_MCC[MCC==1]))
+MCC_summary=rbind(MCC_summary,data.table(MCC=2, assoc_tested=.N,RR=get_RR(r_MCC[MCC==2]), RR_all=get_RR(r_MCC[MCC==2], include="all"), nPower=sum(r_MCC[MCC==2]$powered), Power=get_powered_rate(r_MCC[MCC==2]), AER=get_AER(r_MCC[MCC==2])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=3, assoc_tested=.N,RR=get_RR(r_MCC[MCC==3]), RR_all=get_RR(r_MCC[MCC==3], include="all"), nPower=sum(r_MCC[MCC==3]$powered),Power=get_powered_rate(r_MCC[MCC==3]),AER=get_AER(r_MCC[MCC==3])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=4,assoc_tested=.N, RR=get_RR(r_MCC[MCC==4]), RR_all=get_RR(r_MCC[MCC==4], include="all"), nPower=sum(r_MCC[MCC==4]$powered),Power=get_powered_rate(r_MCC[MCC==4]),AER=get_AER(r_MCC[MCC==4])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=5, assoc_tested=.N,RR=get_RR(r_MCC[MCC==5]), RR_all=get_RR(r_MCC[MCC==5], include="all"), nPower=sum(r_MCC[MCC==5]$powered),Power=get_powered_rate(r_MCC[MCC==5]),AER=get_AER(r_MCC[MCC==5])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=6,assoc_tested=.N, RR=get_RR(r_MCC[MCC==6]), RR_all=get_RR(r_MCC[MCC==6], include="all"), nPower=sum(r_MCC[MCC==6]$powered),Power=get_powered_rate(r_MCC[MCC==6]),AER=get_AER(r_MCC[MCC==6])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=7, assoc_tested=.N,RR=get_RR(r_MCC[MCC==7]), RR_all=get_RR(r_MCC[MCC==7], include="all"), nPower=sum(r_MCC[MCC==7]$powered),Power=get_powered_rate(r_MCC[MCC==7]),AER=get_AER(r_MCC[MCC==7])))
+MCC_summary=rbind(MCC_summary,data.table(MCC=8, assoc_tested=.N,RR=get_RR(r_MCC[MCC==8]), RR_all=get_RR(r_MCC[MCC==8], include="all"), nPower=sum(r_MCC[MCC==8]$powered),Power=get_powered_rate(r_MCC[MCC==8]),AER=get_AER(r_MCC[MCC==8])))
+MCC_summary
 #MCC_summary$MCC=as.factor(MCC_summary$MCC)
+
+compare_annotated_results(r_MCC[MCC==1],r_MCC[MCC==2],include_all = F)
+compare_annotated_results(r_MCC[MCC==2],r_MCC[MCC==3],include_all = F)
+compare_annotated_results(r_MCC[MCC==3],r_MCC[MCC==4],include_all = F)
+compare_annotated_results(r_MCC[MCC==4],r_MCC[MCC==5],include_all = F)
+compare_annotated_results(r_MCC[MCC==5],r_MCC[MCC==6],include_all = F)
+compare_annotated_results(r_MCC[MCC==6],r_MCC[MCC==7],include_all = F)
+compare_annotated_results(r_MCC[MCC==7],r_MCC[MCC==8],include_all = F)
+
+compare_annotated_results(r_MCC[MCC==3],r_MCC[MCC==6],include_all = F)
+
+cat_strings= unique(r_MCC$category_string)
+i=0
+
+i=i+1
+print(cat_strings[i])
+
+compare_annotated_results(r_MCC[MCC==3 & category_string==cat_strings[i]],
+                          r_MCC[MCC==4 & category_string==cat_strings[i]])
+r_MCC$MCC_fac=as.factor(r_MCC$MCC)
+r_MCC$MCC_fac=relevel(r_MCC$MCC_fac,ref="1")
+m=glm(rep~MCC_fac:category_string,data=r_MCC[powered==1],family="binomial")
+summary(m)
+p=predict(m,newdata=data.frame(MCC_fac=rep(unique(r_MCC$MCC_fac),length(unique(r_MCC$category_string))),
+                               category_string=rep(unique(r_MCC$category_string),8)),type="response",se.fit=T)
+p=data.frame()
+cat_strings= unique(r_MCC$category_string)
+for(i in 1:length(cat_strings)){
+  pred=predict(m,newdata=data.frame(MCC_fac=unique(r_MCC$MCC_fac),category_string=rep(cat_strings[i],8)),type="response",se.fit=T)
+  pred=data.frame(pred)
+  pred$MCC=rownames(pred)
+  pred$cat = cat_strings[i]
+  head(pred)
+  p=rbind(p,pred)
+}
+p$MCC=as.numeric(p$MCC)
+library( ggrepel)
+ggplot(p,aes(x=MCC,y=fit,color=cat))+geom_point()+geom_line()+ geom_text_repel(
+  aes(label = cat), data = p,
+  fontface ="plain", color = "black", size = 3
+)
+
+r_MCC$MCC_fac=relevel(r_MCC$MCC_fac,ref="2")
+m=glm(rep~MCC_fac,data=r_MCC,family="binomial")
+summary(m)
+p=predict(m,newdata=data.frame(MCC_fac=unique(r_MCC$MCC_fac),category_string=rep('neoplasms',8)),type="response",se.fit=T)
+p
+foo=data.frame(p)
+foo$MCC=rownames(foo)
+plot_RR_ALL=ggplot(foo,aes(x=MCC,y=fit))+geom_point()+geom_errorbar(aes(x=MCC,ymin=fit-se.fit,ymax=fit+se.fit,width=0.4))+
+  theme_classic()+scale_y_continuous( limits=c(.30,.45),labels = scales::percent)+labs(x="Minimum code count",y=expression(RR[All]*""))
+plot_RR_ALL
+#p=predict(m,newdata=data.frame(MCC_fac=unique(r_MCC$MCC_fac),category_string=rep('sense organs',8)),type="response",se.fit=T)
+
+m=glm(rep~MCC_fac,data=r_MCC[powered==1],family="binomial")
+summary(m)
+p=predict(m,newdata=data.frame(MCC_fac=unique(r_MCC$MCC_fac),Power=rep(.8,8)),type="response",se.fit=T)
+p
+foo2=data.frame(p)
+foo2$MCC=rownames(foo2)
+plot_RR_power=ggplot(foo2,aes(x=MCC,y=fit))+geom_point()+geom_errorbar(aes(x=MCC,ymin=fit-se.fit,ymax=fit+se.fit,width=0.4))+
+  theme_classic()+scale_y_continuous( labels = scales::percent)+labs(x="Minimum code count",y=expression(RR[Powered]*""))
+plot_RR_power
+ggarrange(plot_RR_ALL,plot_RR_power,labels="AUTO")
+
+
+
+
+
+predict(m,newdata=data.frame(MCC_fac=unique(r_MCC$MCC_fac),category_string="sense organs"))
+
+library(effects)
+plot(allEffects(m))
+
+
+
 
 #scale_y_continuous(labels = scales::percent,n.breaks=10,name = expression(RR[Power]*""),sec.axis = sec_axis( trans=~.*10000, name="Second Axis"))+
 RR_plot=ggplot()+geom_bar(data=MCC_summary,aes(x=MCC,y=nPower),stat="identity")+

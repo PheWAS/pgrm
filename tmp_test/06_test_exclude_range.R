@@ -78,10 +78,19 @@ get_RR(r_no_exclude,include="powered") ##
 get_AER(r_no_exclude) ##
 r_no_exclude[is.na(Power)]
 
+
 prop.table(table(r_no_exclude$CI_overlap))
 
 #t.test(r_inpt_only$cat_OR,r_inpt_only$rOR,paired=T) ## mean diff 0.08509277
 #t.test(r_inpt_only[rep==1]$cat_OR,r_inpt_only[rep==1]$rOR,paired=T) ## mean diff 0.06459039
 
-compare_annotated_results(benchmark_results[cohort=="BioVU_EUR"],r_no_exclude)
 
+compare_annotated_results(r_no_exclude,benchmark_results[cohort=="BioVU_EUR"])
+table(r_no_exclude$category_string)
+cat_strings= unique(r_no_exclude$category_string)
+i=0
+
+i=i+1
+print(cat_strings[i])
+compare_annotated_results(r_no_exclude[category_string==cat_strings[i]],
+                          benchmark_results[cohort=="BioVU_EUR" & category_string==cat_strings[i],])

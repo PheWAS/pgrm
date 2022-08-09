@@ -308,12 +308,17 @@ compare_annotated_results = function(results1, results2){
                results2[,c('assoc_ID','odds_ratio','P','L95','U95','rep','powered','Power','rOR','rL95','rU95','dataset')])
   r_long=data.table(r_long)
   ## Compare RR all
-  m=glm(rep~dataset,data=r_long,family="binomial")
-  P=summary(m)$coeff['datasetresults2','Pr(>|z|)']
-  OR=exp(summary(m)$coeff['datasetresults2','Estimate'])
-  CIs=exp(confint.default(m))
-  L95=CIs['datasetresults2',1]
-  U95=CIs['datasetresults2',2]
+  #m=glm(rep~dataset,data=r_long,family="binomial")
+  #P=summary(m)$coeff['datasetresults2','Pr(>|z|)']
+  #OR=exp(summary(m)$coeff['datasetresults2','Estimate'])
+  #CIs=exp(confint.default(m))
+  #L95=CIs['datasetresults2',1]
+  #U95=CIs['datasetresults2',2]
+  f=fisher.test(table(r_long$rep,r_long$dataset))
+  P=f$p.value
+  L95=f$conf.int[1]
+  U95=f$conf.int[2]
+  OR=f$estimate
   print(glue('\n--------------------------------------'))
   print(glue('Replication rate (all) comparison'))
   RR_ALL_r1=get_RR(results1,include="all",LOUD=FALSE)
@@ -327,12 +332,17 @@ compare_annotated_results = function(results1, results2){
   print(glue('P-value {P}'))
 
   ## Compare Power
-  m=glm(powered~dataset,data=r_long,family="binomial")
-  P=summary(m)$coeff['datasetresults2','Pr(>|z|)']
-  OR=exp(summary(m)$coeff['datasetresults2','Estimate'])
-  CIs=exp(confint.default(m))
-  L95=CIs['datasetresults2',1]
-  U95=CIs['datasetresults2',2]
+  #m=glm(powered~dataset,data=r_long,family="binomial")
+  #P=summary(m)$coeff['datasetresults2','Pr(>|z|)']
+  #OR=exp(summary(m)$coeff['datasetresults2','Estimate'])
+  #CIs=exp(confint.default(m))
+  #L95=CIs['datasetresults2',1]
+  #U95=CIs['datasetresults2',2]
+  f=fisher.test(table(r_long[powered==1]$rep,r_long[powered==1]$dataset))
+  P=f$p.value
+  L95=f$conf.int[1]
+  U95=f$conf.int[2]
+  OR=f$estimate
   print(glue('\n--------------------------------------'))
   print(glue('Powered comparison'))
   Power_r1=get_powered_rate(results1,LOUD=FALSE)
