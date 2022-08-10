@@ -23,6 +23,9 @@ setcolorder(d, c('assoc_ID', 'rsID', 'risk_allele_dir',
                  'Study_accession','cat_LOG10_P','cat_OR','cat_L95','cat_U95','RAF',
                  'pub_count','first_pub_date'))
 
+d[,.N,by="cohort"]
+d[d$cohort_match==0,.(all=.N,uniq_pheno = length(unique(phecode))),by="cohort"]
+
 head(d)
 write.table(d,file="annotated_results_ALL.csv",sep=",",row.names = F, col.names = T)
 nrow(d) ## 12497

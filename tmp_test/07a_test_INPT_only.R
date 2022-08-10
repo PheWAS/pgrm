@@ -68,12 +68,17 @@ r_inpt_only=fread(file="anno_BioVU_EUR_INPT_only.csv",header=T,colClasses = list
 r_inpt_only=r_inpt_only[,c('SNP','phecode','cases','controls','P','odds_ratio','L95','U95')]
 
 r_inpt_only=annotate_results(r_inpt_only,ancestry="EUR",build="hg19",calculate_power = TRUE)
-nrow(r_inpt_only)
+nrow(r_inpt_only) ## 2806
 get_RR(r_inpt_only,include="all") ##
 get_powered_rate(r_inpt_only)
 get_RR(r_inpt_only,include="powered") ##
 get_AER(r_inpt_only) ##
 r_inpt_only[is.na(Power)]
+
+
+
+compare_annotated_results(r_inpt_only,benchmark_results[cohort=="BioVU_EUR"])
+
 
 prop.table(table(r_inpt_only$CI_overlap))
 
@@ -81,7 +86,9 @@ t.test(r_inpt_only$cat_OR,r_inpt_only$rOR,paired=T) ## mean diff 0.08509277
 t.test(r_inpt_only[rep==1]$cat_OR,r_inpt_only[rep==1]$rOR,paired=T) ## mean diff 0.06459039
 
 
-compare_annotated_results(benchmark_results[cohort=="BioVU_EUR"],r_inpt_only)
+
+
+fig2=data.frame(odds_ratio=0.9895, L95=0.7444, U95=1.332)
 
 
 r_inpt_only

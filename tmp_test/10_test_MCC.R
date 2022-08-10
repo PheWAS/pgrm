@@ -84,6 +84,9 @@ MCC_summary=rbind(MCC_summary,data.table(MCC=8, assoc_tested=.N,RR=get_RR(r_MCC[
 MCC_summary
 #MCC_summary$MCC=as.factor(MCC_summary$MCC)
 
+compare_annotated_results(r_MCC[MCC==1],r_MCC[MCC==2])
+compare_annotated_results(r_MCC[MCC==3],r_MCC[MCC==2])
+
 compare_annotated_results(r_MCC[MCC==1],r_MCC[MCC==2],include_all = F)
 compare_annotated_results(r_MCC[MCC==2],r_MCC[MCC==3],include_all = F)
 compare_annotated_results(r_MCC[MCC==3],r_MCC[MCC==4],include_all = F)
@@ -93,6 +96,39 @@ compare_annotated_results(r_MCC[MCC==6],r_MCC[MCC==7],include_all = F)
 compare_annotated_results(r_MCC[MCC==7],r_MCC[MCC==8],include_all = F)
 
 compare_annotated_results(r_MCC[MCC==3],r_MCC[MCC==6],include_all = F)
+
+r_MCC$powered=as.factor(r_MCC$powered)
+r_MCC$MCC_fac=as.factor(r_MCC$MCC)
+r_MCC$MCC_fac=relevel(r_MCC$MCC_fac,ref="2")
+
+m_RRp=glm(rep~MCC_fac,data=r_MCC[powered==1],family="binomial")
+summary(m_RRp)
+plot(allEffects(m_RRp))
+
+m_RRa=glm(rep~MCC_fac,data=r_MCC,family="binomial")
+summary(m_RRa)
+plot(allEffects(m_RRa))
+
+m_pow=glm(powered~m_pow,data=r_MCC,family="binomial")
+summary(m_pow)
+plot(allEffects(m_pow))
+
+p_RRa=predict(m_RRa,newdata=data.frame(MCC_fac=rep(unique(r_MCC$MCC_fac))),type="response",se.fit=T)
+p_RRa=data.frame(p_RRa)
+p_RRa$MCC=rownames(p_RRa)
+
+plot_RR_ALL=ggplot(p_RRa,aes(x=MCC,y=fit))+geom_point()+geom_errorbar(aes(x=MCC,ymin=fit-se.fit,ymax=fit+se.fit,width=0.4))+
+  theme_classic()+scale_y_continuous( limits=c(.30,.45),labels = scales::percent)+labs(x="Minimum code count",y=expression(RR[All]*""))
+plot_RR_ALL
+
+p_RRp=predict(m_RRp,newdata=data.frame(MCC_fac=rep(unique(r_MCC$MCC_fac))),type="response",se.fit=T)
+p_RRp=data.frame(p_RRp)
+p_RRp$MCC=rownames(p_RRp)
+
+plot_RR_ALL=ggplot(p_RRp,aes(x=MCC,y=fit))+geom_point()+geom_errorbar(aes(x=MCC,ymin=fit-se.fit,ymax=fit+se.fit,width=0.4))+
+  theme_classic()+scale_y_continuous( limits=c(.30,.45),labels = scales::percent)+labs(x="Minimum code count",y=expression(RR[All]*""))
+plot_RR_ALL
+
 
 cat_strings= unique(r_MCC$category_string)
 i=0

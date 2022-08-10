@@ -68,7 +68,7 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
   PGRM_new = PGRM_new[, c(
    'assoc_ID', 'SNP', 'ancestry', 'rsID', 'risk_allele_dir', 'RAF',
    'phecode', 'phecode_string', 'category_string', 'cat_LOG10_P', 'cat_OR', 'cat_L95',
-   'cat_U95', 'cases_needed', 'Study_accession','pub_count','first_pub_date')]
+   'cat_U95', 'cases_needed', 'Study_accession','pub_count','pub_date')]
 
   return(PGRM_new)}
 
@@ -338,7 +338,7 @@ compare_annotated_results = function(results1, results2){
   #CIs=exp(confint.default(m))
   #L95=CIs['datasetresults2',1]
   #U95=CIs['datasetresults2',2]
-  f=fisher.test(table(r_long[powered==1]$rep,r_long[powered==1]$dataset))
+  f=fisher.test(table(r_long$powered,r_long$dataset))
   P=f$p.value
   L95=f$conf.int[1]
   U95=f$conf.int[2]
@@ -347,20 +347,25 @@ compare_annotated_results = function(results1, results2){
   print(glue('Powered comparison'))
   Power_r1=get_powered_rate(results1,LOUD=FALSE)
   Power_r2=get_powered_rate(results2,LOUD=FALSE)
-  print(glue('Result1 replication rate (overall) = {r1_power}',
+  print(glue('Result1 powered rate (overall) = {r1_power}',
              r1_power = sprintf('%1.1f%%', 100 * Power_r1)))
-  print(glue('Result2 replication rate (overall) = {r2_power}',
+  print(glue('Result2 powered rate (overall) = {r2_power}',
              r2_power = sprintf('%1.1f%%', 100 * Power_r2)))
   print(glue('Odds ratio (95% CIs) {round(OR,4)} ({round(L95,4)} to {round(U95,4)})'))
   print(glue('P-value {P}'))
 
   ## Compare RR powered
-  m=glm(rep~dataset,data=r_long[powered==1],family="binomial")
-  P=summary(m)$coeff['datasetresults2','Pr(>|z|)']
-  OR=exp(summary(m)$coeff['datasetresults2','Estimate'])
-  CIs=exp(confint.default(m))
-  L95=CIs['datasetresults2',1]
-  U95=CIs['datasetresults2',2]
+  #m=glm(rep~dataset,data=r_long[powered==1],family="binomial")
+  #P=summary(m)$coeff['datasetresults2','Pr(>|z|)']
+  #OR=exp(summary(m)$coeff['datasetresults2','Estimate'])
+  #CIs=exp(confint.default(m))
+  #L95=CIs['datasetresults2',1]
+  #U95=CIs['datasetresults2',2]
+  f=fisher.test(table(r_long[powered==1]$rep,r_long[powered==1]$dataset))
+  P=f$p.value
+  L95=f$conf.int[1]
+  U95=f$conf.int[2]
+  OR=f$estimate
   print(glue('\n--------------------------------------'))
   print(glue('Replication rate (Powered) comparison'))
   RR_ALL_r1=get_RR(results1,LOUD=FALSE)

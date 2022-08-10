@@ -185,3 +185,22 @@ t
 nrow(d[rep==1])
 nrow(d[rep==1 & cat_OR > rOR ])
 nrow(d[rep==1 & cat_OR < rOR ])
+
+
+
+MGI=d[cohort=="MGI" & rep==1 & powered==1,c('assoc_ID','rOR')]
+setnames(MGI, "rOR", "rOR_MGI")
+UKBB=d[cohort=="UKBB"  & rep==1  & powered==1,c('assoc_ID','rOR')]
+setnames(UKBB, "rOR", "rOR_UKBB")
+BioVU=d[cohort=="BioVU_EUR"  & rep==1  & powered==1,c('assoc_ID','rOR')]
+setnames(BioVU, "rOR", "rOR_BioVU")
+
+foo=merge(MGI,UKBB,by="assoc_ID")
+foo=merge(foo,BioVU,by="assoc_ID")
+t.test(foo$rOR_BioVU,foo$rOR_MGI,paired=T)
+t.test(foo$rOR_BioVU,foo$rOR_UKBB,paired=T)
+t.test(foo$rOR_MGI,foo$rOR_UKBB,paired=T)
+nrow(foo)
+mean(foo$rOR_BioVU)
+mean(foo$rOR_UKBB)
+mean(foo$rOR_MGI)
