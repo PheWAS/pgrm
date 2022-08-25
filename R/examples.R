@@ -26,3 +26,4 @@ get_RR(anno,include='all')
 get_AER(anno)
 "
   return(strsplit(ex, split = '\n')[[1L]])}
+
