@@ -1,6 +1,0 @@
-"overlap"	"PGRM_greater"	"test_cohort_greater"
-"MGI"	1384	115	22
-"BBJ"	174	30	1
-"BioVU_AFR"	15	4	0
-"BioVU_EUR"	1239	107	8
-"UKBB"	1148	106	20
