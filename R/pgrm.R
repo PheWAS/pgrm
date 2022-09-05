@@ -277,7 +277,7 @@ get_powered_rate = function(annotated_results, include_missing_pheno=TRUE,LOUD =
 #'
 #' @export
 make_pheno = function(icds,phecode_version="V1.2") {
-  #checkIcdTable(icds)  ## why can't you see this??
+  checkIcdTable(icds)
   checkPhecodeVersion(phecode_version)
   if(phecode_version=="V1.2"){
     icdPhecodeMap=icdPhecodeMap_V1_2

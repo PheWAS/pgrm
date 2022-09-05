@@ -151,3 +151,14 @@ usethis::use_data(PGRM_ALL, overwrite = TRUE)
  setkeyv(icdPhecodeMap_V1_2, c('icd','flag','phecode'))
 
  usethis::use_data(icdPhecodeMap_V1_2, overwrite = TRUE)
+
+
+ #######################
+ # Example ICD file
+
+ icdExampleTable = fread(
+   file.path(rawDir, 'icds_example.csv'),
+   colClasses = list(character = 'icd'))
+ setkeyv(icdExampleTable, c('icd','flag'))
+
+ usethis::use_data(icdExampleTable, overwrite = TRUE)
