@@ -141,3 +141,13 @@ usethis::use_data(PGRM_ALL, overwrite = TRUE)
 
  benchmark_results$first_pub_date=as.Date(benchmark_results$first_pub_date)
  usethis::use_data(benchmark_results, overwrite = TRUE)
+
+ #######################
+ # ICD to phecode map (version 1.2)
+
+ icdPhecodeMap_V1_2 = fread(
+   file.path(rawDir, 'icd_to_phecode_V1_2.csv'),
+   colClasses = list(character = 'phecode','icd'))
+ setkeyv(icdPhecodeMap_V1_2, c('icd','flag','phecode'))
+
+ usethis::use_data(icdPhecodeMap_V1_2, overwrite = TRUE)

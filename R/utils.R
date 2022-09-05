@@ -16,6 +16,7 @@ checkPhecodeVersion = function(phecode_version) {
   invisible()}
 
 
+
 check_RR_include = function(include) {
   if (!include %in% c('powered', 'all')) {
     stop('include must be set to powered or all')}
@@ -37,6 +38,14 @@ checkBool = function(bool) {
   assertLogical(bool)
   invisible()}
 
+checkSex = function(bool,covars) {
+  assertLogical(bool)
+  if(bool==TRUE){
+    assertDataFrame(covars)
+    assertNames(names(covars), must.include = c('person_id','sex'))
+  }
+  invisible()}
+
 checkR2 = function(R2) {
   assertNumeric(R2,lower=0,upper=1)
   invisible()}
@@ -46,6 +55,11 @@ checkAnnotatedResults = function(annotated_results, include) {
   assertNames(names(annotated_results), must.include = c( 'assoc_ID', 'rep'))
   if (include == 'powered') {
     assertNames(names(annotated_results), must.include = c('powered'))}
+  invisible()}
+
+checkIcdTable = function(icds) {
+  assertDataFrame(icds)
+  assertNames(names(icds), must.include = c( 'person_id', 'icd','flag'))
   invisible()}
 
 
@@ -90,8 +104,6 @@ checkCovarList = function(covariate_list,demos_table) {
   }
   invisible()}
 
-
-
 annotate_power = function(annotated_results, LOUD = FALSE,max_thresh=50) {
   Power = NULL
 
@@ -133,6 +145,7 @@ annotate_power = function(annotated_results, LOUD = FALSE,max_thresh=50) {
   return(annotated_results)}
 
 sex_check_phecode = function(phecode){
+  sex=NULL
   if(phecode %in% pgrm::phecode_info[sex=='Male']$phecode){
     return('M')}
   if (phecode %in% pgrm::phecode_info[sex=='Female']$phecode){

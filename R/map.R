@@ -210,3 +210,18 @@
 #' * `first_pub_date`: The first date the association was published
 #'
 'benchmark_results'
+
+
+
+#' ICD code to phecode map, version 1.2
+#'
+#' This map is used in the make_pheno() function
+#'
+#' @format A data.table with the following columns:
+#'
+#' * `icd`: Character vector of icd code.
+#' * `flag`: Integer of ICD version (either 9 or 10)
+#' * `phecode`: Character vector of phecode
+#'
+#'
+'icdPhecodeMap_V1_2'

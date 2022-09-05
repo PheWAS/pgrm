@@ -28,11 +28,6 @@ Genomes superpopulations ancestry groupings (\strong{AFR}: African, \strong{EAS}
 \item \code{pubmedid}: Numeric value of the PubMed ID for source publication of association
 \item \code{pub_count}: Numeric value indicating how many times association has been published in GWAS catalog
 \item \code{first_pub_date}: Date of the first date the association was published
-\item \code{cases_needed_AFR}: Numeric value of the estimated cases needed at 80\% power for African ancestry cohort
-\item \code{cases_needed_EAS}: Numeric value of the estimated cases needed at 80\% power for East Asian ancestry cohort
-\item \code{cases_needed_AMR}: Numeric value  of the estimated cases needed at 80\% power for Latino/Admixed American ancestry cohort
-\item \code{cases_needed_SAS}: Numeric value  of the estimated cases needed at 80\% power for South Asian ancestry cohort
-\item \code{cases_needed_ALL}: Numeric value  of the estimated cases needed at 80\% power for multi-ancestry cohort
 \item \code{AFR_RAF}: Numeric value of the African ancestry risk allele frequency from gnomAD
 \item \code{EUR_RAF}: Numeric value of the European (non-Finnish) ancestry risk allele frequency from gnomAD
 \item \code{EAS_RAF}: Numeric value of the East Asian ancestry risk allele frequency from gnomAD

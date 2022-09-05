@@ -8,8 +8,8 @@ genotype, and covariate information.}
 run_PGRM_assoc(
   geno,
   pheno,
-  demos,
-  covariates,
+  covars,
+  covariate_names,
   PGRM,
   MCC = 2,
   minimum_case_count = 100,
@@ -21,13 +21,16 @@ run_PGRM_assoc(
 \arguments{
 \item{geno}{A matrix or 'BEDMatrix' object containing genetic data}
 
-\item{pheno}{A data.table having one row per person in the cohort. Must have}
+\item{pheno}{A data.table with phecode phenotypes. columns \code{person_id}, \code{phecode}, and \code{N}
+required. The phecode columns should be a character vector. Column \code{N} specifies the number of
+unique dates a phecode occurs for that individual. Only phecodes that are present for an individual
+are included (i.e. N is always greater than one).}
 
-\item{demos}{A data.table having one row per person in the cohort. Must have
-a column \code{person_id}. May include other columns used for covariates in later function calls.}
+\item{covars}{A data.table having one row per person in the cohort. Must havea column names
+\code{person_id}. Must include other columns specified in covariate_names.}
 
-\item{covariates}{A list of covariates to be used in the logistic regression. All covariates
-listed must be present in the demos table}
+\item{covariate_names}{A list of covariates to be used in the logistic regression. All covariates
+listed must be present in the covars table}
 
 \item{PGRM}{A data.table of the PGRM, generated with get_PGRM()}
 
@@ -38,9 +41,9 @@ cohort to be included in the analysis (default minimum_case_count=100)}
 
 \item{use_exclude_ranges}{If TRUE then exclude ranges are applied to controls}
 
-\item{check_sex}{If TRUE then individuals with sex == F in the demos table will be excluded
+\item{check_sex}{If TRUE then individuals with sex == F in the covars table will be excluded
 from male-specific phenotypes, and vice-versa. Sex specific phecodes are specified in
-phecode_info. For this function to work, the demos table must have column \code{sex} and the values
+phecode_info. For this function to work, the covars table must have column \code{sex} and the values
 must be 'M' for Male and 'F' for Female}
 
 \item{LOUD}{If TRUE then progress info is printed to the terminal. Default TRUE}
