@@ -9,6 +9,9 @@ get_powered_rate(annotated_results, include_missing_pheno = TRUE, LOUD = TRUE)
 \arguments{
 \item{annotated_results}{A data table of results that have been annotated with the PGRM}
 
+\item{include_missing_pheno}{If TRUE, then denominator inclues SNP/phecode pairs that are not
+present in the annotated_results data.table}
+
 \item{LOUD}{If TRUE then progress info is printed to the terminal. Default TRUE}
 }
 \value{

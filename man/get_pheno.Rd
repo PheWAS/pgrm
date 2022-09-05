@@ -22,6 +22,8 @@ are included (i.e. N is always greater than one).}
 \item{covars}{A data.table having one row per person in the cohort. Must havea column names
 \code{person_id}. Must include other columns specified in covariate_names.}
 
+\item{phecode}{A character vector of the phecode}
+
 \item{MCC}{A numeric value specified the minimum code count required for cases.}
 
 \item{use_exclude_ranges}{If TRUE then individuals who are not cases but have a phecode within
