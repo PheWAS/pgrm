@@ -212,7 +212,6 @@
 'benchmark_results'
 
 
-
 #' ICD code to phecode map, version 1.2
 #'
 #' This map is used in the make_pheno() function
@@ -225,3 +224,17 @@
 #'
 #'
 'icdPhecodeMap_V1_2'
+
+
+#' Example table of ICD data
+#'
+#'
+#' @format A data.table with the following columns:
+#'
+#' * `person_id`: unqiue identifier of subject
+#' * `icd`: Character vector of icd code
+#' * `flag`: Integer of ICD version (either 9 or 10)
+#' * `entry_date`: Date of ICD code
+#'
+#'
+'icdExampleTable'

@@ -187,7 +187,7 @@ annotate_results = function(
 #'
 #' @return An numeric value of the replication rate of the result set
 #'
-#' @eval annotate_UKBB()
+#' @eval run_PGRM_assoc_ex()
 #'
 #' @export
 get_RR = function(annotated_results, include = 'powered', LOUD = TRUE) {
@@ -381,6 +381,8 @@ get_pheno = function(pheno, covars ,phecode,MCC=2,use_exclude_ranges=TRUE,check_
 #' @param LOUD If TRUE then progress info is printed to the terminal. Default TRUE
 #'
 #' @return A data.table with annotated results from association tests
+#'
+#' @eval run_PGRM_assoc_ex()
 #'
 #' @export
 run_PGRM_assoc = function(geno, pheno, covars,covariate_names, PGRM,MCC=2,minimum_case_count=100,use_exclude_ranges=TRUE,check_sex=FALSE,LOUD=TRUE){

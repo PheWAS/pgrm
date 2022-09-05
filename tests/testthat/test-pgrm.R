@@ -29,6 +29,9 @@ test_that('test annotate_results with MGI data', {
 
 
 test_that('test make pheno', {
+  phecodeExample_observed=make_pheno(icdExampleTable)
+  phecodeExample_expected=snapshot(phecodeExample_observed,"snapshots/phecodeExample_observed.qs" )
+
   phecode_T2D_observed=get_pheno(phecode_table_test, demos_table_test, phecode='250.2',MCC=2,use_exclude_ranges = TRUE)
   phecode_T2D_expected=snapshot(phecode_T2D_observed,"snapshots/phecode_T2D_observed.qs" )
   expect_equal(phecode_T2D_observed,phecode_T2D_expected)

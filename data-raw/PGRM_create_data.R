@@ -160,5 +160,5 @@ usethis::use_data(PGRM_ALL, overwrite = TRUE)
    file.path(rawDir, 'icds_example.csv'),
    colClasses = list(character = 'icd'))
  setkeyv(icdExampleTable, c('icd','flag'))
-
+ icdExampleTable$V1 = NULL
  usethis::use_data(icdExampleTable, overwrite = TRUE)
