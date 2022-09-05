@@ -49,6 +49,7 @@ must be 'M' for Male and 'F' for Female}
 A data.table with annotated results from association tests
 }
 \description{
-Run associations in the pgrm on data from a test cohort. Function requires row level phenotype,
-genotype, and covariate information.
+(NOTE: If you used principle components as covariates, make sure they are not coded as numeric.
+Otherwise the logistic regression will treat them as categorical variables, making the function
+run very slowly before failing.)
 }

@@ -18,16 +18,10 @@ NULL
 #'
 #' @return A data.table of the PGRM
 #'
-#' @details This function returns a copy of the PGRM with specified columns for SNP, AF, and cases_needed
-#' according to the arguments specified. The function assigns a column "SNP" as either SNP_hg19 or SNP_hg38, depending
-#' on the build argument. It also assigns the allele frequency (AF) and cases_needed columns according to the ancestry.
-#' If the ancestry is != "ALL", then the funciton also subsets PGRM_ALL to include only associations that were based in
-#' cohorts with the specified ancestry. This funciton is called inside annotate_results(),
-#' which can be used to annoate the results of a specific test cohort.
-#'
-#' (NOTE: If you used principle components as covariates, make sure they are not coded as numeric.
-#' Otherwise the logistic regression will treat them as categorical variables, making the function
-#' run very slowly before failing.)
+#' @details This function returns a copy of the PGRM. The function assigns a column "SNP" as
+#' either SNP_hg19 or SNP_hg38, depending on the build argument. The returned PGRM only includes
+#' associations annotated with the specified ancestry, and the risk allele frequency (RAF) is based
+#' on the specified ancestry.
 #'
 #' @seealso [PGRM_ALL], [annotate_results()]
 #'
@@ -62,13 +56,11 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
     PGRM_new = merge(uniq_PGRM, PGRM_new, by = c('SNP', 'phecode', 'cat_LOG10_P'))}
 
   freq_col_name = glue('{ancestry}_RAF')
-  cases_needed_col_name = glue('cases_needed_{ancestry}')
   setnames(PGRM_new, freq_col_name, 'RAF')
-  setnames(PGRM_new, cases_needed_col_name, 'cases_needed')
   PGRM_new = PGRM_new[, c(
    'assoc_ID', 'SNP', 'ancestry', 'rsID', 'risk_allele_dir', 'RAF',
    'phecode', 'phecode_string', 'category_string', 'cat_LOG10_P', 'cat_OR', 'cat_L95',
-   'cat_U95', 'cases_needed', 'Study_accession','pub_count','pub_date')]
+   'cat_U95', 'Study_accession','pub_count','pub_date')]
 
   return(PGRM_new)}
 
@@ -272,169 +264,18 @@ get_powered_rate = function(annotated_results, include_missing_pheno=TRUE,LOUD =
   return(powered_rate)}
 
 
-#' Compare two annotated result sets
+
+
+#' Add case/control status for a specified phenotype to a
 #'
-#' @param results1 A data.table of results that have been annotated with the PGRM
-#' @param results2 A data.table of results that have been annotated with the PGRM
+#' This function calculates % of powered associations for a test cohort that has been annotated with PGRM.
 #'
-#' @return foobar
+#' @param annotated_results A data table of results that have been annotated with the PGRM
+#' @param LOUD If TRUE then progress info is printed to the terminal. Default TRUE
 #'
-#' @export
-#'
-#' @param pheno A data.table of phecode phenotypes. Must have columns `person_id` and `phecode`, as
-#'   well as `N` which specifies the number of times the phecode occurred for that person_id
-#' @param demos A data.table having one row per person in the cohort. Must have
-#'   a column `person_id`. May include other columns used for covariates in later function calls.
-#' @param phecode A string specifying the phecode
-#' @param MCC The minimum code count required for a case (default MCC=2)
-#' @param use_exclude_ranges If TRUE then exclude ranges are applied to controls
-#' @param check_sex If TRUE then individuals with sex == F in the demos table will be excluded
-#'   from male-specific phenotypes, and vice-versa. Sex specific phecodes are specified in
-#'   phecode_info. For this function to work, the demos table must have column `sex` and the values
-#'   must be 'M' for Male and 'F' for Female
-#'
-#' @return A data.table with columns `person_id`, `phecode`, `N` (number of phecode instances),
-#'   and `pheno` indicating case, control, or exclude status (represented as 1, 0, NA respectively).
-#'   Any additional columns provided in demos will also be returned
-#'   prevalence.
+#' @return An numeric value of the percent of associations that are powered
 #'
 #' @export
-
-compare_annotated_results = function(results1, results2){
-  summary=data.table()
-  results1$dataset='results1'
-  results2$dataset='results2'
-  r_long=rbind(results1[,c('assoc_ID','odds_ratio','P','L95','U95','rep','powered','Power','rOR','rL95','rU95','dataset')],
-               results2[,c('assoc_ID','odds_ratio','P','L95','U95','rep','powered','Power','rOR','rL95','rU95','dataset')])
-  r_long=data.table(r_long)
-  ## Compare RR all
-  #m=glm(rep~dataset,data=r_long,family="binomial")
-  #P=summary(m)$coeff['datasetresults2','Pr(>|z|)']
-  #OR=exp(summary(m)$coeff['datasetresults2','Estimate'])
-  #CIs=exp(confint.default(m))
-  #L95=CIs['datasetresults2',1]
-  #U95=CIs['datasetresults2',2]
-  f=fisher.test(table(r_long$rep,r_long$dataset))
-  P=f$p.value
-  L95=f$conf.int[1]
-  U95=f$conf.int[2]
-  OR=f$estimate
-  print(glue('\n--------------------------------------'))
-  print(glue('Replication rate (all) comparison'))
-  RR_ALL_r1=get_RR(results1,include="all",LOUD=FALSE)
-  RR_ALL_r2=get_RR(results2,include="all",LOUD=FALSE)
-  print(glue('Result1 replication rate (overall) = {r1_RR}',
-             r1_RR = sprintf('%1.1f%%', 100 * RR_ALL_r1)))
-  print(glue('Result2 replication rate (overall) = {r2_RR}',
-             r2_RR = sprintf('%1.1f%%', 100 * RR_ALL_r2)))
-  print(glue('Logistic regression rep~dataset'))
-  print(glue('Odds ratio (95% CIs) {round(OR,4)} ({round(L95,4)} to {round(U95,4)})'))
-  print(glue('P-value {P}'))
-
-  ## Compare Power
-  #m=glm(powered~dataset,data=r_long,family="binomial")
-  #P=summary(m)$coeff['datasetresults2','Pr(>|z|)']
-  #OR=exp(summary(m)$coeff['datasetresults2','Estimate'])
-  #CIs=exp(confint.default(m))
-  #L95=CIs['datasetresults2',1]
-  #U95=CIs['datasetresults2',2]
-  f=fisher.test(table(r_long$powered,r_long$dataset))
-  P=f$p.value
-  L95=f$conf.int[1]
-  U95=f$conf.int[2]
-  OR=f$estimate
-  print(glue('\n--------------------------------------'))
-  print(glue('Powered comparison'))
-  Power_r1=get_powered_rate(results1,LOUD=FALSE)
-  Power_r2=get_powered_rate(results2,LOUD=FALSE)
-  print(glue('Result1 powered rate (overall) = {r1_power}',
-             r1_power = sprintf('%1.1f%%', 100 * Power_r1)))
-  print(glue('Result2 powered rate (overall) = {r2_power}',
-             r2_power = sprintf('%1.1f%%', 100 * Power_r2)))
-  print(glue('Odds ratio (95% CIs) {round(OR,4)} ({round(L95,4)} to {round(U95,4)})'))
-  print(glue('P-value {P}'))
-
-  ## Compare RR powered
-  #m=glm(rep~dataset,data=r_long[powered==1],family="binomial")
-  #P=summary(m)$coeff['datasetresults2','Pr(>|z|)']
-  #OR=exp(summary(m)$coeff['datasetresults2','Estimate'])
-  #CIs=exp(confint.default(m))
-  #L95=CIs['datasetresults2',1]
-  #U95=CIs['datasetresults2',2]
-  f=fisher.test(table(r_long[powered==1]$rep,r_long[powered==1]$dataset))
-  P=f$p.value
-  L95=f$conf.int[1]
-  U95=f$conf.int[2]
-  OR=f$estimate
-  print(glue('\n--------------------------------------'))
-  print(glue('Replication rate (Powered) comparison'))
-  RR_ALL_r1=get_RR(results1,LOUD=FALSE)
-  RR_ALL_r2=get_RR(results2,LOUD=FALSE)
-  print(glue('Result1 replication rate (powered) = {r1_RR}',
-             r1_RR = sprintf('%1.1f%%', 100 * RR_ALL_r1)))
-  print(glue('Result2 replication rate (powered) = {r2_RR}',
-             r2_RR = sprintf('%1.1f%%', 100 * RR_ALL_r2)))
-  print(glue('Odds ratio (95% CIs) {round(OR,4)} ({round(L95,4)} to {round(U95,4)})'))
-  print(glue('P-value {P}'))
-
-  ## Compare RR, control for power
-  m=glm(rep~dataset+Power,data=r_long,family="binomial")
-  P=summary(m)$coeff['datasetresults2','Pr(>|z|)']
-  OR=exp(summary(m)$coeff['datasetresults2','Estimate'])
-  CIs=exp(confint.default(m))
-  L95=CIs['datasetresults2',1]
-  U95=CIs['datasetresults2',2]
-  print(glue('\n--------------------------------------'))
-  print(glue('Replication comparison, controlling for Power'))
-  AER_r1=get_AER(results1,LOUD=FALSE)
-  AER_r2=get_AER(results2,LOUD=FALSE)
-  print(glue('Result1 Actual:Expected = {round(AER_r1,3)}'))
-  print(glue('Result2 Actual:Expected = {round(AER_r2,3)}'))
-  print(glue('Odds ratio (95% CIs) {round(OR,4)} ({round(L95,4)} to {round(U95,4)})'))
-  print(glue('P-value {P}'))
-
-  r1=results1[,c('assoc_ID','rsID','phecode','phecode_string','category_string','odds_ratio','P','L95','U95','rep','powered','Power','rOR','rL95','rU95')]
-  r2=results2[,c('assoc_ID','odds_ratio','P','L95','U95','rep','powered','Power','rOR','rL95','rU95')]
-  r=merge(r1,r2,by="assoc_ID")
-  overlapping_rows=nrow(r)
-  if(overlapping_rows==0){
-    print("no overlapping rows in datasets")
-    return(0)
-  }
-  both_powered=nrow(r[powered.x==1 & powered.y==1])
-  both_rep=nrow(r[rep.x==1 & rep.y==1])
-  both_powered_rep=nrow(r[rep.x==1 & rep.y==1 & powered.x==1 & powered.y==1])
-
-  r$both_powered = 0
-  r[powered.x==1 & powered.y==1]$both_powered = 1
-
-  r$both_rep = 0
-  r[rep.x==1 & rep.y==1]$both_rep = 1
-
-  r$both_powered_rep = 0
-  r[rep.x==1 & rep.y==1 & powered.x==1 & powered.y==1]$both_powered_rep = 1
-
-  table(r$both_powered,r$both_rep)
-
-  print(glue('\n--------------------------------------'))
-  print(glue('Compare odds ratios, all'))
-
-  t=t.test(r$rOR.x,r$rOR.y,paired=T)
-  print(glue('Odds ratio comparison (all), n={overlapping_rows}'))
-  print(glue('P-value {t$p.value}'))
-  print(glue('Mean difference {round(t$estimate,4)}'))
-  print(glue('95% CI {round(t$conf.int[1],4)} to {round(t$conf.int[2],4)}'))
-
-  print(glue('\n--------------------------------------'))
-  print(glue('Compare odds ratios, Powered'))
-
-  t=t.test(r[rep.x==1 & rep.y==1]$rOR.x,r[rep.x==1 & rep.y==1]$rOR.y,paired=T)
-  print(glue('Odds ratio comparison (both replicated), n={both_rep}'))
-  print(glue('P-value {t$p.value}'))
-  print(glue('Mean difference {round(t$estimate,4)}'))
-  print(glue('95% CI {round(t$conf.int[1],4)} to {round(t$conf.int[2],4)}'))}
-
-
 get_pheno = function(pheno, demos ,phecode,MCC=2,use_exclude_ranges=TRUE,check_sex=FALSE){
   checkPhecodeTable(pheno)
   checkDemosTable(demos)
@@ -480,6 +321,10 @@ get_pheno = function(pheno, demos ,phecode,MCC=2,use_exclude_ranges=TRUE,check_s
 
 #' Run associations in the pgrm on data from a test cohort. Function requires row level phenotype,
 #' genotype, and covariate information.
+#'
+#' (NOTE: If you used principle components as covariates, make sure they are not coded as numeric.
+#' Otherwise the logistic regression will treat them as categorical variables, making the function
+#' run very slowly before failing.)
 #'
 #' @param geno A matrix or 'BEDMatrix' object containing genetic data
 #' @param pheno A data.table having one row per person in the cohort. Must have

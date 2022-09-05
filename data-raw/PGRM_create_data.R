@@ -22,6 +22,9 @@ PGRM_pubinfo = fread(
 setkeyv(PGRM_pubinfo, c('assoc_ID'))
 PGRM_ALL = merge(PGRM_ALL, PGRM_pubinfo, by = 'assoc_ID')
 
+
+
+
 #PGRM_ALL$first_pub_date=as.Date(PGRM_ALL$first_pub_date)
 PGRM_ALL$pub_date=as.Date(PGRM_ALL$pub_date)
 nrow(PGRM_ALL)
@@ -35,10 +38,10 @@ PGRM_ALL[risk_allele_dir=="ref"]$SAS_RAF=1-PGRM_ALL[risk_allele_dir=="ref"]$SAS_
 PGRM_ALL[risk_allele_dir=="ref"]$ALL_RAF=1-PGRM_ALL[risk_allele_dir=="ref"]$ALL_RAF
 head(PGRM_ALL)
 PGRM_ALL$first_pub_date=NULL
+PGRM_ALL[, c('cases_needed_AFR','cases_needed_EAS','cases_needed_EUR','cases_needed_AMR','cases_needed_SAS','cases_needed_ALL'):=NULL]
 setcolorder(PGRM_ALL, c('assoc_ID', 'SNP_hg19', 'SNP_hg38','rsID', 'risk_allele_dir','risk_allele',
                   'phecode','phecode_string','category_string','ancestry',
                   'cat_LOG10_P','cat_OR','cat_L95','cat_U95','Study_accession','pubmedid','pub_count','pub_date',
-                  'cases_needed_AFR','cases_needed_EAS','cases_needed_EUR','cases_needed_AMR','cases_needed_SAS','cases_needed_ALL',
                   'AFR_RAF','EUR_RAF','EAS_RAF','AMR_RAF','SAS_RAF','ALL_RAF'))
 
 head(PGRM_ALL)

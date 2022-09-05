@@ -28,16 +28,10 @@ A data.table of the PGRM
 This function generates a PGRM copy with specified ancestry, build, and phecode version
 }
 \details{
-This function returns a copy of the PGRM with specified columns for SNP, AF, and cases_needed
-according to the arguments specified. The function assigns a column "SNP" as either SNP_hg19 or SNP_hg38, depending
-on the build argument. It also assigns the allele frequency (AF) and cases_needed columns according to the ancestry.
-If the ancestry is != "ALL", then the funciton also subsets PGRM_ALL to include only associations that were based in
-cohorts with the specified ancestry. This funciton is called inside annotate_results(),
-which can be used to annoate the results of a specific test cohort.
-
-(NOTE: If you used principle components as covariates, make sure they are not coded as numeric.
-Otherwise the logistic regression will treat them as categorical variables, making the function
-run very slowly before failing.)
+This function returns a copy of the PGRM. The function assigns a column "SNP" as
+either SNP_hg19 or SNP_hg38, depending on the build argument. The returned PGRM only includes
+associations annotated with the specified ancestry, and the risk allele frequency (RAF) is based
+on the specified ancestry.
 }
 \examples{
 library(pgrm)
