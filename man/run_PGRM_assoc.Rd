@@ -65,22 +65,22 @@ run very slowly before failing.)
   head(icdExampleTable)
 
   ## make pheno table
-  pheno=make_pheno(icdExampleTable)
+  pheno = make_pheno(icdExampleTable)
   head(pheno)
 
   ## Load in covariate file. Here's a generated example
   covar_table_test = data.table(
   person_id = 1:4, sex = c('F', 'M', 'F', 'M'),
-  last_age = c(28772,18028,11636,14589))
+  last_age = c(28772, 18028, 11636, 14589))
 
   ## Load genotype file
   library(gaston)
- # geno=read.bed.matrix('data/geno_test')
+ # geno = read.bed.matrix('data/geno_test')
 
   ## Make a PGRM instance, specifying genome build and ancestry
-  PGRM=get_PGRM(build='hg19',ancestry='all')
+  PGRM = get_PGRM(build = 'hg19', ancestry = 'all')
 
   ## Run associations from the PGRM
- # run_PGRM_assoc(geno,pheno,covars,covariate_names=c('last_age'),PGRM,MCC=2, use_exclude_range=TRUE,check_sex=TRUE)
+ #run_PGRM_assoc(geno,pheno,covars,covariate_names=c('last_age'),PGRM,MCC=2,use_exclude_range=TRUE,check_sex=TRUE)
   
 }

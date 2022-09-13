@@ -36,7 +36,7 @@ table. (Currently only V1.2 is supported)}
 \item{calculate_power}{If TRUE then power calculations will be conducted using
 case and control counts from the results file. Necessary for get_AER(). Default FALSE}
 
-\item{annotate_CI_overlap}{If TRUE then a column called "annotate_CI_overlap"
+\item{annotate_CI_overlap}{If TRUE then a column called 'annotate_CI_overlap'
 is added to the table, values:
 \strong{overlap}: 95\% CIs of PGRM and test cohort overlap
 \strong{test_cohort_greater}: 95\% CI of test cohort greater than PGRM
@@ -86,7 +86,7 @@ intervals are reported in the test cohort summary statistics)
 library(pgrm)
 
 ## annotate the BioVU African ancestry result set
-anno = annotate_results(results_BioVU_AFR,ancestry='AFR', build='hg19',calculate_power=TRUE)
+anno = annotate_results(results_BioVU_AFR, ancestry = 'AFR', build = 'hg19', calculate_power = TRUE)
 
 ## Get the replication rate of associations powered at >80\%
 get_RR(anno)

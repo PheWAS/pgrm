@@ -6,7 +6,7 @@ checkBuild = function(build) {
 
 checkAncestry = function(ancestry) {
   if (!ancestry %in% c('EAS', 'EUR', 'AFR', 'SAS', 'AMR', 'ALL')) {
-    stop('Ancestry must be EAS, EUR, AFR, SAS, AMR, or ALL.')}
+    stop('Ancestry must be EAS, EUR, AFR, SAS, AMR, or ALL')}
   invisible()}
 
 
@@ -38,28 +38,27 @@ checkBool = function(bool) {
   assertLogical(bool)
   invisible()}
 
-checkSex = function(bool,covars) {
+checkSex = function(bool, covars) {
   assertLogical(bool)
-  if(bool==TRUE){
+  if(bool == TRUE){
     assertDataFrame(covars)
-    assertNames(names(covars), must.include = c('person_id','sex'))
-  }
+    assertNames(names(covars), must.include = c('person_id', 'sex'))}
   invisible()}
 
 checkR2 = function(R2) {
-  assertNumeric(R2,lower=0,upper=1)
+  assertNumeric(R2, lower = 0, upper = 1)
   invisible()}
 
 checkAnnotatedResults = function(annotated_results, include) {
   assertDataFrame(annotated_results)
-  assertNames(names(annotated_results), must.include = c( 'assoc_ID', 'rep'))
+  assertNames(names(annotated_results), must.include = c('assoc_ID', 'rep'))
   if (include == 'powered') {
     assertNames(names(annotated_results), must.include = c('powered'))}
   invisible()}
 
 checkIcdTable = function(icds) {
   assertDataFrame(icds)
-  assertNames(names(icds), must.include = c( 'person_id', 'icd','flag'))
+  assertNames(names(icds), must.include = c('person_id', 'icd','flag'))
   invisible()}
 
 
@@ -70,7 +69,7 @@ checkAnnotatedResults_forAE = function(annotated_results) {
 
 checkPhecodeTable = function(phecode_table) {
   assertDataFrame(phecode_table)
-  assertNames(names(phecode_table), must.include = c('person_id','phecode','N'))
+  assertNames(names(phecode_table), must.include = c('person_id', 'phecode', 'N'))
   invisible()}
 
 checkDemosTable = function(demos_table) {
@@ -79,16 +78,12 @@ checkDemosTable = function(demos_table) {
   invisible()}
 
 checkMCC = function(MCC){
-  assertNumeric(MCC,lower=1)
-}
+  assertNumeric(MCC, lower=1)}
 
 checkPhecode = function(phecode){
   assertCharacter(phecode)
   if (! phecode %in% pgrm::phecode_info$phecode) {
-    stop('phecode specified is not a valid phecode')
-  }
-  #assertTRUE(phecode %in% pgrm::phecode_info$phecode)
-}
+    stop('phecode specified is not a valid phecode')}}
 
 checkGenotypes = function(genotypes) {
   assertMultiClass(genotypes, c('BEDMatrix', 'matrix','bed.matrix'))
@@ -96,7 +91,7 @@ checkGenotypes = function(genotypes) {
   #assertNames(colnames(genotypes), type = 'unique', disjunct.from = 'score')
   invisible()}
 
-checkCovarList = function(covariate_list,demos_table) {
+checkCovarList = function(covariate_list, demos_table) {
   assertCharacter(covariate_list)
   demo_cols = names(demos_table)
   if (! all(covariate_list %in% demo_cols)) {
@@ -104,7 +99,7 @@ checkCovarList = function(covariate_list,demos_table) {
   }
   invisible()}
 
-annotate_power = function(annotated_results, LOUD = FALSE,max_thresh=50) {
+annotate_power = function(annotated_results, LOUD = FALSE, max_thresh = 50) {
   Power = NULL
 
   annotated_results[, Power := as.numeric(NA)]
@@ -129,71 +124,56 @@ annotate_power = function(annotated_results, LOUD = FALSE,max_thresh=50) {
     ## control:case ratio ceiling of max_thresh
     if (k > max_thresh) {
       k = max_thresh
-      N = annotated_results_tmp$cases * max_thresh
-    }
+      N = annotated_results_tmp$cases * max_thresh}
 
     pwr = genpwr.calc(calc = 'power', model = 'logistic', ge.interaction = NULL,
                       Case.Rate = NULL, k = k, N = N, MAF = AF, OR = odds_ratio,
                       Alpha = 0.05, Power = NULL, True.Model = c('Additive'),
                       Test.Model = c('Additive'))
-    annotated_results[i]$Power = pwr$Power_at_Alpha_0.05
-  #  assoc_ID = annotated_results_tmp$assoc_ID
-  #  x=pwr$Power_at_Alpha_0.05
-  #  print(glue('{assoc_ID} {x} k={k} N={N} AF={AF} OR={odds_ratio}'))
-
-  }
+    annotated_results[i]$Power = pwr$Power_at_Alpha_0.05}
   return(annotated_results)}
 
 sex_check_phecode = function(phecode){
-  sex=NULL
-  if(phecode %in% pgrm::phecode_info[sex=='Male']$phecode){
+  sex = NULL
+  if(phecode %in% pgrm::phecode_info[sex == 'Male']$phecode){
     return('M')}
-  if (phecode %in% pgrm::phecode_info[sex=='Female']$phecode){
+  if (phecode %in% pgrm::phecode_info[sex == 'Female']$phecode){
     return('F')}
   return('B')}
 
-get_pruned_SNPs = function(PGRM, geno, phecode, R2){
+get_pruned_SNPs = function(PGRM, geno, phecode, R2) {
   SNP = prune = id = NULL
 
   to_prune = c()
   cur_phecode = phecode
-  SNPs=geno@snps$id
+  SNPs = geno@snps$id
 
-  sub_PGRM=PGRM[phecode==cur_phecode]
+  sub_PGRM = PGRM[phecode == cur_phecode]
   sub_PGRM$prune = 0
   sub_PGRM[!SNP %in% SNPs]$prune = 1 ## mark SNPs that aren't in geno as pruned
-  SNP_list=sub_PGRM[prune==0]$SNP
+  SNP_list = sub_PGRM[prune == 0]$SNP
 
-  if(length(SNP_list) <3 ){
-    return(to_prune)
-  }
+  if(length(SNP_list) <3 ) {
+    return(to_prune)}
 
-  sub_geno=select.snps(geno, id %in% SNP_list)
-#  sub_geno=geno[,which(geno@snps$id %in% SNP_list)]
-  ld <- LD(sub_geno, c(1,ncol(sub_geno)),measure='r2')
+  sub_geno = select.snps(geno, id %in% SNP_list)
+  ld <- LD(sub_geno, c(1, ncol(sub_geno)), measure = 'r2')
 
   for(i in 1:length(SNP_list)){
     SNP1 = SNP_list[i]
-    chr1 = sub_geno@snps[sub_geno@snps$id==SNP1,]$chr
+    chr1 = sub_geno@snps[sub_geno@snps$id == SNP1,]$chr
     if(SNP1 %in% to_prune){
-      next
-    }
+      next}
     for(j in 1:length(SNP_list)){
       SNP2 = SNP_list[j]
-      chr2 = sub_geno@snps[sub_geno@snps$id==SNP2,]$chr
-      if(SNP2 %in% to_prune || SNP1 %in% to_prune || j==i || chr1 != chr2){
-        next
-      }
-      if(ld[SNP1,SNP2]>R2){
-        if(sub_PGRM[SNP==SNP1]$cat_LOG10_P > sub_PGRM[SNP==SNP2]$cat_LOG10_P){
+      chr2 = sub_geno@snps[sub_geno@snps$id == SNP2,]$chr
+      if(SNP2 %in% to_prune || SNP1 %in% to_prune || j == i || chr1 != chr2) {
+        next}
+      if(ld[SNP1, SNP2] > R2){
+        if(sub_PGRM[SNP == SNP1]$cat_LOG10_P > sub_PGRM[SNP == SNP2]$cat_LOG10_P){
           #  print("prune " %c% SNP2 %c% " with R2 " %c% ld[SNP1,SNP2] %c% " to " %c% SNP1)
-          to_prune=c(to_prune,SNP2)
+          to_prune = c(to_prune, SNP2)
         } else {
           # print("prune " %c% SNP1 %c% " with R2 " %c% ld[SNP1,SNP2] %c% " to " %c% SNP2)
-          to_prune=c(to_prune,SNP1)
-        }
-      }
-    }
-  }
-  return(to_prune)
-}
+          to_prune = c(to_prune, SNP1)}}}}
+  return(to_prune)}

@@ -9,7 +9,7 @@ make_pheno(icds, phecode_version = "V1.2")
 \arguments{
 \item{icds}{A data table ICD codes. Must include columns \code{person_id}, \code{icd}, \code{flag}}
 
-\item{phecode_version}{Phecode map version. Currently only supports "V1.2", which is default}
+\item{phecode_version}{Phecode map version. Currently only supports 'V1.2', which is default}
 }
 \value{
 An numeric value of the percent of associations that are powered

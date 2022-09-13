@@ -1,0 +1,27 @@
+
+---
+title: "Running the PGRM on summary statistics"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Running the PGRM on summary statistics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = '#>', fig.retina = 2, message = FALSE)
+```
+
+The Phenotype Genotype Reference Map (PGRM) is a set of associations from the ([NHGRI-EBI GWAS catalog](https://www.ebi.ac.uk/gwas/). The pgrm package enables users to calculate replication related measures on test cohorts.
+
+This vignette shows how replication measures can be calculated based on summary statistics. To learn how the PGRM can be used on raw data (i.e. row level genotype and phenotype data), see LINK TO OTHER VIGNETTE.
+
+## Load packages
+
+```{r}
+library('pgrm')
+library('data.table')
+```
+
+## Load GWAS summary statistics for test cohort
