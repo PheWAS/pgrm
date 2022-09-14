@@ -25,3 +25,47 @@ library('data.table')
 ```
 
 ## Load GWAS summary statistics for test cohort
+
+Summary statistics must include columns for the SNP, phecode, cases, controls, odds ratios, and P-values. 95% confidence intervals are optional but recommended. SNPs must be denoted by a string with the chromosome, position, reference and alternate allele, separated by ":". Builds hg19 and hg37 are both supported. Odds ratios should be oriented to the reference allele.
+
+In the example below, a .csv file of a small number of association from the UK biobank are read into a data table. When loading the file, remember to read in phecodes as characters.
+
+```{r}
+d=fread(
+   system.file('extdata', 'results_UKBB.csv', package = 'pgrm'),
+   colClasses = list(character = 'phecode'))
+head(d)
+```
+
+## Annotate test chort summary statistics
+
+You can add annotations from the PGRM to the test cohort results with the annotate_results() function. his funciton allows you to specify the genome build of your SNP identifiers as well as ancestry. SNP/phenotype pairs that are in the PGRM will be extracted from the test cohort & columns will be added to the data.table including the power calculation, as well as boolean values indiciating whether the association in the test cohort is powered at 80% and whether or not it replicated at p<0.05. Additional columns are added with information about the original study of the association (e.g. publicaiton date, reported p-value and odds ratio, etc).
+
+By default, this function uses the direction of effect, such that if an association is only defined as replicated if p<0.05 AND the direction of effect is the same as the original study. For this function to work, the odds ratios in the test cohort must be oriented to the alternate allle. If your data is not orginalized in this way, this functionality can be suppressed with the opion use_allele_dir==FALSE.
+
+```{r}
+anno = annotate_results(d, ancestry = 'EUR', build = 'hg38', calculate_power = TRUE, LOUD=FALSE)
+head(anno)
+```
+
+## Calculate the replication rate of associations powered at >80%
+
+The get_RR function takes an annotated data.table and calcuated the powered replication rate.
+```{r}
+get_RR(anno)
+```
+## Calculate the overall replication rate
+By adding the include='all' option, the replication rate is calculated using all associations, regardless of power. This measure is known as the overall replication rate.
+
+```{r}
+get_RR(anno,include='all')
+```
+
+## Calculate the actual:expected ratio
+
+The actual:expected ratio (AER) is the measure of the number of associations replicated divided by the sum of the power. This measure avoids the threshold effect induced by excluding on power >80%, and can be particularly useful for smaller datasets. 
+
+
+```{r}
+get_AER(anno, LOUD = TRUE)
+```
