@@ -16,4 +16,5 @@ remotes::install_github('hugheylab/pgrm')
 ## Usage
 
 Check out the [reference documentation](https://pgrm.hugheylab.org/reference/index.html).
+
 Here's a [vignette](https://pgrm.hugheylab.org/articles/my-vignette.html) of how to run PGRM on summary statistics.
