@@ -21,6 +21,12 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/my-vignette.html">Running the PGRM on summary statistics</a>
+  </div>
+</li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
@@ -62,7 +68,8 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>ancestry</dt>
-<dd><p>A string that indicates the ancestry of the PGRM. Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL</p></dd>
+<dd><p>A string that indicates the ancestry of the PGRM.
+Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL</p></dd>
 
 
 <dt>build</dt>
@@ -75,7 +82,7 @@ V1.2 is supported, which is the default</p></dd>
 
 
 <dt>unique</dt>
-<dd><p>If TRUE, then rows are uniqued by SNP/phecode (only relevant when ancestry == "ALL")</p></dd>
+<dd><p>If TRUE, then rows are uniqued by SNP/phecode (only relevant when ancestry == 'ALL')</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -86,12 +93,10 @@ V1.2 is supported, which is the default</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function returns a copy of the PGRM with specified columns for SNP, AF, and cases_needed
-according to the arguments specified. The function assigns a column "SNP" as either SNP_hg19 or SNP_hg38, depending
-on the build argument. It also assigns the allele frequency (AF) and cases_needed columns according to the ancestry.
-If the ancestry is != "ALL", then the funciton also subsets PGRM_ALL to include only associations that were based in
-cohorts with the specified ancestry. This funciton is called inside annotate_results(),
-which can be used to annoate the results of a specific test cohort.</p>
+    <p>This function returns a copy of the PGRM. The function assigns a column 'SNP' as
+either SNP_hg19 or SNP_hg38, depending on the build argument. The returned PGRM only includes
+associations annotated with the specified ancestry, and the risk allele frequency (RAF) is based
+on the specified ancestry.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -103,43 +108,43 @@ which can be used to annoate the results of a specific test cohort.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pgrm.hugheylab.org">pgrm</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Get a copy of the PGRM for build hg19, East Asian ancestry</span></span></span>
-<span class="r-in"><span><span class="fu">get_PGRM</span><span class="op">(</span>build<span class="op">=</span><span class="st">'hg19'</span>,ancestry<span class="op">=</span><span class="st">'EAS'</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       assoc_ID              SNP ancestry        rsID risk_allele_dir</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:    59717 10:101290301:T:C      EAS   rs6584283             alt</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:   247636 10:104456686:T:C      EAS  rs10883765             alt</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:   103387 10:104595248:G:A      EAS   rs4919687             ref</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:   247628 10:104654577:T:C      EAS  rs10883795             alt</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:   216343 10:104719096:G:A      EAS  rs12413409             ref</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1211:   112945   9:84308948:G:A      EAS   rs2796441             ref</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1212:   180392    9:8879118:C:T      EAS  rs17584499             alt</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1213:   216979   9:92202495:T:C      EAS  rs10797119             alt</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1214:    84289   9:93636664:G:A      EAS    rs290227             ref</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1215:   112946   9:98278413:C:T      EAS rs113154802             ref</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       risk_allele     AF phecode    phecode_string    category_string</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:           C 0.5569     153 Colorectal cancer          neoplasms</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:           C 0.4108   295.1     Schizophrenia        psychiatric</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:           G 0.2494     153 Colorectal cancer          neoplasms</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:           C 0.5233   295.1     Schizophrenia        psychiatric</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:           G 0.2816     401      Hypertension circulatory system</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1211:           G 0.6390   250.2   Type 2 diabetes          endocrine</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1212:           T 0.1050   250.2   Type 2 diabetes          endocrine</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1213:           C 0.2571     495            Asthma        respiratory</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1214:           G 0.5868  290.16 Vascular dementia       neurological</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1215:           C 0.1071   250.2   Type 2 diabetes          endocrine</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       cat_LOG10_P   cat_OR  cat_L95  cat_U95 cases_needed Study_accession</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:   10.221849 1.086957 1.060000 1.110000         5873      GCST009869</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:    8.522879 1.086957 1.040000 1.130000        13139      GCST003880</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:   11.096910 1.140000 1.100000 1.190000         2943      GCST003799</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:    9.096910 1.150000 1.100000 1.200000         2171      GCST003880</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:    8.301030 1.176471 1.111111 1.234568         2228      GCST011141</span>
+<span class="r-in"><span><span class="fu">get_PGRM</span><span class="op">(</span>build <span class="op">=</span> <span class="st">'hg19'</span>, ancestry <span class="op">=</span> <span class="st">'EAS'</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       assoc_ID             SNP ancestry        rsID risk_allele_dir        RAF</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:     7883 4:174444902:G:A      EAS  rs17059534             alt 0.07270002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:     7884 4:111718067:G:A      EAS   rs6843082             ref 0.75449997</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:     7885 4:111761487:T:C      EAS   rs3853445             ref 0.63690001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:     7886 1:112392360:G:T      EAS  rs12044963             alt 0.34810001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:     7887 1:203026591:A:G      EAS  rs17461925             ref 0.80930001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1211:   306221  6:32575513:C:G      EAS   rs9271060             alt 0.81039999</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1212:   306222  6:83648056:C:T      EAS    rs293526             alt 0.79761900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1213:   306223 9:117568766:A:G      EAS   rs6478109             alt 0.47939998</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1214:   306224  6:32659443:A:C      EAS rs140068907             alt 0.06639999</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1215:   311954  18:6282593:A:C      EAS    rs403814             ref 0.75610000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       phecode      phecode_string    category_string cat_LOG10_P   cat_OR</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:  427.21 Atrial fibrillation circulatory system    9.522879 1.201000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:  427.21 Atrial fibrillation circulatory system  126.000000 1.842000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:  427.21 Atrial fibrillation circulatory system   33.698970 1.330000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:  427.21 Atrial fibrillation circulatory system   14.397940 1.110000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:  427.21 Atrial fibrillation circulatory system   10.045757 1.077000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1211:   28.000000 1.080000 1.060000 1.090000         6225      GCST010118</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1212:    9.045757 1.570000 1.360000 1.820000          506      GCST000601</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1213:    8.000000 1.107381 1.068997 1.147144         5698    GCST90013679</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1214:   10.154902 2.200000 1.730000 2.780000           67      GCST000993</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1215:    7.397940 1.060000 1.040000 1.080000        33750      GCST010118</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1211:   555.1  Regional enteritis          digestive   22.000000 2.857143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1212:   555.1  Regional enteritis          digestive   10.698970 2.127660</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1213:   555.1  Regional enteritis          digestive   24.301030 2.083334</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1214:   555.1  Regional enteritis          digestive   11.000000 1.980000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1215:     401        Hypertension circulatory system    8.221849 1.150000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       cat_L95 cat_U95 Study_accession pub_count   pub_date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:   1.134   1.271      GCST004373         1 2017-04-17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:   1.751   1.939      GCST004373         1 2017-04-17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:   1.271   1.391      GCST004373         1 2017-04-17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:   1.082   1.140      GCST004373         2 2017-04-17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:   1.053   1.102      GCST004373         1 2017-04-17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1211:   2.330   3.570      GCST003360         1 2016-02-18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1212:   1.690   2.630      GCST003360         1 2016-02-18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1213:   1.820   2.380      GCST003360         1 2016-02-18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1214:   1.620   2.410      GCST003360         1 2016-02-18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1215:   1.070   1.230      GCST003613         1 2016-08-02</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

@@ -21,6 +21,12 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/my-vignette.html">Running the PGRM on summary statistics</a>
+  </div>
+</li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
@@ -57,7 +63,7 @@
 <span>  ancestry <span class="op">=</span> <span class="st">"all"</span>,</span>
 <span>  build <span class="op">=</span> <span class="st">"hg19"</span>,</span>
 <span>  phecode_version <span class="op">=</span> <span class="st">"V1.2"</span>,</span>
-<span>  calculate_power <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  calculate_power <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  annotate_CI_overlap <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  LOUD <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -98,7 +104,7 @@ case and control counts from the results file. Necessary for get_AER(). Default 
 
 
 <dt>annotate_CI_overlap</dt>
-<dd><p>If TRUE then a column called "annotate_CI_overlap"
+<dd><p>If TRUE then a column called 'annotate_CI_overlap'
 is added to the table, values:
 <strong>overlap</strong>: 95% CIs of PGRM and test cohort overlap
 <strong>test_cohort_greater</strong>: 95% CI of test cohort greater than PGRM
@@ -124,14 +130,17 @@ sets included in the package (e.g. results_MGI). (NOTE: If the direction of effe
 is used to determine if an association is replicated, then the odds ratios of
 the result set must be oriented to the alternative allele.)</p>
 <p>The function returns a data.table with the following annotations:</p><ul><li><p>Phecode informtion, including phecode_string and phecode_category</p></li>
-<li><p>Allele frequencies from GnomAD (column AF), ancestry specified by the ancestry argument</p></li>
+<li><p>Risk allele frequency from GnomAD (column RAF), ancestry specified by the ancestry argument</p></li>
 <li><p>The rsID</p></li>
 <li><p>The direction of effect (ref or alt) and risk allele of the original association</p></li>
 <li><p>Summary statistics from the GWAS catalog association, including the -log10(P),
 odds ratio, and 95% confidence intervals (cat_LOG10_P, cat_OR, cat_L95, cat_U95)</p></li>
 <li><p>The study accession ID from the GWAS catalog</p></li>
 <li><p>A column called powered, which is 1 or 0 indicating whether the test association
-is powered &gt; 80% (1 if cases &gt;= cases_needed)</p></li>
+is powered &gt; 80%. If calculate_power==TRUE, then the power is determined by the case/control
+counts specified in the results data.table. Otherwise, it is derrived from the estimate
+pre-computed cases needed assuming a 1:5 case:control ratio. All power calculations use
+alpha=0.0</p></li>
 <li><p>A column called rep that indicates if the association is replicated (i.e.
 p&lt;0.05 in the test cohort; if use_allele_dir==TRUE, then the direction of effect
 from the test cohort must also be consistant with what is reported in the catalog)</p></li>
@@ -151,24 +160,23 @@ intervals are reported in the test cohort summary statistics)</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pgrm.hugheylab.org">pgrm</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## annotate the BioVU African ancestry result set</span></span></span>
-<span class="r-in"><span><span class="va">anno</span> <span class="op">=</span> <span class="fu">annotate_results</span><span class="op">(</span><span class="va">results_BioVU_AFR</span>,ancestry<span class="op">=</span><span class="st">'AFR'</span>, build<span class="op">=</span><span class="st">'hg19'</span>,calculate_power<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">anno</span> <span class="op">=</span> <span class="fu">annotate_results</span><span class="op">(</span><span class="va">results_BioVU_AFR</span>, ancestry <span class="op">=</span> <span class="st">'AFR'</span>, build <span class="op">=</span> <span class="st">'hg19'</span>, calculate_power <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Doing power calculations"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Get the replication rate of associations powered at &gt;80%</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="get_RR.html">get_RR</a></span><span class="op">(</span><span class="va">anno</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Replicated 9 of 11 for RR=81.8%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8181818</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Replicated 11 of 14 for RR=78.6%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7857143</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Get the replication rate of all associations</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="get_RR.html">get_RR</a></span><span class="op">(</span><span class="va">anno</span>,include<span class="op">=</span><span class="st">'all'</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Replicated 17 of 31 for RR=54.8%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5483871</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Replicated 19 of 31 for RR=61.3%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.6129032</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Get the actual:expected ratio</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="get_AER.html">get_AER</a></span><span class="op">(</span><span class="va">anno</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Expected 20.2, replicated 17 for AE=0.843 (31</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> associations for 14 uniq phecodes)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8429951</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Expected 20.2, replicated 19 for AE=0.94 (31 associations for 14 uniq phecodes)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9402914</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

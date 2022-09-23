@@ -21,6 +21,12 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/my-vignette.html">Running the PGRM on summary statistics</a>
+  </div>
+</li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
@@ -51,13 +57,18 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_powered_rate</span><span class="op">(</span><span class="va">annotated_results</span>, LOUD <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_powered_rate</span><span class="op">(</span><span class="va">annotated_results</span>, include_missing_pheno <span class="op">=</span> <span class="cn">TRUE</span>, LOUD <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>annotated_results</dt>
 <dd><p>A data table of results that have been annotated with the PGRM</p></dd>
+
+
+<dt>include_missing_pheno</dt>
+<dd><p>If TRUE, then denominator inclues SNP/phecode pairs that are not
+present in the annotated_results data.table</p></dd>
 
 
 <dt>LOUD</dt>

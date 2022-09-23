@@ -21,6 +21,12 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/my-vignette.html">Running the PGRM on summary statistics</a>
+  </div>
+</li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
@@ -66,6 +72,11 @@
         <dd>Annotate a result set with the PGRM</dd>
       </dl><dl><dt>
           
+          <code><a href="benchmark_results.html">benchmark_results</a></code> 
+        </dt>
+        <dd>Summary statistics from all five test cohorts with annotations</dd>
+      </dl><dl><dt>
+          
           <code><a href="exclude_ranges.html">exclude_ranges</a></code> 
         </dt>
         <dd>Exclude ranges for phecode controls</dd>
@@ -88,12 +99,32 @@
           
           <code><a href="get_pheno.html">get_pheno()</a></code> 
         </dt>
-        <dd>Define a phenotype from an ICD file and list of person_id</dd>
+        <dd>Add case/control status for a specified phenotype to a covariate file.</dd>
       </dl><dl><dt>
           
           <code><a href="get_powered_rate.html">get_powered_rate()</a></code> 
         </dt>
         <dd>Calculate the percent of associations that are powered in a test set</dd>
+      </dl><dl><dt>
+          
+          <code><a href="icdExampleTable.html">icdExampleTable</a></code> 
+        </dt>
+        <dd>Example table of ICD data</dd>
+      </dl><dl><dt>
+          
+          <code><a href="icdPhecodeMap_V1_2.html">icdPhecodeMap_V1_2</a></code> 
+        </dt>
+        <dd>ICD code to phecode map, version 1.2</dd>
+      </dl><dl><dt>
+          
+          <code><a href="make_pheno.html">make_pheno()</a></code> 
+        </dt>
+        <dd>Make a phecode phenotype file from table of ICD codes</dd>
+      </dl><dl><dt>
+          
+          <code><a href="phecode_info.html">phecode_info</a></code> 
+        </dt>
+        <dd>Information about phecodes</dd>
       </dl><dl><dt>
           
           <code><a href="results_BBJ.html">results_BBJ</a></code> 
@@ -119,6 +150,12 @@
           <code><a href="results_UKBB.html">results_UKBB</a></code> 
         </dt>
         <dd>Summary statistics from UK Biobank (UKBB)</dd>
+      </dl><dl><dt>
+          
+          <code><a href="run_PGRM_assoc.html">run_PGRM_assoc()</a></code> 
+        </dt>
+        <dd>Run associations in the pgrm on data from a test cohort. Function requires row level phenotype,
+genotype, and covariate information.</dd>
       </dl></div>
   </main></div>
 
