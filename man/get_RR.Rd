@@ -46,6 +46,6 @@ By default, it calculates the RR for associations that powered at >80\%.
   PGRM = get_PGRM(build = 'hg19', ancestry = 'all')
 
   ## Run associations from the PGRM
- #run_PGRM_assoc(geno,pheno,covars,covariate_names=c('last_age'),PGRM,MCC=2,use_exclude_range=TRUE,check_sex=TRUE)
+  run_PGRM_assoc(geno,pheno,covars,covariate_names=c('last_age'),PGRM,MCC=2,use_exclude_range=TRUE,check_sex=TRUE)
   
 }

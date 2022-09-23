@@ -17,6 +17,9 @@ A data.table with the following columns:
 \item \code{P}: Numeric raw P-value for test cohort association
 \item \code{L95}: Numeric 95\% lower confidence interval for test cohort association
 \item \code{U95}: Numeric 95\% upper confidence interval for test cohort association
+\item \code{cohort}: Character vector of the source cohort (\strong{BBJ}: Biobank Japan,
+\strong{BioVU_AFR}: BioVU, African ancestry, \strong{BioVU_EUR}: BioVU, European ancestry,
+\strong{MGI}: Michigan genomics initiative, \strong{UKBB}: UK Biobank)
 \item \code{ancestry}: Character vector of the ancestery of the source GWAS using 1000
 Genomes superpopulations ancestry groupings (\strong{AFR}: African, \strong{EAS}: East Asian,
 \strong{EUR}: European, \strong{AMR}: AdMixed American, \strong{SAS}: South Asian)
@@ -42,6 +45,7 @@ the catalog and test association
 benchmark_results
 }
 \description{
-This table summary statistics for PGRM association in BioVU (EUR and AFR), BBJ, MGI, and UKBB
+This table summary statistics for PGRM association in BioVU (EUR and AFR), BBJ, MGI, and UKBB.
+All associations are annotated and the table is in long format.
 }
 \keyword{datasets}

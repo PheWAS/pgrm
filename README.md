@@ -3,7 +3,7 @@
 [![check-deploy](https://github.com/hugheylab/pgrm/workflows/check-deploy/badge.svg)](https://github.com/hugheylab/pgrm/actions)
 [![codecov](https://codecov.io/gh/hugheylab/pgrm/branch/main/graph/badge.svg)](https://codecov.io/gh/hugheylab/pgrm)
 
-`pgrm` is an R package for doing stuff.
+`pgrm` is an R package for measuring the quality of biobank data through replication.
 
 ## Installation
 

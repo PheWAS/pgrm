@@ -19,7 +19,7 @@ A data table with the following columns:
 exclude_ranges
 }
 \description{
-The data are artificial and do not correspond to real patients.
+Exclude ranges for phecode controls
 }
 \seealso{
 \code{\link[=get_pheno]{get_pheno()}}

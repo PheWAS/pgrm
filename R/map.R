@@ -44,7 +44,6 @@
 
 #' Information about phecodes
 #'
-#' The data are artificial and do not correspond to real patients.
 #'
 #' @format A data table with the following columns:
 #'
@@ -62,7 +61,6 @@
 
 #' Exclude ranges for phecode controls
 #'
-#' The data are artificial and do not correspond to real patients.
 #'
 #' @format A data table with the following columns:
 #'
@@ -175,7 +173,8 @@
 
 #' Summary statistics from all five test cohorts with annotations
 #'
-#' This table summary statistics for PGRM association in BioVU (EUR and AFR), BBJ, MGI, and UKBB
+#' This table summary statistics for PGRM association in BioVU (EUR and AFR), BBJ, MGI, and UKBB.
+#' All associations are annotated and the table is in long format.
 #'
 #' @format A data.table with the following columns:
 #'
@@ -189,6 +188,9 @@
 #' * `P`: Numeric raw P-value for test cohort association
 #' * `L95`: Numeric 95% lower confidence interval for test cohort association
 #' * `U95`: Numeric 95% upper confidence interval for test cohort association
+#' * `cohort`: Character vector of the source cohort (**BBJ**: Biobank Japan,
+#' **BioVU_AFR**: BioVU, African ancestry, **BioVU_EUR**: BioVU, European ancestry,
+#' **MGI**: Michigan genomics initiative, **UKBB**: UK Biobank)
 #' * `ancestry`: Character vector of the ancestery of the source GWAS using 1000
 #' Genomes superpopulations ancestry groupings (**AFR**: African, **EAS**: East Asian,
 #' **EUR**: European, **AMR**: AdMixed American, **SAS**: South Asian)

@@ -22,7 +22,7 @@ A data table with the following columns:
 phecode_info
 }
 \description{
-The data are artificial and do not correspond to real patients.
+Information about phecodes
 }
 \seealso{
 \code{\link[=get_pheno]{get_pheno()}}
