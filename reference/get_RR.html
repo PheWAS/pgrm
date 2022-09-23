@@ -85,67 +85,6 @@ If 'all' then all associations are included</p></dd>
 <p>An numeric value of the replication rate of the result set</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pgrm.hugheylab.org">pgrm</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">## Read in an ICD file. Format should look like the example file.</span></span></span>
-<span class="r-in"><span>  <span class="co">## Note: Don't forget to load icd column as a character vector!</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">icdExampleTable</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    person_id    icd flag entry_date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         1  034.0    9 2014-04-12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         3  041.9    9 2014-08-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:         1 079.99    9 2011-05-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:         3  112.1    9 2014-08-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         2  150.5    9 2014-02-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         2  150.5    9 2014-04-18</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">## make pheno table</span></span></span>
-<span class="r-in"><span>  <span class="va">pheno</span> <span class="op">=</span> <span class="fu"><a href="make_pheno.html">make_pheno</a></span><span class="op">(</span><span class="va">icdExampleTable</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pheno</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    person_id phecode N</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         1     465 5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         3     041 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:         1     079 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:         3     112 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         2     150 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         2     151 6</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">## Load in covariate file. Here's a generated example</span></span></span>
-<span class="r-in"><span>  <span class="va">covar_table_test</span> <span class="op">=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  person_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'F'</span>, <span class="st">'M'</span>, <span class="st">'F'</span>, <span class="st">'M'</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  last_age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">28772</span>, <span class="fl">18028</span>, <span class="fl">11636</span>, <span class="fl">14589</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">## Load genotype file</span></span></span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">gaston</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: Rcpp</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: RcppParallel</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘RcppParallel’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:Rcpp’:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     LdFlags</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Gaston set number of threads to 1. Use setThreadOptions() to modify this.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘gaston’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:stats’:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     sigma</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:base’:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     cbind, rbind</span>
-<span class="r-in"><span> <span class="co"># geno = read.bed.matrix('data/geno_test')</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">## Make a PGRM instance, specifying genome build and ancestry</span></span></span>
-<span class="r-in"><span>  <span class="va">PGRM</span> <span class="op">=</span> <span class="fu"><a href="get_PGRM.html">get_PGRM</a></span><span class="op">(</span>build <span class="op">=</span> <span class="st">'hg19'</span>, ancestry <span class="op">=</span> <span class="st">'all'</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">## Run associations from the PGRM</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="run_PGRM_assoc.html">run_PGRM_assoc</a></span><span class="op">(</span><span class="va">geno</span>,<span class="va">pheno</span>,<span class="va">covars</span>,covariate_names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'last_age'</span><span class="op">)</span>,<span class="va">PGRM</span>,MCC<span class="op">=</span><span class="fl">2</span>,use_exclude_range<span class="op">=</span><span class="cn">TRUE</span>,check_sex<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in checkMultiClass(x, classes, null.ok):</span> object 'geno' not found</span>
-<span class="r-in"><span>  </span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -28,9 +28,6 @@
     <loc>https://pgrm.hugheylab.org/reference/benchmark_results.html</loc>
   </url>
   <url>
-    <loc>https://pgrm.hugheylab.org/reference/exclude_ranges.html</loc>
-  </url>
-  <url>
     <loc>https://pgrm.hugheylab.org/reference/get_AER.html</loc>
   </url>
   <url>
@@ -40,25 +37,10 @@
     <loc>https://pgrm.hugheylab.org/reference/get_RR.html</loc>
   </url>
   <url>
-    <loc>https://pgrm.hugheylab.org/reference/get_pheno.html</loc>
-  </url>
-  <url>
     <loc>https://pgrm.hugheylab.org/reference/get_powered_rate.html</loc>
   </url>
   <url>
-    <loc>https://pgrm.hugheylab.org/reference/icdExampleTable.html</loc>
-  </url>
-  <url>
-    <loc>https://pgrm.hugheylab.org/reference/icdPhecodeMap_V1_2.html</loc>
-  </url>
-  <url>
     <loc>https://pgrm.hugheylab.org/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://pgrm.hugheylab.org/reference/make_pheno.html</loc>
-  </url>
-  <url>
-    <loc>https://pgrm.hugheylab.org/reference/phecode_info.html</loc>
   </url>
   <url>
     <loc>https://pgrm.hugheylab.org/reference/results_BBJ.html</loc>
@@ -74,8 +56,5 @@
   </url>
   <url>
     <loc>https://pgrm.hugheylab.org/reference/results_UKBB.html</loc>
-  </url>
-  <url>
-    <loc>https://pgrm.hugheylab.org/reference/run_PGRM_assoc.html</loc>
   </url>
 </urlset>
