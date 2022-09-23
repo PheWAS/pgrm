@@ -17,7 +17,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = '#>', fig.retina = 2, message =
 
 The Phenotype Genotype Reference Map (PGRM) is a set of associations from the ([NHGRI-EBI GWAS catalog](https://www.ebi.ac.uk/gwas/). The pgrm package enables users to calculate replication related measures on test cohorts.
 
-This vignette shows how replication measures can be calculated based on summary statistics. To generate summary statistics from raw data, see the run_PGRM_assoc() function.
+This vignette shows how replication measures can be calculated based on summary statistics from a test cohort. (To generate summary statistics from raw data, see the run_PGRM_assoc() function.)
 
 ## Load packages
 
@@ -28,7 +28,7 @@ library('data.table')
 
 ## Load GWAS summary statistics for test cohort
 
-Summary statistics must include columns for the SNP, phecode, cases, controls, odds ratios, and P-values. 95% confidence intervals are optional but recommended. SNPs must be denoted by a string with the chromosome, position, reference and alternate allele, separated by ":". Builds hg19 and hg37 are both supported. Odds ratios and 95% upper/lower confidence invervals (U95, L95) should be oriented to the reference allele.
+The first step is to load in a file of summary statistics. This file must include columns for the SNP, phecode, cases, controls, odds ratios, and P-values. 95% confidence intervals are optional but recommended. SNPs must be denoted by a string with the chromosome, position, reference and alternate allele, separated by ":". Builds hg19 and hg37 are both supported. Odds ratios and 95% upper/lower confidence invervals (U95, L95) should be oriented to the reference allele.
 
 In the example below, we open a csv file containing summary statistics (in this case, the summary statistics from the BioVU cohort) using the fread() function. Alternatively you can read your datafile in as a data.frame and convert it to a data.table using the function data.table().
 
@@ -41,12 +41,12 @@ head(d)
 
 ## Annotate test chort summary statistics
 
-You can add annotations from the PGRM to the test cohort results with the annotate_results() function. Use the build argument to specify the build of your SNP labels (hg19 or hg38). The ancestry argument should be set to the genetic ancestry of the cohort (EAS, EUR, AFR, SAS, AMR, and ALL).
+Next, you can add annotations from the PGRM to the test cohort results with the annotate_results() function. Use the build argument to specify the build of your SNP labels (hg19 or hg38). The ancestry argument should be set to the genetic ancestry of the cohort (EAS, EUR, AFR, SAS, AMR, and ALL).
 
-The funciton will annotate all SNP/phenotype pairs that are present in both the summary statistics table and the PGRM, and returns a data.table of annotated summary statistics. The annotation includes information about power, replication, and the source study of the association. A boolean variable `powered` indicates if the association is powered at 80% (given the reported odds ratio and allele frequency, along with the case and control counts from the test cohort). A boolean variable `rep` indicates if the association is replicated in the test cohort at p<0.05 and the direction of effect is consistent in the source and test summary statistics. To match on the direction of effect, the odds ratios in the test cohort must be oriented to the alternate allle. If your data is not orginalized in this way, this functionality can be suppressed with the opion use_allele_dir==FALSE.
+The annotate_results() funciton will annotate all SNP/phenotype pairs that are present in both the summary statistics table and the PGRM, and returns a data.table of annotated summary statistics. The annotation includes information about power, replication, and the source study of the association. A boolean variable `powered` indicates if the association is powered at 80% (given the reported odds ratio and allele frequency, along with the case and control counts from the test cohort). A boolean variable `rep` indicates if the association is replicated in the test cohort at p<0.05 and the direction of effect is consistent in the source and test summary statistics. To match on the direction of effect, the odds ratios in the test cohort must be oriented to the alternate allle. If your data is not orginalized in this way, this functionality can be suppressed with the opion use_allele_dir==FALSE.
 
 ```{r}
-anno = annotate_results(d, ancestry = 'EUR', build = 'hg19', calculate_power = TRUE, LOUD=FALSE)
+anno = annotate_results(d, ancestry = 'EUR', build = 'hg19', calculate_power = TRUE, LOUD = FALSE)
 head(anno)
 ```
 
@@ -76,7 +76,7 @@ get_AER(anno, LOUD = TRUE)
 You can assess the replication rate by category like this.
 
 ```{r}
-by_pheno_cat=anno[,.(total_tested = .N, replicated = sum(rep), AER = sum(rep)/sum(Power)),
+by_pheno_cat=anno[,.(total_tested = .N, replicated = sum(rep), AER = sum(rep) / sum(Power)),
                   by=c('category_string')]
 by_pheno_cat
 ```
@@ -85,7 +85,23 @@ Why not make a plot?
 
 ```{r}
 library(ggplot2)
-ggplot(by_pheno_cat, aes(y = category_string,x = AER)) + geom_bar(stat = 'identity') + 
+ggplot(by_pheno_cat, aes(y = category_string, x = AER)) + geom_bar(stat = 'identity') + 
   theme_classic() + ylab('')
 ```
 
+## Comparing a single phenotype
+
+You can also compare the associations for a single phenotype against what was reported in the catalog. To do this, we use the rOR, rL95, and rU95 values from the annotion file as columns have been oriented to the risk allele. To make a plot, we will bind results from the test cohort and the source cohort (catalog) for a single phenotype.
+
+```{r, fig.width = 6, fig.height = 8}
+gout_test = anno[phecode_string %like% 'Gout',c('SNP', 'rOR', 'rL95', 'rU95')]
+gout_test$cohort = 'test'
+gout_cat = anno[phecode_string %like% 'Gout', c('SNP', 'cat_OR', 'cat_L95', 'cat_U95')]
+gout_cat$cohort = 'catalog'
+gout = rbind(gout_test, gout_cat, use.names = FALSE)
+
+ggplot(gout, aes(y = SNP, x = rOR, color = cohort)) + 
+  geom_point(position = position_dodge(width = 0.4)) + 
+  geom_errorbar(aes(xmin = rL95, xmax = rU95), width = 0.2, position = position_dodge(width = 0.4)) + 
+  ylab('') + xlab('Odds ratio') + theme_bw()
+```

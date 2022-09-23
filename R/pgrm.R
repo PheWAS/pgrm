@@ -236,8 +236,9 @@ get_AER = function(annotated_results, LOUD = TRUE) {
   total_assoc = nrow(r)
   uniq_phecode = length(unique(r$phecode))
   if (LOUD == TRUE) {
-    print(glue('Expected {expected}, replicated {actual} for AE={AE_round} ({total_assoc}
-               associations for {uniq_phecode} uniq phecodes)', AE_round = round(AE, 3)))}
+    ## Need to keep this line long because it prints to the terminal
+    print(glue('Expected {expected}, replicated {actual} for AE={AE_round} ({total_assoc} associations for {uniq_phecode} uniq phecodes)',
+               AE_round = round(AE, 3)))}
   return(AE)}
 
 
@@ -263,8 +264,8 @@ get_powered_rate = function(annotated_results, include_missing_pheno = TRUE, LOU
 
   if (LOUD == TRUE) {
     uniq_phecode = length(unique(annotated_results[powered == 1]$phecode))
-    print(glue('Powered for {powered} of {total_rows} associations {pr} for {uniq_phecode}
-               uniq phecodes'))}
+    ## Need to keep this line long because it prints to the terminal
+    print(glue('Powered for {powered} of {total_rows} associations {pr} for {uniq_phecode} uniq phecodes'))}
   return(powered_rate)}
 
 
