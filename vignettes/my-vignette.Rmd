@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Running the PGRM on summary statistics}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, echo = FALSE}
@@ -15,7 +17,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = '#>', fig.retina = 2, message =
 
 The Phenotype Genotype Reference Map (PGRM) is a set of associations from the ([NHGRI-EBI GWAS catalog](https://www.ebi.ac.uk/gwas/). The pgrm package enables users to calculate replication related measures on test cohorts.
 
-This vignette shows how replication measures can be calculated based on summary statistics. To learn how the PGRM can be used on raw data (i.e. row level genotype and phenotype data), see LINK TO OTHER VIGNETTE.
+This vignette shows how replication measures can be calculated based on summary statistics. To generate summary statistics from raw data, see the run_PGRM_assoc() function.
 
 ## Load packages
 
@@ -26,25 +28,25 @@ library('data.table')
 
 ## Load GWAS summary statistics for test cohort
 
-Summary statistics must include columns for the SNP, phecode, cases, controls, odds ratios, and P-values. 95% confidence intervals are optional but recommended. SNPs must be denoted by a string with the chromosome, position, reference and alternate allele, separated by ":". Builds hg19 and hg37 are both supported. Odds ratios should be oriented to the reference allele.
+Summary statistics must include columns for the SNP, phecode, cases, controls, odds ratios, and P-values. 95% confidence intervals are optional but recommended. SNPs must be denoted by a string with the chromosome, position, reference and alternate allele, separated by ":". Builds hg19 and hg37 are both supported. Odds ratios and 95% upper/lower confidence invervals (U95, L95) should be oriented to the reference allele.
 
-In the example below, a .csv file of a small number of association from the UK biobank are read into a data table. When loading the file, remember to read in phecodes as characters.
+In the example below, we open a csv file containing summary statistics (in this case, the summary statistics from the BioVU cohort) using the fread() function. Alternatively you can read your datafile in as a data.frame and convert it to a data.table using the function data.table().
 
 ```{r}
 d=fread(
-   system.file('extdata', 'results_UKBB.csv', package = 'pgrm'),
+   system.file('extdata', 'data_sample.csv', package = 'pgrm'),
    colClasses = list(character = 'phecode'))
 head(d)
 ```
 
 ## Annotate test chort summary statistics
 
-You can add annotations from the PGRM to the test cohort results with the annotate_results() function. his funciton allows you to specify the genome build of your SNP identifiers as well as ancestry. SNP/phenotype pairs that are in the PGRM will be extracted from the test cohort & columns will be added to the data.table including the power calculation, as well as boolean values indiciating whether the association in the test cohort is powered at 80% and whether or not it replicated at p<0.05. Additional columns are added with information about the original study of the association (e.g. publicaiton date, reported p-value and odds ratio, etc).
+You can add annotations from the PGRM to the test cohort results with the annotate_results() function. Use the build argument to specify the build of your SNP labels (hg19 or hg38). The ancestry argument should be set to the genetic ancestry of the cohort (EAS, EUR, AFR, SAS, AMR, and ALL).
 
-By default, this function uses the direction of effect, such that if an association is only defined as replicated if p<0.05 AND the direction of effect is the same as the original study. For this function to work, the odds ratios in the test cohort must be oriented to the alternate allle. If your data is not orginalized in this way, this functionality can be suppressed with the opion use_allele_dir==FALSE.
+The funciton will annotate all SNP/phenotype pairs that are present in both the summary statistics table and the PGRM, and returns a data.table of annotated summary statistics. The annotation includes information about power, replication, and the source study of the association. A boolean variable `powered` indicates if the association is powered at 80% (given the reported odds ratio and allele frequency, along with the case and control counts from the test cohort). A boolean variable `rep` indicates if the association is replicated in the test cohort at p<0.05 and the direction of effect is consistent in the source and test summary statistics. To match on the direction of effect, the odds ratios in the test cohort must be oriented to the alternate allle. If your data is not orginalized in this way, this functionality can be suppressed with the opion use_allele_dir==FALSE.
 
 ```{r}
-anno = annotate_results(d, ancestry = 'EUR', build = 'hg38', calculate_power = TRUE, LOUD=FALSE)
+anno = annotate_results(d, ancestry = 'EUR', build = 'hg19', calculate_power = TRUE, LOUD=FALSE)
 head(anno)
 ```
 
@@ -63,9 +65,27 @@ get_RR(anno,include='all')
 
 ## Calculate the actual:expected ratio
 
-The actual:expected ratio (AER) is the measure of the number of associations replicated divided by the sum of the power. This measure avoids the threshold effect induced by excluding on power >80%, and can be particularly useful for smaller datasets. 
-
+The actual:expected ratio (AER) is the measure of the number of associations replicated divided by the sum of the power. This measure avoids the threshold effect induced by excluding on power >80%, and can be particularly useful for smaller datasets.
 
 ```{r}
 get_AER(anno, LOUD = TRUE)
 ```
+
+## Replication by phenotype category
+
+You can assess the replication rate by category like this.
+
+```{r}
+by_pheno_cat=anno[,.(total_tested = .N, replicated = sum(rep), AER = sum(rep)/sum(Power)),
+                  by=c('category_string')]
+by_pheno_cat
+```
+
+Why not make a plot?
+
+```{r}
+library(ggplot2)
+ggplot(by_pheno_cat, aes(y = category_string,x = AER)) + geom_bar(stat = 'identity') + 
+  theme_classic() + ylab('')
+```
+
