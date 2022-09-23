@@ -42,37 +42,6 @@
 #' @seealso [get_PGRM()]
 'PGRM_ALL'
 
-#' Information about phecodes
-#'
-#'
-#' @format A data table with the following columns:
-#'
-#' * `phecode`: Character vector of phecode
-#' * `phecode_string`: Character vector or string label for phecode
-#' * `sex`: Indicates if phecode is sex specific. Values `Female`, `Male`, or `Both`
-#' * `leaf`: A boolean value indicating that the phecode is a leaf (has no children)
-#' * `phecode_top`: Character vector of the parent phecode
-#' * `phecode_top`: Character vector of the category label
-#'
-#' @source <https://phewascatalog.org>
-#'
-#' @seealso [get_pheno()]
-'phecode_info'
-
-#' Exclude ranges for phecode controls
-#'
-#'
-#' @format A data table with the following columns:
-#'
-#' * `phecode`: Character vector of phecode
-#' * `range_start`: Numeric vector of the start of the exclude range
-#' * `range_end`: Numeric vector of the end of the exclude range
-#'
-#' @source <https://phewascatalog.org>
-#'
-#' @seealso [get_pheno()]
-'exclude_ranges'
-
 #' Summary statistics from BioBank Japan (BBJ)
 #'
 #' This table provides BBJ GWAS summary statistics for SNPs and phecodes that are in the PGRM
@@ -213,30 +182,3 @@
 #'
 'benchmark_results'
 
-
-#' ICD code to phecode map, version 1.2
-#'
-#' This map is used in the make_pheno() function
-#'
-#' @format A data.table with the following columns:
-#'
-#' * `icd`: Character vector of icd code.
-#' * `flag`: Integer of ICD version (either 9 or 10)
-#' * `phecode`: Character vector of phecode
-#'
-#'
-'icdPhecodeMap_V1_2'
-
-
-#' Example table of ICD data
-#'
-#'
-#' @format A data.table with the following columns:
-#'
-#' * `person_id`: unqiue identifier of subject
-#' * `icd`: Character vector of icd code
-#' * `flag`: Integer of ICD version (either 9 or 10)
-#' * `entry_date`: Date of ICD code
-#'
-#'
-'icdExampleTable'

@@ -80,11 +80,6 @@ checkDemosTable = function(demos_table) {
 checkMCC = function(MCC){
   assertNumeric(MCC, lower=1)}
 
-checkPhecode = function(phecode){
-  assertCharacter(phecode)
-  if (! phecode %in% pgrm::phecode_info$phecode) {
-    stop('phecode specified is not a valid phecode')}}
-
 checkGenotypes = function(genotypes) {
   assertMultiClass(genotypes, c('BEDMatrix', 'matrix','bed.matrix'))
   #assertNames(rownames(genotypes), type = 'unique')
@@ -133,47 +128,4 @@ annotate_power = function(annotated_results, LOUD = FALSE, max_thresh = 50) {
     annotated_results[i]$Power = pwr$Power_at_Alpha_0.05}
   return(annotated_results)}
 
-sex_check_phecode = function(phecode){
-  sex = NULL
-  if(phecode %in% pgrm::phecode_info[sex == 'Male']$phecode){
-    return('M')}
-  if (phecode %in% pgrm::phecode_info[sex == 'Female']$phecode){
-    return('F')}
-  return('B')}
 
-get_pruned_SNPs = function(PGRM, geno, phecode, R2) {
-  SNP = prune = id = NULL
-
-  to_prune = c()
-  cur_phecode = phecode
-  SNPs = geno@snps$id
-
-  sub_PGRM = PGRM[phecode == cur_phecode]
-  sub_PGRM$prune = 0
-  sub_PGRM[!SNP %in% SNPs]$prune = 1 ## mark SNPs that aren't in geno as pruned
-  SNP_list = sub_PGRM[prune == 0]$SNP
-
-  if(length(SNP_list) <3 ) {
-    return(to_prune)}
-
-  sub_geno = select.snps(geno, id %in% SNP_list)
-  ld <- LD(sub_geno, c(1, ncol(sub_geno)), measure = 'r2')
-
-  for(i in 1:length(SNP_list)){
-    SNP1 = SNP_list[i]
-    chr1 = sub_geno@snps[sub_geno@snps$id == SNP1,]$chr
-    if(SNP1 %in% to_prune){
-      next}
-    for(j in 1:length(SNP_list)){
-      SNP2 = SNP_list[j]
-      chr2 = sub_geno@snps[sub_geno@snps$id == SNP2,]$chr
-      if(SNP2 %in% to_prune || SNP1 %in% to_prune || j == i || chr1 != chr2) {
-        next}
-      if(ld[SNP1, SNP2] > R2){
-        if(sub_PGRM[SNP == SNP1]$cat_LOG10_P > sub_PGRM[SNP == SNP2]$cat_LOG10_P){
-          #  print("prune " %c% SNP2 %c% " with R2 " %c% ld[SNP1,SNP2] %c% " to " %c% SNP1)
-          to_prune = c(to_prune, SNP2)
-        } else {
-          # print("prune " %c% SNP1 %c% " with R2 " %c% ld[SNP1,SNP2] %c% " to " %c% SNP2)
-          to_prune = c(to_prune, SNP1)}}}}
-  return(to_prune)}

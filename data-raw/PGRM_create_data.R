@@ -79,7 +79,6 @@ usethis::use_data(PGRM_ALL, overwrite = TRUE)
 
  usethis::use_data(phecode_info, overwrite = TRUE)
 
-
 #######################
 # Results file - BioVU EUR
 
