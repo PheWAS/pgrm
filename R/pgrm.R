@@ -11,41 +11,41 @@ NULL
 #' This function generates a PGRM copy with specified ancestry, build, and phecode version
 #'
 #' @param ancestry A string that indicates the ancestry of the PGRM.
-#' Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL
+#' Options afr, eas, eur, sas, amr or all. Default `all`
 #' @param build A string indicating the genome reference build. Options hg19, hg38. Default is hg19.
 #' @param phecode_version A string indicating the phecode version. Currently only
 #' V1.2 is supported, which is the default
 #' @param unique If TRUE, then rows are uniqued by SNP/phecode (only relevant when ancestry == 'ALL')
 #'
-#' @return A data.table of the PGRM
+#' @returns A data.table of the PGRM. For column details, see [pgrm_all].
 #'
 #' @details This function returns a copy of the PGRM. The function assigns a column 'SNP' as
 #' either SNP_hg19 or SNP_hg38, depending on the build argument. The returned PGRM only includes
 #' associations annotated with the specified ancestry, and the risk allele frequency (RAF) is based
 #' on the specified ancestry.
 #'
-#' @seealso [PGRM_ALL], [annotate_results()]
+#' @seealso [pgrm_all], [annotate_results()]
 #'
 #' @eval example_get_PGRM()
 #'
 #' @export
 get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', unique = TRUE) {
   ## Avoid warnings about global vars
-  cat_LOG10_P = SNP = . = phecode = NULL
+  cat_log10_p = snp = . = phecode = NULL
 
-  ancestry = toupper(ancestry)
+  ancestry = tolower(ancestry)
   build = tolower(build)
   checkBuild(build)
   checkAncestry(ancestry)
   checkPhecodeVersion(phecode_version)
 
-  PGRM_new = copy(pgrm::PGRM_ALL)
+  PGRM_new = copy(pgrm::pgrm_all)
   if (build == 'hg19') {
-    PGRM_new$SNP_hg38 = NULL
-    setnames(PGRM_new, 'SNP_hg19', 'SNP')
+    PGRM_new$snp_hg38 = NULL
+    setnames(PGRM_new, 'snp_hg19', 'snp')
   } else if (build == 'hg38') {
-    PGRM_new$SNP_hg19 = NULL
-    setnames(PGRM_new, 'SNP_hg38', 'SNP')
+    PGRM_new$snp_hg19 = NULL
+    setnames(PGRM_new, 'snp_hg38', 'snp')
     }
 
   if (ancestry != 'ALL') {
@@ -53,18 +53,44 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
     PGRM_new = PGRM_new[ancestry == a]
   } else if (ancestry == 'ALL' && isTRUE(unique)) {
     ## make the 'ALL' PGRM unique by SNP/phecode
-    uniq_PGRM = PGRM_new[, .(cat_LOG10_P = max(cat_LOG10_P)), by = c('SNP', 'phecode')]
-    PGRM_new = merge(uniq_PGRM, PGRM_new, by = c('SNP', 'phecode', 'cat_LOG10_P'))}
+    uniq_PGRM = PGRM_new[, .(cat_log10_p = max(cat_log10_p)), by = c('snp', 'phecode')]
+    PGRM_new = merge(uniq_PGRM, PGRM_new, by = c('snp', 'phecode', 'cat_log10_p'))}
 
-  freq_col_name = glue('{ancestry}_RAF')
-  setnames(PGRM_new, freq_col_name, 'RAF')
+  freq_col_name = glue('{ancestry}_raf')
+  setnames(PGRM_new, freq_col_name, 'raf')
   PGRM_new = PGRM_new[, c(
-   'assoc_ID', 'SNP', 'ancestry', 'rsID', 'risk_allele_dir', 'RAF',
-   'phecode', 'phecode_string', 'category_string', 'cat_LOG10_P', 'cat_OR', 'cat_L95',
-   'cat_U95', 'Study_accession', 'pub_count', 'pub_date')]
+   'assoc_id', 'snp', 'ancestry', 'rsid', 'risk_allele_dir', 'raf',
+   'phecode', 'phecode_string', 'category_string', 'cat_log10_p', 'cat_or', 'cat_l95',
+   'cat_u95', 'study_accession', 'pub_count', 'pub_date')]
 
   return(PGRM_new)}
 
+#' Retrieve summary statistics
+#'
+#' This function returns a data.table of summary statics from biobank cohorts
+#'
+#' @param dataset A string that indicates the biobank dataset
+#' Options ukb, mgi, bbj, biovu_eur, biovu_afr. Default all
+#' @param exclude_overlap If TRUE then associations that were originally sourced from the dataset
+#' will be excluded
+#'
+#' @returns A data.table of the summary statistics
+#'
+#' @details This function retrieves summary statistics from biobank cohorts.
+#'
+#' @export
+get_summary_stats = function(dataset = 'ukb', exclude_overlap = TRUE){
+  ds = NULL
+  ds = tolower(dataset)
+  checkDataset(ds)
+  checkBool(exclude_overlap)
+
+  sum_stat = summary_stats[dataset == ds]
+  if(exclude_overlap == TRUE){
+    sum_stat = sum_stat[cohort_match == 0]
+  }
+  return(sum_stat)
+}
 
 #' Annotate a result set with the PGRM
 #'
@@ -188,8 +214,6 @@ annotate_results = function(
 #'
 #' @return An numeric value of the replication rate of the result set
 #'
-#' @eval run_PGRM_assoc_ex()
-#'
 #' @export
 get_RR = function(annotated_results, include = 'powered', LOUD = TRUE) {
   ## Avoid warnings about global vars
@@ -269,210 +293,3 @@ get_powered_rate = function(annotated_results, include_missing_pheno = TRUE, LOU
   return(powered_rate)}
 
 
-#' Make a phecode phenotype file from table of ICD codes
-#'
-#' This function calculates % of powered associations for a test cohort that has been annotated with PGRM.
-#'
-#' @param icds A data table ICD codes. Must include columns `person_id`, `icd`, `flag`
-#' @param phecode_version Phecode map version. Currently only supports 'V1.2', which is default
-#'
-#' @return An numeric value of the percent of associations that are powered
-#'
-#' @export
-make_pheno = function(icds, phecode_version = 'V1.2') {
-  checkIcdTable(icds)
-  checkPhecodeVersion(phecode_version)
-  if(phecode_version == 'V1.2') {
-    icdPhecodeMap = icdPhecodeMap_V1_2}
-  pheno = merge(icds, icdPhecodeMap, by = c('icd', 'flag'), allow.cartesian = TRUE)
-  pheno = pheno[, c('person_id', 'phecode', 'entry_date')]
-  pheno = unique(pheno)
-  pheno = pheno[, .N, by = c('person_id', 'phecode')]
-  return(pheno)}
-
-#' Add case/control status for a specified phenotype to a covariate file.
-#'
-#' @param pheno A data.table with phecode phenotypes. columns `person_id`, `phecode`, and `N`
-#' required. The phecode columns should be a character vector. Column `N` specifies the number of
-#' unique dates a phecode occurs for that individual. Only phecodes that are present for an individual
-#' are included (i.e. N is always greater than one).
-#' @param covars A data.table having one row per person in the cohort. Must havea column names
-#' `person_id`. Must include other columns specified in covariate_names.
-#' @param phecode A character vector of the phecode
-#' @param MCC A numeric value specified the minimum code count required for cases.
-#' @param use_exclude_ranges If TRUE then individuals who are not cases but have a phecode within
-#' the exclude ranges are excluded.
-#' @param check_sex If TRUE then the `pheno` column is set to zero for individuals with a sex that
-#' does not match the specified sex. This argument is only relevant for sex specific codes
-#' (e.g. Prostate cancer). To use this function, sex must be included as a column in the covars data.table.
-#'
-#' @return The covar data.table with a new column called `pheno`. This column is 0 if the individual,
-#' is a control for specified phecode, 1 if they are a case, and NA if they are excluded.
-#'
-#' @export
-get_pheno = function(pheno, covars, phecode, MCC = 2, use_exclude_ranges = TRUE, check_sex = FALSE) {
-  checkPhecodeTable(pheno)
-  checkDemosTable(covars)
-  checkPhecode(phecode)
-  checkSex(check_sex, covars)
-  checkMCC(MCC)
-
-  phecode_num = N = sex = NULL
-
-  cur_phecode = phecode
-
-  p = pheno[pheno$phecode == cur_phecode, c('person_id', 'N')]
-  p = data.table(p, key = 'person_id')
-  p$pheno = -9
-  p[p$N >= MCC]$pheno = 1
-
-  if(use_exclude_ranges == TRUE){
-    to_exclude = c()
-    pheno$phecode_num = as.numeric(pheno$phecode)
-    ranges = pgrm::exclude_ranges[phecode == cur_phecode]
-    for(i in 1:nrow(ranges)){
-      to_exclude = union(to_exclude, unique(pheno[phecode_num >= ranges[i,]$range_start &
-                                                    phecode_num < ranges[i,]$range_end]$person_id))
-    }
-    to_exclude = subset(to_exclude, !to_exclude %in% p$person_id)
-    to_exclude = data.table(person_person_id = to_exclude)
-    names(to_exclude)[1] = 'person_id'
-    to_exclude$N = 0
-    to_exclude$pheno = -9
-    p = rbind(p, to_exclude)
-  }
-  p = merge(covars, p, by = 'person_id', all.x=TRUE)
-  p[is.na(pheno)]$pheno = 0
-  p[p$pheno == -9]$pheno = NA
-  p[is.na(N)]$N = 0
-
-  if(check_sex == TRUE){
-    phecode_sex = sex_check_phecode(cur_phecode)
-    if(phecode_sex %in% c('F', 'M')){
-      p[sex != phecode_sex]$pheno = NA
-    }
-  }
-  return(p)}
-
-#' Run associations in the pgrm on data from a test cohort. Function requires row level phenotype,
-#' genotype, and covariate information.
-#'
-#' (NOTE: If you used principle components as covariates, make sure they are not coded as numeric.
-#' Otherwise the logistic regression will treat them as categorical variables, making the function
-#' run very slowly before failing.)
-#'
-#' @param geno A matrix or 'BEDMatrix' object containing genetic data
-#' @param pheno A data.table with phecode phenotypes. columns `person_id`, `phecode`, and `N`
-#' required. The phecode columns should be a character vector. Column `N` specifies the number of
-#' unique dates a phecode occurs for that individual. Only phecodes that are present for an individual
-#' are included (i.e. N is always greater than one).
-#' @param covars A data.table having one row per person in the cohort. Must havea column names
-#' `person_id`. Must include other columns specified in covariate_names.
-#' @param covariate_names A list of covariates to be used in the logistic regression. All covariates
-#'   listed must be present in the covars table
-#' @param PGRM A data.table of the PGRM, generated with get_PGRM()
-#' @param MCC An integer specifying the minimum code count required for a case (default MCC=2)
-#' @param minimum_case_count An integer specifiying the minimum number of cases required in the test
-#'   cohort to be included in the analysis (default minimum_case_count=100)
-#' @param use_exclude_ranges If TRUE then exclude ranges are applied to controls
-#' @param check_sex If TRUE then individuals with sex == F in the covars table will be excluded
-#'   from male-specific phenotypes, and vice-versa. Sex specific phecodes are specified in
-#'   phecode_info. For this function to work, the covars table must have column `sex` and the values
-#'   must be 'M' for Male and 'F' for Female
-#' @param LOUD If TRUE then progress info is printed to the terminal. Default TRUE
-#'
-#' @return A data.table with annotated results from association tests
-#'
-#' @eval run_PGRM_assoc_ex()
-#'
-#' @export
-run_PGRM_assoc = function(geno, pheno, covars,covariate_names, PGRM, MCC=2, minimum_case_count = 100,
-                          use_exclude_ranges = TRUE, check_sex = FALSE, LOUD = TRUE) {
-  person_id = id = N = . = phecode = cases = NULL
-  ## Add check PGRM
-  checkGenotypes(geno)
-  checkPhecodeTable(pheno)
-  checkDemosTable(covars)
-  checkCovarList(covariate_names,covars)
-  checkMCC(MCC)
-  checkMCC(minimum_case_count)
-  checkBool(use_exclude_ranges)
-  checkSex(check_sex, covars)
-  checkBool(LOUD)
-  # ## create formulas for glm using covariates; formula_string_no_sex is for sex-specific phenotypes
-  covar_list = paste(covariate_names, collapse = '+')
-  formula_string = paste('pheno~genotype+', covar_list, sep = '')
-  formula_string_no_sex = gsub('\\+sex', '', formula_string)
-  formula_string_no_sex = gsub('sex\\+', '', formula_string_no_sex)
-
-  ## Change person_id to character to ensure merging works
-  covars$person_id = as.character(covars$person_id)
-  pheno$person_id = as.character(pheno$person_id)
-
-  # filter covars, pheno, and geno for intersection of IDs
-  IDs = union(geno@ped$id, covars$person_id)
-  covars = covars[person_id %in% IDs]
-  geno = select.inds(geno, id %in% IDs)
-  pheno = pheno[person_id %in% IDs]
-
-  ## get available phecodes list
-  phecode_counts = pheno[N >= MCC, .(cases = .N), by = phecode]
-  available_phecodes = phecode_counts[cases >= minimum_case_count]$phecode
-
-  # filter PGRM for available SNPs and phecodes
-  SNPs = geno@snps$id
-  PGRM = PGRM[PGRM$SNP %in% SNPs & PGRM$phecode %in% available_phecodes,]
-
-  assoc_to_run = unique(PGRM[, c('SNP', 'phecode')])
-  assoc_num = nrow(assoc_to_run)
-  if(assoc_num == 0){
-    print('There are no eligable associations to run')
-    return(0)}
-  if(LOUD == TRUE){
-    print(glue('Attempting {assoc_num} association tests'))
-    print(glue('Formula: {formula_string}'))}
-
-  results = data.frame()
-
-  for(i in 1:nrow(assoc_to_run)){
-    cur_SNP = assoc_to_run[i,]$SNP
-    cur_phecode = assoc_to_run[i,]$phecode
-    cur_SNP_index = which(SNPs %in% c(cur_SNP))
-
-    if(LOUD == TRUE){
-      print(glue('{i} SNP: {cur_SNP} Phecode: {cur_phecode}'))
-    }
-
-    g = data.table(as.matrix(geno[, cur_SNP_index]), keep.rownames = TRUE)
-    names(g)[1] = 'person_id'
-    names(g)[2] = 'genotype'
-    setkey(g, 'person_id')
-
-    g$genotype = abs(g$genotype - 2) ## gaston codes 2==HOM for ref. Flip this around
-
-    d = merge(g, covars, by='person_id')
-    d = get_pheno(pheno = pheno, covars = d, phecode = cur_phecode, MCC = MCC,
-                use_exclude_ranges = use_exclude_ranges, check_sex = check_sex)
-
-    formula = as.formula(formula_string)
-    if(check_sex == TRUE) {
-      phecode_sex = sex_check_phecode(cur_phecode)
-      if(phecode_sex != 'B') {
-        formula = as.formula(formula_string_no_sex)}}
-
-    n_case = nrow(d[pheno == 1,])
-    n_control = nrow(d[pheno == 0,])
-    if(n_case < minimum_case_count) {
-      next}
-
-    m = glm(formula, data = d, family = 'binomial')
-    conf = confint.default(m)
-    P = summary(m)$coeff[2, 4]
-    odds_ratio = exp(summary(m)$coeff[2, 1])
-
-    L95 = exp(conf[2, 1])
-    U95 = exp(conf[2, 2])
-    result = data.frame(SNP = cur_SNP, phecode = cur_phecode, cases = n_case, controls = n_control,
-                        P = P, odds_ratio = odds_ratio, L95 = L95, U95 = U95)
-    results = rbind(results, result)}
-  return(results)}

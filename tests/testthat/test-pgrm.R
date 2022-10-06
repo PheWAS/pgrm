@@ -1,4 +1,4 @@
-test_that('get_PGRM with build hg38', {
+test_that('get_pgrm with build hg38', {
   PGRM_observed = get_PGRM(build = 'hg38')
   PGRM_expected = snapshot(PGRM_observed, file.path('snapshots', 'PGRM_hg38.qs'))
   expect_equal(PGRM_observed, PGRM_expected)
@@ -7,7 +7,7 @@ test_that('get_PGRM with build hg38', {
 
 test_that('test annotate_results with MGI data', {
   MGI_annotate_observed = annotate_results(
-    head(results_MGI, n = 20), build = 'hg38', ancestry = 'EUR', calculate_power = TRUE, LOUD = FALSE)
+    head(summary_statistics[dataset == 'mgi'], n = 20), build = 'hg38', ancestry = 'EUR', calculate_power = TRUE, LOUD = FALSE)
   MGI_annotate_expected = snapshot(MGI_annotate_observed, file.path('snapshots', 'MGI_annotate.qs'))
   expect_equal(MGI_annotate_observed, MGI_annotate_expected)
 

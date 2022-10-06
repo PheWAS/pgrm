@@ -4,10 +4,10 @@
 #'
 #' @format A data.table with the following columns:
 #'
-#' * `assoc_ID`: Integer vector of the unique identifier for each association
-#' * `SNP_hg19`: Character vector variants encoded in hg19 genome reference build
-#' * `SNP_hg38`: Character vector variants encoded in hg38 genome reference build
-#' * `rsID`: Character indicating the Reference SNP cluster ID
+#' * `assoc_id`: Integer vector of the unique identifier for each association
+#' * `snp_hg19`: Character vector variants encoded in hg19 genome reference build
+#' * `snp_hg38`: Character vector variants encoded in hg38 genome reference build
+#' * `rsid`: Character indicating the Reference SNP cluster ID
 #' * `risk_allele_dir`: Character vector specifying the risk allele direction
 #'   (**alt**: Alternate allele, **ref**: Reference allele)
 #' * `risk_allele`: Character specifying the risk allele
@@ -17,20 +17,20 @@
 #' * `ancestry`: Character vector of the ancestery of the source GWAS using 1000
 #' Genomes superpopulations ancestry groupings (**AFR**: African, **EAS**: East Asian,
 #' **EUR**: European, **AMR**: AdMixed American, **SAS**: South Asian)
-#' * `cat_LOG10_P`: Numeric vector of the -log10(P) of the association from the catalog
-#' * `cat_OR`: Numeric value of the odds ratio of the association
-#' * `cat_L95`: Numeric value of the 95% lower confidence interval of the association
-#' * `cat_U95`: Numeric value of the 95% upper confidence interval of the association
-#' * `Study_accession`: Character vector of the study accession ID from the GWAS catalog
+#' * `cat_log10_p`: Numeric vector of the -log10(P) of the association from the catalog
+#' * `cat_or`: Numeric value of the odds ratio of the association
+#' * `cat_l95`: Numeric value of the 95% lower confidence interval of the association
+#' * `cat_u95`: Numeric value of the 95% upper confidence interval of the association
+#' * `study_accession`: Character vector of the study accession ID from the GWAS catalog
 #' * `pubmedid`: Numeric value of the PubMed ID for source publication of association
 #' * `pub_count`: Numeric value indicating how many times association has been published in GWAS catalog
 #' * `first_pub_date`: Date of the first date the association was published
-#' * `AFR_RAF`: Numeric value of the African ancestry risk allele frequency from gnomAD
-#' * `EUR_RAF`: Numeric value of the European (non-Finnish) ancestry risk allele frequency from gnomAD
-#' * `EAS_RAF`: Numeric value of the East Asian ancestry risk allele frequency from gnomAD
-#' * `AMR_RAF`: Numeric value of the Latino/Admixed American ancestry risk allele frequency from gnomAD
-#' * `SAS_RAF`: Numeric value of the South Asian ancestry risk allele frequency from gnomAD
-#' * `ALL_RAF`: Numeric value of the risk allele frequency from gnomAD
+#' * `afr_raf`: Numeric value of the African ancestry risk allele frequency from gnomAD
+#' * `eur_raf`: Numeric value of the European (non-Finnish) ancestry risk allele frequency from gnomAD
+#' * `eas_raf`: Numeric value of the East Asian ancestry risk allele frequency from gnomAD
+#' * `amr_raf`: Numeric value of the Latino/Admixed American ancestry risk allele frequency from gnomAD
+#' * `sas_raf`: Numeric value of the South Asian ancestry risk allele frequency from gnomAD
+#' * `all_raf`: Numeric value of the risk allele frequency from gnomAD
 #'
 #' @details The odds ratio and 95% confidence intervals (columns cat_OR, cat_L95,
 #' and cat_U95) are reported relative to the risk allele which is specified in the
@@ -40,7 +40,7 @@
 #' Summary statistics: <https://www.ebi.ac.uk/gwas/>
 #'
 #' @seealso [get_PGRM()]
-'PGRM_ALL'
+'pgrm_all'
 
 #' Information about phecodes
 #'
@@ -73,9 +73,9 @@
 #' @seealso [get_pheno()]
 'exclude_ranges'
 
-#' Summary statistics from BioBank Japan (BBJ)
+#' Summary statistics from five biobank cohorts
 #'
-#' This table provides BBJ GWAS summary statistics for SNPs and phecodes that are in the PGRM
+#' This table provides GWAS summary statistics for SNPs and phecodes that are in the PGRM
 #'
 #' @format A data.table with the following columns:
 #'
@@ -88,88 +88,15 @@
 #' * `L95`: Numeric 95% lower confidence interval
 #' * `U95`: Numeric 95% upper confidence interval
 #' * `cohort_match`: Integer that is 1 if the source of the PGRM association includes BBJ, 0 if not
-#'
-#' @source <https://pheweb.jp>
-#'
-'results_BBJ'
-
-#' Summary statistics from UK Biobank (UKBB)
-#'
-#' This table provides UK Biobank GWAS summary statistics for SNPs and phecodes that are in the PGRM
-#'
-#' @format A data.table with the following columns:
-#'
-#' * `SNP`: String of SNP identifier, format CHR:position:ref:alt. Build = hg38
-#' * `phecode`: String of a phecode
-#' * `cases`: Integer of the number of cases for specified phecode
-#' * `controls`: Integer of the number of controls for specified phecode
-#' * `odds_ratio`: Numeric odds ratio
-#' * `P`: Numeric raw P-value
-#' * `L95`: Numeric 95% lower confidence interval
-#' * `U95`: Numeric 95% upper confidence interval
-#' * `cohort_match`: Integer that is 1 if the source of the PGRM association includes UKBB, 0 if not
-#'
-#' @source <https://pheweb.org/UKB-TOPMed/>
-#'
-'results_UKBB'
-
-
-#' Summary statistics from the Michigan Genomics Initiative (MGI)
-#'
-#' This table provides MGI GWAS summary statistics for SNPs and phecodes that are in the PGRM
-#'
-#' @format A data.table with the following columns:
-#'
-#' * `SNP`: String of SNP identifier, format CHR:position:ref:alt. Build = hg38
-#' * `phecode`: String of a phecode
-#' * `cases`: Integer of the number of cases for specified phecode
-#' * `controls`: Integer of the number of controls for specified phecode
-#' * `odds_ratio`: Numeric odds ratio
-#' * `P`: Numeric raw P-value
-#' * `L95`: Numeric 95% lower confidence interval
-#' * `U95`: Numeric 95% upper confidence interval
-#' * `cohort_match`: Integer that is 1 if the source of the PGRM association includes MGI, 0 if not
+#' * `dataset`: Character vector indicating the dataset:
+#' **bbj**: BioBank Japan
+#' **biovu_afr**: BioVU, African ancestry
+#' **biovu_eur**: BioVU, European ancestry
+#' **mgi**: Michigan genomics initiative
+#' **ukb**: UK Biobank
 #'
 #'
-'results_MGI'
-
-#' Summary statistics from the African ancestery cohort in BioVU
-#'
-#' This table provides BioVU African ancestry GWAS summary statistics for SNPs and phecodes that are in the PGRM
-#'
-#' @format A data.table with the following columns:
-#'
-#' * `SNP`: String of SNP identifier, format CHR:position:ref:alt. Build = hg19
-#' * `phecode`: String of a phecode
-#' * `cases`: Integer of the number of cases for specified phecode
-#' * `controls`: Integer of the number of controls for specified phecode
-#' * `odds_ratio`: Numeric odds ratio
-#' * `P`: Numeric raw P-value
-#' * `L95`: Numeric 95% lower confidence interval
-#' * `U95`: Numeric 95% upper confidence interval
-#' * `cohort_match`: Integer that is 1 if the source of the PGRM association includes BioVU, 0 if not
-#'
-#'
-'results_BioVU_AFR'
-
-#' Summary statistics from the European ancestery cohort in BioVU
-#'
-#' This table provides BioVU European ancestry GWAS summary statistics for SNPs and phecodes that are in the PGRM
-#'
-#' @format A data.table with the following columns:
-#'
-#' * `SNP`: String of SNP identifier, format CHR:position:ref:alt. Build = hg19
-#' * `phecode`: String of a phecode
-#' * `cases`: Integer of the number of cases for specified phecode
-#' * `controls`: Integer of the number of controls for specified phecode
-#' * `odds_ratio`: Numeric odds ratio
-#' * `P`: Numeric raw P-value
-#' * `L95`: Numeric 95% lower confidence interval
-#' * `U95`: Numeric 95% upper confidence interval
-#' * `cohort_match`: Integer that is 1 if the source of the PGRM association includes BioVU, 0 if not
-#'
-#'
-'results_BioVU_EUR'
+'summary_stats'
 
 #' Summary statistics from all five test cohorts with annotations
 #'
@@ -188,7 +115,7 @@
 #' * `P`: Numeric raw P-value for test cohort association
 #' * `L95`: Numeric 95% lower confidence interval for test cohort association
 #' * `U95`: Numeric 95% upper confidence interval for test cohort association
-#' * `cohort`: Character vector of the source cohort (**BBJ**: Biobank Japan,
+#' * `dataset`: Character vector of the source dataset (**BBJ**: Biobank Japan,
 #' **BioVU_AFR**: BioVU, African ancestry, **BioVU_EUR**: BioVU, European ancestry,
 #' **MGI**: Michigan genomics initiative, **UKBB**: UK Biobank)
 #' * `ancestry`: Character vector of the ancestery of the source GWAS using 1000
@@ -207,11 +134,10 @@
 #' * `rep`: Boolean value indicating if the association replicated
 #' * `CI_overlap`: Character vector indicating the overlap of the confidence intervals from
 #'   the catalog and test association
-#' * `CI_overlap`: Character vector indicating the test cohort
 #' * `pub_count`: The number of times the association has been reported in the catalog
 #' * `first_pub_date`: The first date the association was published
 #'
-'benchmark_results'
+'summary_stats_anno'
 
 
 #' ICD code to phecode map, version 1.2
@@ -228,7 +154,7 @@
 'icdPhecodeMap_V1_2'
 
 
-#' Example table of ICD data
+#' Example table of ICD data should be formatted for run_PGRM_assoc()
 #'
 #'
 #' @format A data.table with the following columns:

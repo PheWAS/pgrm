@@ -13,7 +13,7 @@ get_PGRM(
 }
 \arguments{
 \item{ancestry}{A string that indicates the ancestry of the PGRM.
-Options EAS, EUR, AFR, SAS, AMR, ALL. Default ALL}
+Options afr, eas, eur, sas, amr or all. Default \code{all}}
 
 \item{build}{A string indicating the genome reference build. Options hg19, hg38. Default is hg19.}
 
@@ -23,7 +23,7 @@ V1.2 is supported, which is the default}
 \item{unique}{If TRUE, then rows are uniqued by SNP/phecode (only relevant when ancestry == 'ALL')}
 }
 \value{
-A data.table of the PGRM
+A data.table of the PGRM. For column details, see \link{pgrm_all}.
 }
 \description{
 This function generates a PGRM copy with specified ancestry, build, and phecode version
@@ -38,8 +38,8 @@ on the specified ancestry.
 library(pgrm)
 
 ## Get a copy of the PGRM for build hg19, East Asian ancestry
-get_PGRM(build = 'hg19', ancestry = 'EAS')
+get_PGRM(build = 'hg19', ancestry = 'eas')
 }
 \seealso{
-\link{PGRM_ALL}, \code{\link[=annotate_results]{annotate_results()}}
+\link{pgrm_all}, \code{\link[=annotate_results]{annotate_results()}}
 }

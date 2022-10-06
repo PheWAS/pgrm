@@ -85,8 +85,12 @@ intervals are reported in the test cohort summary statistics)
 \examples{
 library(pgrm)
 
-## annotate the BioVU African ancestry result set
-anno = annotate_results(results_BioVU_AFR, ancestry = 'AFR', build = 'hg19', calculate_power = TRUE)
+## get summary statistics for UK Biobanks
+summary_stats_ukb = get_summary_stats(dataset = 'ukb')
+
+## annotate summary statistics with pgrm
+anno = annotate_results(head(summary_stats_ukb,n=10), ancestry = 'EUR',
+  build = 'hg38', calculate_power = TRUE)
 
 ## Get the replication rate of associations powered at >80\%
 get_RR(anno)

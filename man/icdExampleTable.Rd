@@ -3,7 +3,7 @@
 \docType{data}
 \name{icdExampleTable}
 \alias{icdExampleTable}
-\title{Example table of ICD data}
+\title{Example table of ICD data should be formatted for run_PGRM_assoc()}
 \format{
 A data.table with the following columns:
 \itemize{
@@ -17,6 +17,6 @@ A data.table with the following columns:
 icdExampleTable
 }
 \description{
-Example table of ICD data
+Example table of ICD data should be formatted for run_PGRM_assoc()
 }
 \keyword{datasets}

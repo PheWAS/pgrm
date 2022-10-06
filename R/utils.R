@@ -3,19 +3,20 @@ checkBuild = function(build) {
     stop('Build must equal hg19 or hg38.')}
   invisible()}
 
-
 checkAncestry = function(ancestry) {
-  if (!ancestry %in% c('EAS', 'EUR', 'AFR', 'SAS', 'AMR', 'ALL')) {
-    stop('Ancestry must be EAS, EUR, AFR, SAS, AMR, or ALL')}
+  if (!ancestry %in% c('eas', 'eur', 'afr', 'sas', 'amr', 'all')) {
+    stop('Ancestry must be eas, eur, afr, sas, amr, or all')}
   invisible()}
 
+checkDataset = function(dataset) {
+  if (!dataset %in% c('ukb', 'bbj', 'biovu_eur', 'biovu_afr', 'mgi', 'all')) {
+    stop('Dataset must be ukb, bbj, biovu_eur, biovu_afr, mgi, or all')}
+  invisible()}
 
 checkPhecodeVersion = function(phecode_version) {
   if (!phecode_version %in% c('V1.2', 'X')) {
     stop('phecode_version must be V1.2 or X')}
   invisible()}
-
-
 
 check_RR_include = function(include) {
   if (!include %in% c('powered', 'all')) {
