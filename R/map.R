@@ -137,7 +137,7 @@
 #' * `pub_count`: The number of times the association has been reported in the catalog
 #' * `first_pub_date`: The first date the association was published
 #'
-'summary_stats_anno'
+'benchmark_results'
 
 
 #' ICD code to phecode map, version 1.2

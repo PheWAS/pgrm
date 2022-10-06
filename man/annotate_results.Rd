@@ -11,13 +11,13 @@ annotate_results(
   build = "hg19",
   phecode_version = "V1.2",
   calculate_power = TRUE,
-  annotate_CI_overlap = TRUE,
+  annotate_ci_overlap = TRUE,
   LOUD = TRUE
 )
 }
 \arguments{
 \item{results}{A data frame (or data.table) with results of a test cohort; columns
-for SNP, phecode, cases, controls, odds_ratio, P (see demo files for example (e.g results_MGI))}
+for SNP, phecode, cases, controls, odds_ratio, P.}
 
 \item{use_allele_dir}{If TRUE, direction of effect is used when assessing if an
 association is replicated. To use this argument, odds ratios must be reported
@@ -36,12 +36,12 @@ table. (Currently only V1.2 is supported)}
 \item{calculate_power}{If TRUE then power calculations will be conducted using
 case and control counts from the results file. Necessary for get_AER(). Default FALSE}
 
-\item{annotate_CI_overlap}{If TRUE then a column called 'annotate_CI_overlap'
+\item{annotate_ci_overlap}{If TRUE then a column called 'annotate_ci_overlap'
 is added to the table, values:
 \strong{overlap}: 95\% CIs of PGRM and test cohort overlap
 \strong{test_cohort_greater}: 95\% CI of test cohort greater than PGRM
 \strong{PGRM_greater}: 95\% CI of PGRM greater than test cohort
-If annotate_CI_overlap is TRUE, then results must include 95\% CIs}
+If annotate_ci_overlap is TRUE, then results must include 95\% CIs}
 
 \item{LOUD}{If TRUE then progress info is printed to the terminal. Default FALSE}
 }
@@ -53,8 +53,8 @@ This function annotates a result from a test cohort with information from the PG
 }
 \details{
 This function takes a dataframe with summary statistics from a test cohort.
-For an example of the way to format the results data frame, see one of the results
-sets included in the package (e.g. results_MGI). (NOTE: If the direction of effect
+For an example of the way to format the results data frame, look at the fomatting from
+\link{summary_stats}. (NOTE: If the direction of effect
 is used to determine if an association is replicated, then the odds ratios of
 the result set must be oriented to the alternative allele.)
 
@@ -65,7 +65,7 @@ The function returns a data.table with the following annotations:
 \item The rsID
 \item The direction of effect (ref or alt) and risk allele of the original association
 \item Summary statistics from the GWAS catalog association, including the -log10(P),
-odds ratio, and 95\% confidence intervals (cat_LOG10_P, cat_OR, cat_L95, cat_U95)
+odds ratio, and 95\% confidence intervals (cat_log10_p, cat_or, cat_l95, cat_u95)
 \item The study accession ID from the GWAS catalog
 \item A column called powered, which is 1 or 0 indicating whether the test association
 is powered > 80\%. If calculate_power==TRUE, then the power is determined by the case/control
@@ -75,10 +75,10 @@ alpha=0.0
 \item A column called rep that indicates if the association is replicated (i.e.
 p<0.05 in the test cohort; if use_allele_dir==TRUE, then the direction of effect
 from the test cohort must also be consistant with what is reported in the catalog)
-\item If annotate_CI_overlap is true, then information about the relationship
+\item If annotate_ci_overlap is true, then information about the relationship
 between the 95\% CIs from the catalog and the test set is included in column
-CI_overlap, and new columns for odds_ratio, L95, and U95 are created(rOR, rL95,
-rU95) that are oriented to the risk allele. (This option requires that the confidence
+ci_overlap, and new columns for odds_ratio, l95, and u95 are created(risk_or, risk_l95,
+risk_u95) that are oriented to the risk allele. (This option requires that the confidence
 intervals are reported in the test cohort summary statistics)
 }
 }
@@ -87,6 +87,9 @@ library(pgrm)
 
 ## get summary statistics for UK Biobanks
 summary_stats_ukb = get_summary_stats(dataset = 'ukb')
+
+## Filter out associations where UKB was included in the original study
+summary_stats_ukb = summary_stats_ukb[cohort_match == 0]
 
 ## annotate summary statistics with pgrm
 anno = annotate_results(head(summary_stats_ukb,n=10), ancestry = 'EUR',
@@ -102,5 +105,5 @@ get_RR(anno,include='all')
 get_AER(anno)
 }
 \seealso{
-Example result sets: \link{results_BBJ}, \link{results_UKBB}, \link{results_BioVU_EUR}, \link{results_BioVU_AFR}, \link{results_MGI}
+Example result sets: \link{summary_stats}
 }

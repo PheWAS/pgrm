@@ -16,6 +16,9 @@ library(pgrm)
 ## get summary statistics for UK Biobanks
 summary_stats_ukb = get_summary_stats(dataset = 'ukb')
 
+## Filter out associations where UKB was included in the original study
+summary_stats_ukb = summary_stats_ukb[cohort_match == 0]
+
 ## annotate summary statistics with pgrm
 anno = annotate_results(head(summary_stats_ukb,n=10), ancestry = 'EUR',
   build = 'hg38', calculate_power = TRUE)

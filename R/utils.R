@@ -26,13 +26,13 @@ check_RR_include = function(include) {
 
 checkResults = function(results) {
   assertDataFrame(results)
-  assertNames(names(results), must.include = c('SNP', 'phecode', 'cases',
-                                               'controls', 'odds_ratio', 'P'))
+  assertNames(names(results), must.include = c('snp', 'phecode', 'cases',
+                                               'controls', 'odds_ratio', 'p'))
   invisible()}
 
 
 checkForCIs = function(results) {
-  assertNames(names(results), must.include = c('L95', 'U95'))
+  assertNames(names(results), must.include = c('l95', 'u95'))
   invisible()}
 
 checkBool = function(bool) {
@@ -52,7 +52,7 @@ checkR2 = function(R2) {
 
 checkAnnotatedResults = function(annotated_results, include) {
   assertDataFrame(annotated_results)
-  assertNames(names(annotated_results), must.include = c('assoc_ID', 'rep'))
+  assertNames(names(annotated_results), must.include = c('assoc_id', 'rep'))
   if (include == 'powered') {
     assertNames(names(annotated_results), must.include = c('powered'))}
   invisible()}
@@ -65,7 +65,7 @@ checkIcdTable = function(icds) {
 
 checkAnnotatedResults_forAE = function(annotated_results) {
   assertDataFrame(annotated_results)
-  assertNames(names(annotated_results), must.include = c('assoc_ID', 'rep', 'Power'))
+  assertNames(names(annotated_results), must.include = c('assoc_id', 'rep', 'power'))
   invisible()}
 
 checkPhecodeTable = function(phecode_table) {
@@ -101,9 +101,9 @@ checkCovarList = function(covariate_list, demos_table) {
   invisible()}
 
 annotate_power = function(annotated_results, LOUD = FALSE, max_thresh = 50) {
-  Power = NULL
+  power = NULL
 
-  annotated_results[, Power := as.numeric(NA)]
+  annotated_results[, power := as.numeric(NA)]
   total = nrow(annotated_results)
   if (isTRUE(LOUD)) {
     print('Doing power calculations')}
@@ -113,8 +113,8 @@ annotate_power = function(annotated_results, LOUD = FALSE, max_thresh = 50) {
 
     annotated_results_tmp = annotated_results[i]
 
-    odds_ratio = annotated_results_tmp$cat_L95
-    AF = annotated_results_tmp$RAF
+    odds_ratio = annotated_results_tmp$cat_l95
+    AF = annotated_results_tmp$raf
     ## flip AF and OR to minor allele
     if (AF > 0.5) {
       AF = 1 - AF
@@ -131,7 +131,7 @@ annotate_power = function(annotated_results, LOUD = FALSE, max_thresh = 50) {
                       Case.Rate = NULL, k = k, N = N, MAF = AF, OR = odds_ratio,
                       Alpha = 0.05, Power = NULL, True.Model = c('Additive'),
                       Test.Model = c('Additive'))
-    annotated_results[i]$Power = pwr$Power_at_Alpha_0.05}
+    annotated_results[i]$power = pwr$Power_at_Alpha_0.05}
   return(annotated_results)}
 
 sex_check_phecode = function(phecode){

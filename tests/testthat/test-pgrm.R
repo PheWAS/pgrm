@@ -7,7 +7,7 @@ test_that('get_pgrm with build hg38', {
 
 test_that('test annotate_results with MGI data', {
   MGI_annotate_observed = annotate_results(
-    head(summary_statistics[dataset == 'mgi'], n = 20), build = 'hg38', ancestry = 'EUR', calculate_power = TRUE, LOUD = FALSE)
+    head(summary_stats[dataset == 'mgi'], n = 20), build = 'hg38', ancestry = 'eur', calculate_power = TRUE, LOUD = FALSE)
   MGI_annotate_expected = snapshot(MGI_annotate_observed, file.path('snapshots', 'MGI_annotate.qs'))
   expect_equal(MGI_annotate_observed, MGI_annotate_expected)
 
@@ -27,15 +27,15 @@ test_that('test annotate_results with MGI data', {
   MGI_powered_expected = snapshot(MGI_AE_observed, file.path('snapshots', 'MGI_powered.qs'))
 })
 
-
-test_that('test make pheno', {
-  phecodeExample_observed=make_pheno(icdExampleTable)
-  phecodeExample_expected=snapshot(phecodeExample_observed,"snapshots/phecodeExample_observed.qs" )
-
-  phecode_T2D_observed=get_pheno(phecode_table_test, demos_table_test, phecode='250.2',MCC=2,use_exclude_ranges = TRUE)
-  phecode_T2D_expected=snapshot(phecode_T2D_observed,"snapshots/phecode_T2D_observed.qs" )
-  expect_equal(phecode_T2D_observed,phecode_T2D_expected)
-})
+#
+# test_that('test make pheno', {
+#   phecodeExample_observed=make_pheno(icdExampleTable)
+#   phecodeExample_expected=snapshot(phecodeExample_observed,"snapshots/phecodeExample_observed.qs" )
+#
+#   phecode_T2D_observed=get_pheno(phecode_table_test, demos_table_test, phecode='250.2',MCC=2,use_exclude_ranges = TRUE)
+#   phecode_T2D_expected=snapshot(phecode_T2D_observed,"snapshots/phecode_T2D_observed.qs" )
+#   expect_equal(phecode_T2D_observed,phecode_T2D_expected)
+# })
 
 ## need a new test file
 #test_that('test GRS', {

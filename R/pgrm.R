@@ -48,10 +48,10 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
     setnames(PGRM_new, 'snp_hg38', 'snp')
     }
 
-  if (ancestry != 'ALL') {
+  if (ancestry != 'all') {
     a = ancestry
     PGRM_new = PGRM_new[ancestry == a]
-  } else if (ancestry == 'ALL' && isTRUE(unique)) {
+  } else if (ancestry == 'all' && isTRUE(unique)) {
     ## make the 'ALL' PGRM unique by SNP/phecode
     uniq_PGRM = PGRM_new[, .(cat_log10_p = max(cat_log10_p)), by = c('snp', 'phecode')]
     PGRM_new = merge(uniq_PGRM, PGRM_new, by = c('snp', 'phecode', 'cat_log10_p'))}
@@ -80,12 +80,12 @@ get_PGRM = function(ancestry = 'all', build = 'hg19', phecode_version = 'V1.2', 
 #'
 #' @export
 get_summary_stats = function(dataset = 'ukb', exclude_overlap = TRUE){
-  ds = NULL
+  ds = cohort_match = NULL
   ds = tolower(dataset)
   checkDataset(ds)
   checkBool(exclude_overlap)
-
-  sum_stat = summary_stats[dataset == ds]
+  sum_stat = copy(pgrm::summary_stats)
+  sum_stat = sum_stat[dataset == ds]
   if(exclude_overlap == TRUE){
     sum_stat = sum_stat[cohort_match == 0]
   }
@@ -97,7 +97,7 @@ get_summary_stats = function(dataset = 'ukb', exclude_overlap = TRUE){
 #' This function annotates a result from a test cohort with information from the PGRM
 #'
 #' @param results A data frame (or data.table) with results of a test cohort; columns
-#' for SNP, phecode, cases, controls, odds_ratio, P (see demo files for example (e.g results_MGI))
+#' for SNP, phecode, cases, controls, odds_ratio, P.
 #' @param use_allele_dir If TRUE, direction of effect is used when assessing if an
 #' association is replicated. To use this argument, odds ratios must be reported
 #' for the alternative allele
@@ -110,19 +110,19 @@ get_summary_stats = function(dataset = 'ukb', exclude_overlap = TRUE){
 #' table. (Currently only V1.2 is supported)
 #' @param calculate_power If TRUE then power calculations will be conducted using
 #' case and control counts from the results file. Necessary for get_AER(). Default FALSE
-#' @param annotate_CI_overlap If TRUE then a column called 'annotate_CI_overlap'
+#' @param annotate_ci_overlap If TRUE then a column called 'annotate_ci_overlap'
 #' is added to the table, values:
 #' **overlap**: 95% CIs of PGRM and test cohort overlap
 #' **test_cohort_greater**: 95% CI of test cohort greater than PGRM
 #' **PGRM_greater**: 95% CI of PGRM greater than test cohort
-#' If annotate_CI_overlap is TRUE, then results must include 95% CIs
+#' If annotate_ci_overlap is TRUE, then results must include 95% CIs
 #' @param LOUD If TRUE then progress info is printed to the terminal. Default FALSE
 #'
 #' @return A data.table of the results file annotated with columsn from the PGRM
 #'
 #' @details This function takes a dataframe with summary statistics from a test cohort.
-#' For an example of the way to format the results data frame, see one of the results
-#' sets included in the package (e.g. results_MGI). (NOTE: If the direction of effect
+#' For an example of the way to format the results data frame, look at the fomatting from
+#' [summary_stats]. (NOTE: If the direction of effect
 #' is used to determine if an association is replicated, then the odds ratios of
 #' the result set must be oriented to the alternative allele.)
 #'
@@ -133,7 +133,7 @@ get_summary_stats = function(dataset = 'ukb', exclude_overlap = TRUE){
 #'   \item The rsID
 #'   \item The direction of effect (ref or alt) and risk allele of the original association
 #'   \item Summary statistics from the GWAS catalog association, including the -log10(P),
-#'   odds ratio, and 95% confidence intervals (cat_LOG10_P, cat_OR, cat_L95, cat_U95)
+#'   odds ratio, and 95% confidence intervals (cat_log10_p, cat_or, cat_l95, cat_u95)
 #'   \item The study accession ID from the GWAS catalog
 #'   \item A column called powered, which is 1 or 0 indicating whether the test association
 #'   is powered > 80%. If calculate_power==TRUE, then the power is determined by the case/control
@@ -143,38 +143,45 @@ get_summary_stats = function(dataset = 'ukb', exclude_overlap = TRUE){
 #'   \item A column called rep that indicates if the association is replicated (i.e.
 #'   p<0.05 in the test cohort; if use_allele_dir==TRUE, then the direction of effect
 #'   from the test cohort must also be consistant with what is reported in the catalog)
-#'   \item If annotate_CI_overlap is true, then information about the relationship
+#'   \item If annotate_ci_overlap is true, then information about the relationship
 #'   between the 95% CIs from the catalog and the test set is included in column
-#'   CI_overlap, and new columns for odds_ratio, L95, and U95 are created(rOR, rL95,
-#'   rU95) that are oriented to the risk allele. (This option requires that the confidence
+#'   ci_overlap, and new columns for odds_ratio, l95, and u95 are created(risk_or, risk_l95,
+#'   risk_u95) that are oriented to the risk allele. (This option requires that the confidence
 #'   intervals are reported in the test cohort summary statistics)
 #' }
 #'
 #' @eval annotate_UKBB()
 #'
-#' @seealso Example result sets: [results_BBJ], [results_UKBB], [results_BioVU_EUR], [results_BioVU_AFR], [results_MGI]
+#' @seealso Example result sets: [summary_stats]
 #'
 #' @export
 annotate_results = function(
     results, use_allele_dir = TRUE, ancestry = 'all', build = 'hg19', phecode_version = 'V1.2',
-    calculate_power = TRUE, annotate_CI_overlap = TRUE, LOUD = TRUE) {
+    calculate_power = TRUE, annotate_ci_overlap = TRUE, LOUD = TRUE) {
   ## Avoid warnings about global vars
-  cases = cases_needed = risk_allele_dir = odds_ratio = cat_L95 = cat_U95 = rL95 =
-    rU95 = powered = P = rOR = L95 = U95 = CI_overlap = SNP = Power = NULL
+  cases = cases_needed = risk_allele_dir = odds_ratio = cat_l95 = cat_u95 = risk_l95 =
+    risk_u95 = powered = p = risk_or = l95 = u95 = ci_overlap = snp = power = NULL
   PGRM = get_PGRM(ancestry = ancestry, build = build, phecode_version = phecode_version)
   checkResults(results)
-  if (isTRUE(annotate_CI_overlap)) {
+  if (isTRUE(annotate_ci_overlap)) {
     checkForCIs(results)}
 
   results = data.table(results)
-  results[, SNP := toupper(SNP)]
-  results = merge(results, PGRM, by = c('SNP', 'phecode'))
+  results[, snp := toupper(snp)]
+  results = merge(results, PGRM, by = c('snp', 'phecode'))
 
   results[, powered := 0]
-  results[!is.na(cases_needed) & cases >= cases_needed, powered := 1]
 
   results[, rep := 0]
-  results[P < 0.05, rep := 1]
+  results[, powered := 0]
+  results[, power := 0]
+  results[, ci_overlap := '']
+  results[, risk_or := 0]
+  results[, risk_u95 := 0]
+  results[, risk_l95 := 0]
+
+  results[p < 0.05, rep := 1]
+
 
   if (use_allele_dir) {
     results[risk_allele_dir == 'ref' & odds_ratio > 1, rep := 0]
@@ -182,22 +189,35 @@ annotate_results = function(
   if (calculate_power == TRUE) {
     results = annotate_power(results, LOUD = LOUD)
     results[, powered := 0]
-    results[!is.na(Power) & Power >= 0.8, powered := 1]}
-  if (annotate_CI_overlap == TRUE) {
-    results[, rOR := odds_ratio]
-    results[, rL95 := L95]
-    results[, rU95 := U95]
-    results[risk_allele_dir == 'ref', rOR := 1 / odds_ratio]
-    results[risk_allele_dir == 'ref', rU95 := 1 / L95]
-    results[risk_allele_dir == 'ref', rL95 := 1 / U95]
+    results[!is.na(power) & power >= 0.8, powered := 1]}
+  if (annotate_ci_overlap == TRUE) {
+    results[, risk_or := odds_ratio]
+    results[, risk_l95 := l95]
+    results[, risk_u95 := u95]
+    results[risk_allele_dir == 'ref', risk_or := 1 / odds_ratio]
+    results[risk_allele_dir == 'ref', risk_u95 := 1 / l95]
+    results[risk_allele_dir == 'ref', risk_l95 := 1 / u95]
 
-    results[, CI_overlap := '']
-    results[rL95 >= cat_L95 & rL95 <= cat_U95, CI_overlap := 'overlap']
-    results[rU95 >= cat_L95 & rL95 <= cat_U95, CI_overlap := 'overlap']
-    results[rL95 > cat_U95, CI_overlap := 'test_cohort_greater']
-    results[cat_L95 > rU95, CI_overlap := 'PGRM_greater']}
+    results[, ci_overlap := '']
+    results[risk_l95 >= cat_l95 & risk_l95 <= cat_u95, ci_overlap := 'overlap']
+    results[risk_u95 >= cat_l95 & risk_l95 <= cat_u95, ci_overlap := 'overlap']
+    results[risk_l95 > cat_u95, ci_overlap := 'test_cohort_greater']
+    results[cat_l95 > risk_u95, ci_overlap := 'PGRM_greater']}
 
-  setcolorder(results, results[, c('assoc_ID', names(results)[names(results) != 'assoc_ID'])])
+  #setcolorder(results, results[, c('assoc_id', names(results)[names(results) != 'assoc_id'])])
+  setcolorder(results, c('assoc_id', 'snp', 'phecode', 'phecode_string', 'category_string', 'cases',
+                         'controls', 'odds_ratio', 'p', 'l95', 'u95', 'power', 'powered', 'rep',
+                         'ci_overlap', 'risk_or', 'risk_l95', 'risk_u95',
+                         'study_accession', 'pub_count', 'pub_date', 'ancestry', 'rsid',
+                         'risk_allele_dir', 'raf',
+                         'cat_log10_p', 'cat_or', 'cat_l95', 'cat_u95' ))
+
+  ## Get rid of power or ci_overlap columns if those were not computed
+  if(calculate_power == FALSE){
+    results$power = results$powered = NULL}
+
+  if(annotate_ci_overlap == FALSE){
+    results$ci_overlap = results$risk_l95 = results$risk_u95 = results$risk_or = NULL}
 
   return(results)}
 
