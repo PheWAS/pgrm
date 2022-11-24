@@ -68,11 +68,12 @@
 
 
 
-<script src="my-vignette_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Running the PGRM on summary statistics</h1>
             
-            <h4 data-toc-skip class="date">2022-09-23</h4>
+            <h4 data-toc-skip class="date">2022-11-24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hugheylab/pgrm/blob/HEAD/vignettes/my-vignette.Rmd" class="external-link"><code>vignettes/my-vignette.Rmd</code></a></small>
       <div class="d-none name"><code>my-vignette.Rmd</code></div>
@@ -80,8 +81,13 @@
 
     
     
-<p>The Phenotype Genotype Reference Map (PGRM) is a set of associations from the (<a href="https://www.ebi.ac.uk/gwas/" class="external-link">NHGRI-EBI GWAS catalog</a>. The pgrm package enables users to calculate replication related measures on test cohorts.</p>
-<p>This vignette shows how replication measures can be calculated based on summary statistics from a test cohort. (To generate summary statistics from raw data, see the run_PGRM_assoc() function.)</p>
+<p>The Phenotype Genotype Reference Map (PGRM) is a set of associations
+from the (<a href="https://www.ebi.ac.uk/gwas/" class="external-link">NHGRI-EBI GWAS
+catalog</a>. The pgrm package enables users to calculate replication
+related measures on test cohorts.</p>
+<p>This vignette shows how replication measures can be calculated based
+on summary statistics from a test cohort. (To generate summary
+statistics from raw data, see the run_PGRM_assoc() function.)</p>
 <div class="section level2">
 <h2 id="load-packages">Load packages<a class="anchor" aria-label="anchor" href="#load-packages"></a>
 </h2>
@@ -92,8 +98,18 @@
 <div class="section level2">
 <h2 id="load-gwas-summary-statistics-for-test-cohort">Load GWAS summary statistics for test cohort<a class="anchor" aria-label="anchor" href="#load-gwas-summary-statistics-for-test-cohort"></a>
 </h2>
-<p>The first step is to load in a file of summary statistics. This file must include columns for the SNP, phecode, cases, controls, odds ratios, and P-values. 95% confidence intervals are optional but recommended. SNPs must be denoted by a string with the chromosome, position, reference and alternate allele, separated by “:”. Builds hg19 and hg37 are both supported. Odds ratios and 95% upper/lower confidence invervals (U95, L95) should be oriented to the reference allele.</p>
-<p>In the example below, we open a csv file containing summary statistics (in this case, the summary statistics from the BioVU cohort) using the fread() function. Alternatively you can read your datafile in as a data.frame and convert it to a data.table using the function data.table().</p>
+<p>The first step is to load in a file of summary statistics. This file
+must include columns for the SNP, phecode, cases, controls, odds ratios,
+and P-values. 95% confidence intervals are optional but recommended.
+SNPs must be denoted by a string with the chromosome, position,
+reference and alternate allele, separated by “:”. Builds hg19 and hg37
+are both supported. Odds ratios and 95% upper/lower confidence invervals
+(U95, L95) should be oriented to the reference allele.</p>
+<p>In the example below, we open a csv file containing summary
+statistics (in this case, the summary statistics from the BioVU cohort)
+using the fread() function. Alternatively you can read your datafile in
+as a data.frame and convert it to a data.table using the function
+data.table().</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">d</span><span class="op">=</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'data_sample.csv'</span>, package <span class="op">=</span> <span class="st">'pgrm'</span><span class="op">)</span>,</span>
@@ -117,8 +133,25 @@
 <div class="section level2">
 <h2 id="annotate-test-chort-summary-statistics">Annotate test chort summary statistics<a class="anchor" aria-label="anchor" href="#annotate-test-chort-summary-statistics"></a>
 </h2>
-<p>Next, you can add annotations from the PGRM to the test cohort results with the annotate_results() function. Use the build argument to specify the build of your SNP labels (hg19 or hg38). The ancestry argument should be set to the genetic ancestry of the cohort (EAS, EUR, AFR, SAS, AMR, and ALL).</p>
-<p>The annotate_results() funciton will annotate all SNP/phenotype pairs that are present in both the summary statistics table and the PGRM, and returns a data.table of annotated summary statistics. The annotation includes information about power, replication, and the source study of the association. A boolean variable <code>powered</code> indicates if the association is powered at 80% (given the reported odds ratio and allele frequency, along with the case and control counts from the test cohort). A boolean variable <code>rep</code> indicates if the association is replicated in the test cohort at p&lt;0.05 and the direction of effect is consistent in the source and test summary statistics. To match on the direction of effect, the odds ratios in the test cohort must be oriented to the alternate allle. If your data is not orginalized in this way, this functionality can be suppressed with the opion use_allele_dir==FALSE.</p>
+<p>Next, you can add annotations from the PGRM to the test cohort
+results with the annotate_results() function. Use the build argument to
+specify the build of your SNP labels (hg19 or hg38). The ancestry
+argument should be set to the genetic ancestry of the cohort (EAS, EUR,
+AFR, SAS, AMR, and ALL).</p>
+<p>The annotate_results() funciton will annotate all SNP/phenotype pairs
+that are present in both the summary statistics table and the PGRM, and
+returns a data.table of annotated summary statistics. The annotation
+includes information about power, replication, and the source study of
+the association. A boolean variable <code>powered</code> indicates if
+the association is powered at 80% (given the reported odds ratio and
+allele frequency, along with the case and control counts from the test
+cohort). A boolean variable <code>rep</code> indicates if the
+association is replicated in the test cohort at p&lt;0.05 and the
+direction of effect is consistent in the source and test summary
+statistics. To match on the direction of effect, the odds ratios in the
+test cohort must be oriented to the alternate allle. If your data is not
+orginalized in this way, this functionality can be suppressed with the
+opion use_allele_dir==FALSE.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anno</span> <span class="op">=</span> <span class="fu"><a href="../reference/annotate_results.html">annotate_results</a></span><span class="op">(</span><span class="va">d</span>, ancestry <span class="op">=</span> <span class="st">'EUR'</span>, build <span class="op">=</span> <span class="st">'hg19'</span>, calculate_power <span class="op">=</span> <span class="cn">TRUE</span>, LOUD <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">anno</span><span class="op">)</span></span>
@@ -159,9 +192,11 @@
 <span><span class="co">#&gt; 6: 1.0846145 1.234152    overlap</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="calculate-the-replication-rate-of-associations-powered-at-80">Calculate the replication rate of associations powered at &gt;80%<a class="anchor" aria-label="anchor" href="#calculate-the-replication-rate-of-associations-powered-at-80"></a>
+<h2 id="calculate-the-replication-rate-of-associations-powered-at-80">Calculate the replication rate of associations powered at
+&gt;80%<a class="anchor" aria-label="anchor" href="#calculate-the-replication-rate-of-associations-powered-at-80"></a>
 </h2>
-<p>The get_RR function takes an annotated data.table and calcuated the powered replication rate.</p>
+<p>The get_RR function takes an annotated data.table and calcuated the
+powered replication rate.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_RR.html">get_RR</a></span><span class="op">(</span><span class="va">anno</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Replicated 651 of 853 for RR=76.3%</span></span>
@@ -170,7 +205,9 @@
 <div class="section level2">
 <h2 id="calculate-the-overall-replication-rate">Calculate the overall replication rate<a class="anchor" aria-label="anchor" href="#calculate-the-overall-replication-rate"></a>
 </h2>
-<p>By adding the include=‘all’ option, the replication rate is calculated using all associations, regardless of power. This measure is known as the overall replication rate.</p>
+<p>By adding the include=‘all’ option, the replication rate is
+calculated using all associations, regardless of power. This measure is
+known as the overall replication rate.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_RR.html">get_RR</a></span><span class="op">(</span><span class="va">anno</span>,include<span class="op">=</span><span class="st">'all'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Replicated 1354 of 3268 for RR=41.4%</span></span>
@@ -179,7 +216,10 @@
 <div class="section level2">
 <h2 id="calculate-the-actualexpected-ratio">Calculate the actual:expected ratio<a class="anchor" aria-label="anchor" href="#calculate-the-actualexpected-ratio"></a>
 </h2>
-<p>The actual:expected ratio (AER) is the measure of the number of associations replicated divided by the sum of the power. This measure avoids the threshold effect induced by excluding on power &gt;80%, and can be particularly useful for smaller datasets.</p>
+<p>The actual:expected ratio (AER) is the measure of the number of
+associations replicated divided by the sum of the power. This measure
+avoids the threshold effect induced by excluding on power &gt;80%, and
+can be particularly useful for smaller datasets.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_AER.html">get_AER</a></span><span class="op">(</span><span class="va">anno</span>, LOUD <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Expected 1676.7, replicated 1354 for AE=0.808 (3268 associations for 106 uniq phecodes)</span></span>
@@ -217,7 +257,11 @@
 <div class="section level2">
 <h2 id="comparing-a-single-phenotype">Comparing a single phenotype<a class="anchor" aria-label="anchor" href="#comparing-a-single-phenotype"></a>
 </h2>
-<p>You can also compare the associations for a single phenotype against what was reported in the catalog. To do this, we use the rOR, rL95, and rU95 values from the annotion file as columns have been oriented to the risk allele. To make a plot, we will bind results from the test cohort and the source cohort (catalog) for a single phenotype.</p>
+<p>You can also compare the associations for a single phenotype against
+what was reported in the catalog. To do this, we use the rOR, rL95, and
+rU95 values from the annotion file as columns have been oriented to the
+risk allele. To make a plot, we will bind results from the test cohort
+and the source cohort (catalog) for a single phenotype.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gout_test</span> <span class="op">=</span> <span class="va">anno</span><span class="op">[</span><span class="va">phecode_string</span> <span class="op"><a href="https://Rdatatable.gitlab.io/data.table/reference/like.html" class="external-link">%like%</a></span> <span class="st">'Gout'</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SNP'</span>, <span class="st">'rOR'</span>, <span class="st">'rL95'</span>, <span class="st">'rU95'</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">gout_test</span><span class="op">$</span><span class="va">cohort</span> <span class="op">=</span> <span class="st">'test'</span></span>
